@@ -29,13 +29,9 @@ Eigen::Matrix<double, 8, 2> mixed_order::basis(Eigen::Vector3d& lambda, Eigen::M
 	func.row(3) = lambda(0) * nabla_lambda.row(1) + lambda(1) * nabla_lambda.row(0);
 	func.row(4) = lambda(0) * nabla_lambda.row(2) + lambda(2) * nabla_lambda.row(0);
 	func.row(5) = lambda(1) * nabla_lambda.row(2) + lambda(2) * nabla_lambda.row(1);
-	func.row(6) =		(lambda(1) * lambda(2) * nabla_lambda.row(0))
-					+	(lambda(0) * lambda(2) * nabla_lambda.row(1)) 
-				- 2 *	(lambda(0) * lambda(1) * nabla_lambda.row(2));
-	func.row(7) =		(lambda(2) * lambda(0) * nabla_lambda.row(1)) 
-					+	(lambda(1) * lambda(0) * nabla_lambda.row(2)) 
-				- 2 *	(lambda(1) * lambda(2) * nabla_lambda.row(0));
-	
+	func.row(6) = (lambda(1) * lambda(2) * nabla_lambda.row(0)) + (lambda(0) * lambda(2) * nabla_lambda.row(1)) - 2 * (lambda(0) * lambda(1) * nabla_lambda.row(2));
+	func.row(7) = (lambda(2) * lambda(0) * nabla_lambda.row(1)) + (lambda(1) * lambda(0) * nabla_lambda.row(2)) - 2 * (lambda(1) * lambda(2) * nabla_lambda.row(0));
+
 	return func;
 }
 Eigen::Matrix<double, 8, 1> mixed_order::basis_curl(Eigen::Vector3d& lambda, Eigen::Matrix<double, 3, 2>& nabla_lambda) {
@@ -51,10 +47,8 @@ Eigen::Matrix<double, 8, 1> mixed_order::basis_curl(Eigen::Vector3d& lambda, Eig
 	func(3) = 0;
 	func(4) = 0;
 	func(5) = 0;
-	func(6) =	-3 * lambda(1) * nabla_matrix.row(0).cross(nabla_matrix.row(2))(2)
-				-3 * lambda(0) * nabla_matrix.row(1).cross(nabla_matrix.row(2))(2);
-	func(7) =	-3 * lambda(2) * nabla_matrix.row(1).cross(nabla_matrix.row(0))(2)
-				-3 * lambda(1) * nabla_matrix.row(2).cross(nabla_matrix.row(0))(2);
+	func(6) = -3 * lambda(1) * nabla_matrix.row(0).cross(nabla_matrix.row(2))(2) - 3 * lambda(0) * nabla_matrix.row(1).cross(nabla_matrix.row(2))(2);
+	func(7) = -3 * lambda(2) * nabla_matrix.row(1).cross(nabla_matrix.row(0))(2) - 3 * lambda(1) * nabla_matrix.row(2).cross(nabla_matrix.row(0))(2);
 
 	return func;
 }
