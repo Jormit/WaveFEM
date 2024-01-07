@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include "mesher_interface.h"
+#include "fem.h"
 #include "../include/gmsh.h_cwrap"
 
 int main()
@@ -17,6 +18,20 @@ int main()
 
 	auto nodes = mesher_interface::get_nodes();
 	auto tets = mesher_interface::get_elems();
+
+
+	Eigen::Matrix<double, 3, 2> coords;
+	coords << 0, 0,
+		      1, 0,
+		      0, 1;
+
+	Eigen::Vector2d coord(0.25, 0.25);
+
+	auto coeff = fem::_2d::simplex_coefficients(coords);
+	auto lambda = fem::_2d::simplex_coordinates(coord, coeff);
+
+	std::cout << lambda << std::endl;
+
 
 	return 0;
 }
