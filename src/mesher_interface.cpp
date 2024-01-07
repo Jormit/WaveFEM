@@ -1,0 +1,125 @@
+#include <string>
+#include "../include/gmsh.h_cwrap"
+#include "mesher_interface.h"
+#include <algorithm>
+#include <unordered_map>
+#include <iostream>
+
+void mesher_interface::initialize() {
+    gmsh::initialize();
+}
+
+int mesher_interface::import_model(const std::string &filename)
+{
+    std::vector<std::pair<int, int> > v;
+    try 
+    {
+        gmsh::model::occ::importShapes(filename, v);
+    }
+    catch (...) 
+    {
+        gmsh::logger::write("Could not load STEP file: bye!");
+        gmsh::finalize();
+        return -1;
+    }
+    
+    auto ids = std::vector<int>();
+    for (auto i : v)
+    {
+        ids.push_back(i.second);
+    }
+
+    int sl = gmsh::model::occ::addSurfaceLoop(ids, -1, true);
+    int vol = gmsh::model::occ::addVolume({sl});
+    
+    gmsh::model::occ::synchronize();
+    return vol;
+}
+
+void mesher_interface::mesh_model(int mesh_size_min, int mesh_size_max) 
+{
+    gmsh::option::setNumber("Mesh.MeshSizeMin", mesh_size_min);
+    gmsh::option::setNumber("Mesh.MeshSizeMax", mesh_size_max);
+    gmsh::model::mesh::generate(3);
+}
+
+void mesher_interface::view_model()
+{
+    gmsh::fltk::run();
+}
+
+box mesher_interface::get_bounding_box()
+{
+    double xmin = 0, ymin = 0, zmin = 0, xmax = 0, ymax = 0, zmax = 0;
+    try
+    {
+        gmsh::model::getBoundingBox(-1, -1, xmin, ymin, zmin, xmax, ymax, zmax);
+    }
+    catch (...)
+    {
+    }
+    return { xmin, ymin, zmin, xmax, ymax, zmax };
+}
+
+int mesher_interface::add_box(box b)
+{
+    int id = gmsh::model::occ::addBox(b.xmin, b.ymin, b.zmin, b.xmax - b.xmin, b.ymax - b.ymin, b.zmax - b.zmin);
+    gmsh::model::occ::synchronize();
+    return id;
+}
+
+int mesher_interface::subtract(int id1, int id2)
+{
+    std::vector<std::pair<int, int> > ov;
+    std::vector<std::vector<std::pair<int, int> > > ovv;
+    gmsh::model::occ::cut({ {3, id1} }, { {3, id2} }, ov, ovv, 3);
+    gmsh::model::occ::synchronize();
+    return ov[0].second;
+}
+
+std::vector<node> mesher_interface::get_nodes()
+{
+    // Get all nodes
+    std::vector<size_t> nodeTags;
+    std::vector<double> coord;
+    std::vector<double> parametric_coord;
+    gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, 3, -1, true, false);
+
+    // Create a node->index map
+    std::unordered_map<int,int> node_map;
+    node_map.reserve(nodeTags.size());
+    for (int i = 0; i < nodeTags.size(); i++)
+    {
+        int node = nodeTags[i];
+        node_map[node] = i;
+    }
+
+    // Create node array object
+    std::vector<node> nodes_to_return(nodeTags.size());
+   
+    // Get boundary nodes (nodes on a surface)
+    std::vector<int> types2;
+    std::vector<std::vector<size_t>> tags2;
+    std::vector<std::vector<size_t>> nodeTags2;
+    gmsh::model::mesh::getElements(types2, tags2, nodeTags2, 2, -1);
+
+    // Get rest of nodes
+    std::vector<int> types3;
+    std::vector<std::vector<size_t>> tags3;
+    std::vector<std::vector<size_t>> nodeTags3;
+    gmsh::model::mesh::getElements(types3, tags3, nodeTags3, 3, -1);
+
+    // Insert all nodes.
+    for (auto e : nodeTags3[0]) {
+        int new_number = node_map[e];
+        node nn({ coord[3 * new_number], coord[3 * new_number + 1], coord[3 * new_number + 2] }, FREE_NODE);
+        nodes_to_return.insert(nodes_to_return.begin() + new_number, nn);
+    }
+
+    // Adjust nodes on surface.
+    for (auto e : nodeTags2[0]) {
+        int new_number = node_map[e];
+        nodes_to_return[new_number].tag = BOUNDARY_NODE;
+    }
+    return nodes_to_return;
+}
