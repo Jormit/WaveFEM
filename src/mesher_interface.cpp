@@ -163,7 +163,6 @@ std::vector<tet> mesher_interface::get_elems()
 
         std::array<int, 4> nodes{ n1, n2, n3, n4 };
         std::sort(nodes.begin(), nodes.end());
-        std::cout << i << std::endl;
         elems_to_return.push_back({ nodes, 1 });
     }
 
