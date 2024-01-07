@@ -1,6 +1,5 @@
 #include "fem.h"
 #include "quad.h"
-
 #include <iostream>
 
 using namespace fem::_2d;
@@ -30,8 +29,12 @@ Eigen::Matrix<double, 8, 2> mixed_order::basis(Eigen::Vector3d& lambda, Eigen::M
 	func.row(3) = lambda(0) * nabla_lambda.row(1) + lambda(1) * nabla_lambda.row(0);
 	func.row(4) = lambda(0) * nabla_lambda.row(2) + lambda(2) * nabla_lambda.row(0);
 	func.row(5) = lambda(1) * nabla_lambda.row(2) + lambda(2) * nabla_lambda.row(1);
-	func.row(6) = (lambda(1) * lambda(2) * nabla_lambda.row(0)) + (lambda(0) * lambda(2) * nabla_lambda.row(1)) - 2 * (lambda(0) * lambda(1) * nabla_lambda.row(2));
-	func.row(7) = (lambda(2) * lambda(0) * nabla_lambda.row(1)) + (lambda(1) * lambda(0) * nabla_lambda.row(2)) - 2 * (lambda(1) * lambda(2) * nabla_lambda.row(0));
+	func.row(6) =		(lambda(1) * lambda(2) * nabla_lambda.row(0))
+					+	(lambda(0) * lambda(2) * nabla_lambda.row(1)) 
+				- 2 *	(lambda(0) * lambda(1) * nabla_lambda.row(2));
+	func.row(7) =		(lambda(2) * lambda(0) * nabla_lambda.row(1)) 
+					+	(lambda(1) * lambda(0) * nabla_lambda.row(2)) 
+				- 2 *	(lambda(1) * lambda(2) * nabla_lambda.row(0));
 	
 	return func;
 }
