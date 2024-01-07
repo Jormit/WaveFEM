@@ -29,6 +29,9 @@ namespace mesher_interface {
 	// Get nodes
 	std::vector<node> get_nodes();
 
+	// Get elements (tetrahedrons).
+	std::vector<tet> get_elems();
+
 }
 
 

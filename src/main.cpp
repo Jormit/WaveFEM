@@ -16,7 +16,7 @@ int main()
 	mesher_interface::view_model();
 
 	auto nodes = mesher_interface::get_nodes();
-	std::cout << nodes[0].coords[0] << std::endl;
-	
+	auto tets = mesher_interface::get_elems();
+
 	return 0;
 }
