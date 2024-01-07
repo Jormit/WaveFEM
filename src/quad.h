@@ -1,4 +1,4 @@
-namespace quad 
+namespace quad
 {
 	// w, lamba1, lamba2, lamba3, lamba4
 	namespace volume {
