@@ -123,3 +123,49 @@ std::vector<node> mesher_interface::get_nodes()
     }
     return nodes_to_return;
 }
+
+std::vector<tet> mesher_interface::get_elems()
+{
+    // Create a node->index map
+    std::unordered_map<int, int> node_map;
+    {
+        std::vector<size_t> nodeTags;
+        std::vector<double> coord;
+        std::vector<double> parametric_coord;
+        gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, 3, -1, true, false);       
+
+        node_map.reserve(nodeTags.size());
+        for (int i = 0; i < nodeTags.size(); i++)
+        {
+            int node = nodeTags[i];
+            node_map[node] = i;
+        }
+    }    
+
+    std::vector<int> elementTypes;
+    std::vector<std::vector<std::size_t>> elementTags;
+    std::vector<std::vector<std::size_t>> nodeTags;
+    gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 3);
+
+    std::vector<tet> elems_to_return;
+    elems_to_return.reserve(elementTags[0].size());
+    for (int i = 0; i < elementTags[0].size(); i++)
+    {
+        int n1 = nodeTags[0][i * 4];
+        int n2 = nodeTags[0][i * 4 + 1];
+        int n3 = nodeTags[0][i * 4 + 2];
+        int n4 = nodeTags[0][i * 4 + 3];
+
+        n1 = node_map[n1];
+        n2 = node_map[n2];
+        n3 = node_map[n3];
+        n4 = node_map[n4];
+
+        std::array<int, 4> nodes{ n1, n2, n3, n4 };
+        std::sort(nodes.begin(), nodes.end());
+        std::cout << i << std::endl;
+        elems_to_return.push_back({ nodes, 1 });
+    }
+
+    return elems_to_return;
+}
