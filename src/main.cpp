@@ -28,9 +28,11 @@ int main()
 	Eigen::Vector2d coord(0.25, 0.25);
 
 	auto coeff = fem::_2d::simplex_coefficients(coords);
-	auto lambda = fem::_2d::simplex_coordinates(coord, coeff);
+	auto lambda = fem::_2d::lambda(coord, coeff);
+	auto nabla_lambda = fem::_2d::nabla_lambda(coeff);
 
-	std::cout << lambda << std::endl;
+	std::cout << coeff << std::endl;
+	std::cout << nabla_lambda << std::endl;
 
 
 	return 0;
