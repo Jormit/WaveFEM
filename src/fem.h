@@ -1,22 +1,22 @@
 #include <functional>
-#include <geometry.h>
+#include "geometry.h"
+#include "../include/Eigen/dense"
 
-namespace fem 
+namespace fem
 {
 	namespace mixed_order {
-		namespace 2d
+		namespace _2d
 		{
-			S();
-			T();
-			B();
+			Eigen::MatrixXd S();
+			Eigen::MatrixXd T();
 		}
 
-			namespace 3d
+		namespace _3d
 		{
-			S();
-			T();
-			B();
+			Eigen::MatrixXd S();
+			Eigen::MatrixXd T();
+			Eigen::MatrixXd B();
+			Eigen::VectorXd b();
 		}
 	}
-	
 }
