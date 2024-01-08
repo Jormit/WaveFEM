@@ -6,7 +6,7 @@
 int main()
 {
 	mesher_interface::initialize();
-	int id1 = mesher_interface::import_model("../../../data/Original EH Model 1181-LI-T Solid Model.IGS");
+	int id1 = mesher_interface::import_model("../../../data/Horn.IGS");
 	
 	auto bbox = mesher_interface::get_bounding_box();
 	bbox.add_padding(20, 20, 20);

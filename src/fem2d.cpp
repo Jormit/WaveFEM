@@ -1,10 +1,10 @@
 #include "fem.h"
-#include "quad.h"
+//#include "quad.h"
 #include <iostream>
 
 using namespace fem::_2d;
 
-Eigen::Matrix<double, 3, 3> fem::_2d::simplex_coefficients(Eigen::Matrix<double, 3, 2>& coords)
+Eigen::Matrix<double, 3, 3> fem::_2d::simplex_coefficients(const Eigen::Matrix<double, 3, 2>& coords)
 {
 	Eigen::Matrix<double, 3, 3> coord_matrix;
 	coord_matrix.row(0) = coords.col(0);
@@ -13,18 +13,18 @@ Eigen::Matrix<double, 3, 3> fem::_2d::simplex_coefficients(Eigen::Matrix<double,
 	return coord_matrix.inverse();
 }
 
-Eigen::Vector3d fem::_2d::lambda(Eigen::Vector2d& coords, Eigen::Matrix<double, 3, 3>& simplex_coeff)
+Eigen::Vector3d fem::_2d::lambda(const Eigen::Vector2d& coords, const Eigen::Matrix<double, 3, 3>& simplex_coeff)
 {
 	Eigen::Vector3d x(coords(0), coords(1), 1);
 	return simplex_coeff * x;
 }
 
-Eigen::Matrix<double, 3, 2> fem::_2d::nabla_lambda(Eigen::Matrix<double, 3, 3>& simplex_coeff)
+Eigen::Matrix<double, 3, 2> fem::_2d::nabla_lambda(const Eigen::Matrix<double, 3, 3>& simplex_coeff)
 {
 	return simplex_coeff(Eigen::seq(0, 2), Eigen::seq(0, 1));
 }
 
-Eigen::Matrix<double, 8, 2> mixed_order::basis(Eigen::Vector3d& lambda, Eigen::Matrix<double, 3, 2>& nabla_lambda)
+Eigen::Matrix<double, 8, 2> mixed_order::basis(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda)
 {
 	Eigen::Matrix<double, 8, 2> func;
 
@@ -39,7 +39,8 @@ Eigen::Matrix<double, 8, 2> mixed_order::basis(Eigen::Vector3d& lambda, Eigen::M
 
 	return func;
 }
-Eigen::Matrix<double, 8, 1> mixed_order::basis_curl(Eigen::Vector3d& lambda, Eigen::Matrix<double, 3, 2>& nabla_lambda) {
+
+Eigen::Matrix<double, 8, 1> mixed_order::basis_curl(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda) {
 	Eigen::Matrix<double, 8, 1> func;
 	Eigen::Matrix<double, 3, 3> nabla_matrix;
 	nabla_matrix.col(0) = nabla_lambda.col(0);
@@ -56,4 +57,15 @@ Eigen::Matrix<double, 8, 1> mixed_order::basis_curl(Eigen::Vector3d& lambda, Eig
 	func(7) = -3 * lambda(2) * nabla_matrix.row(1).cross(nabla_matrix.row(0))(2) - 3 * lambda(1) * nabla_matrix.row(2).cross(nabla_matrix.row(0))(2);
 
 	return func;
+}
+
+Eigen::Matrix<double, 8, 8> mixed_order::S(const Eigen::Matrix<double, 3, 3>& simplex_coeff, const Eigen::Matrix<double, 3, 2>& nabla_lambda)
+{
+	
+	return {};
+}
+
+Eigen::Matrix<double, 8, 8> mixed_order::T(const Eigen::Matrix<double, 3, 3>& simplex_coeff, const Eigen::Matrix<double, 3, 2>& nabla_lambda)
+{
+	return {};
 }
