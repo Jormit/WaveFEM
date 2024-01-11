@@ -2,8 +2,8 @@
 #include <ostream>
 #include <array>
 
-const int BOUNDARY_NODE = 1;
-const int FREE_NODE = 0;
+const int BOUNDARY_NODE = 0;
+const int FREE_NODE = -1;
 
 class box
 {
