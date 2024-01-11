@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "geometry.h"
+#include "../include/gmsh.h_cwrap"
 
 namespace mesher_interface {
 	// Initializes GMSH.
@@ -26,11 +27,17 @@ namespace mesher_interface {
 	// Subtracts volume with id2 from id1
 	int subtract(int id1, int id2);
 
+	// Get node map
+	std::unordered_map<int, int> get_node_map();
+
 	// Get nodes
-	std::vector<node> get_nodes();
+	std::vector<node> get_nodes(std::unordered_map<int, int> node_map);
 
 	// Get elements (tetrahedrons).
-	std::vector<tet> get_elems();
+	std::vector<tet> get_elems(std::unordered_map<int, int> node_map);
+
+	// Get port nodes
+	gmsh::vectorpair get_surface_ids_from_coms(std::vector<std::vector<double>>);
 
 }
 

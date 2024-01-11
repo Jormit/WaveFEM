@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <unordered_map>
 #include <iostream>
+#include "helpers.h"
 
 void mesher_interface::initialize() {
     gmsh::initialize();
@@ -77,22 +78,31 @@ int mesher_interface::subtract(int id1, int id2)
     return ov[0].second;
 }
 
-std::vector<node> mesher_interface::get_nodes()
+std::unordered_map<int, int> mesher_interface::get_node_map()
 {
-    // Get all nodes
     std::vector<size_t> nodeTags;
     std::vector<double> coord;
     std::vector<double> parametric_coord;
     gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, 3, -1, true, false);
 
-    // Create a node->index map
-    std::unordered_map<int,int> node_map;
+    std::unordered_map<int, int> node_map;
     node_map.reserve(nodeTags.size());
     for (int i = 0; i < nodeTags.size(); i++)
     {
         int node = nodeTags[i];
         node_map[node] = i;
     }
+
+    return node_map;
+}
+
+std::vector<node> mesher_interface::get_nodes(std::unordered_map<int, int> node_map)
+{
+    // Get all nodes
+    std::vector<size_t> nodeTags;
+    std::vector<double> coord;
+    std::vector<double> parametric_coord;
+    gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, 3, -1, true, false);
 
     // Create node array object
     std::vector<node> nodes_to_return(nodeTags.size());
@@ -124,24 +134,8 @@ std::vector<node> mesher_interface::get_nodes()
     return nodes_to_return;
 }
 
-std::vector<tet> mesher_interface::get_elems()
+std::vector<tet> mesher_interface::get_elems(std::unordered_map<int, int> node_map)
 {
-    // Create a node->index map
-    std::unordered_map<int, int> node_map;
-    {
-        std::vector<size_t> nodeTags;
-        std::vector<double> coord;
-        std::vector<double> parametric_coord;
-        gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, 3, -1, true, false);       
-
-        node_map.reserve(nodeTags.size());
-        for (int i = 0; i < nodeTags.size(); i++)
-        {
-            int node = nodeTags[i];
-            node_map[node] = i;
-        }
-    }    
-
     std::vector<int> elementTypes;
     std::vector<std::vector<std::size_t>> elementTags;
     std::vector<std::vector<std::size_t>> nodeTags;
@@ -167,4 +161,19 @@ std::vector<tet> mesher_interface::get_elems()
     }
 
     return elems_to_return;
+}
+
+gmsh::vectorpair mesher_interface::get_surface_ids_from_coms(std::vector<std::vector<double>>)
+{
+    std::vector<std::pair<int, int>> entities;
+    gmsh::model::occ::getEntities(entities, 2);
+
+    for (auto e : entities)
+    {
+        double x, y, z;
+        double mass;
+        gmsh::model::occ::getCenterOfMass(e.first, e.second, x, y, z);
+        std::cout <<  e.second << ": " << x << " " << y << " " << z << " " << mass << std::endl;
+    }
+    return entities;
 }
