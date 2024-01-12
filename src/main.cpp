@@ -19,10 +19,11 @@ int main()
 	mesher_interface::view_model();
 
 	auto node_map = mesher_interface::get_node_map();
-	auto nodes = mesher_interface::get_nodes(node_map);
-	auto tets = mesher_interface::get_elems(node_map);
+	auto nodes = mesher_interface::get_all_nodes(node_map);
+	auto volume_elements = mesher_interface::get_volume_elems(node_map);
 
-	mesher_interface::get_surface_ids_from_coms(port_points);
+	auto port_ids = mesher_interface::get_surface_ids_from_coms(port_points);
+	auto port_surface_elements = mesher_interface::get_surface_elems_by_id(port_ids, node_map);
 
 	return 0;
 }

@@ -31,13 +31,16 @@ namespace mesher_interface {
 	std::unordered_map<int, int> get_node_map();
 
 	// Get nodes
-	std::vector<node> get_nodes(std::unordered_map<int, int> node_map);
+	std::vector<node> get_all_nodes(std::unordered_map<int, int> node_map);
 
-	// Get elements (tetrahedrons).
-	std::vector<tet> get_elems(std::unordered_map<int, int> node_map);
+	// Get elements (tetrahedrons)
+	std::vector<tet> get_volume_elems(std::unordered_map<int, int> node_map);
 
-	// Get port nodes
-	gmsh::vectorpair get_surface_ids_from_coms(std::vector<std::vector<double>>);
+	// Get surface ids by comparing center of mass
+	std::vector<int> get_surface_ids_from_coms(std::vector<std::vector<double>> coms);
+
+	// Get Surface elements (triangles)
+	std::vector<std::vector<tri>> get_surface_elems_by_id(std::vector<int> ids, std::unordered_map<int, int> node_map);
 
 }
 

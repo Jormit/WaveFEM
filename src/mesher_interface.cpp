@@ -96,7 +96,7 @@ std::unordered_map<int, int> mesher_interface::get_node_map()
     return node_map;
 }
 
-std::vector<node> mesher_interface::get_nodes(std::unordered_map<int, int> node_map)
+std::vector<node> mesher_interface::get_all_nodes(std::unordered_map<int, int> node_map)
 {
     // Get all nodes
     std::vector<size_t> nodeTags;
@@ -134,7 +134,7 @@ std::vector<node> mesher_interface::get_nodes(std::unordered_map<int, int> node_
     return nodes_to_return;
 }
 
-std::vector<tet> mesher_interface::get_elems(std::unordered_map<int, int> node_map)
+std::vector<tet> mesher_interface::get_volume_elems(std::unordered_map<int, int> node_map)
 {
     std::vector<int> elementTypes;
     std::vector<std::vector<std::size_t>> elementTags;
@@ -163,17 +163,55 @@ std::vector<tet> mesher_interface::get_elems(std::unordered_map<int, int> node_m
     return elems_to_return;
 }
 
-gmsh::vectorpair mesher_interface::get_surface_ids_from_coms(std::vector<std::vector<double>>)
+std::vector<int> mesher_interface::get_surface_ids_from_coms(std::vector<std::vector<double>> coms)
 {
     std::vector<std::pair<int, int>> entities;
     gmsh::model::occ::getEntities(entities, 2);
+    std::vector<int> ids;
 
-    for (auto e : entities)
+    for (auto p : coms)
     {
-        double x, y, z;
-        double mass;
-        gmsh::model::occ::getCenterOfMass(e.first, e.second, x, y, z);
-        std::cout <<  e.second << ": " << x << " " << y << " " << z << " " << mass << std::endl;
+        for (auto e : entities)
+        {
+            double x, y, z;
+            gmsh::model::occ::getCenterOfMass(e.first, e.second, x, y, z);        
+            if (helpers::isEqual(p[0], x) && helpers::isEqual(p[1], y) && helpers::isEqual(p[2], z))
+            {
+                ids.push_back(e.second);
+                break;
+            }
+        }
     }
-    return entities;
+    return ids;
+}
+
+std::vector<std::vector<tri>> mesher_interface::get_surface_elems_by_id(std::vector<int> ids, std::unordered_map<int, int> node_map)
+{
+    std::vector<std::vector<tri>> elems_to_return(ids.size());
+    int index = 0;
+    for (auto id : ids)
+    {
+        std::vector<int> elementTypes;
+        std::vector<std::vector<std::size_t>> elementTags;
+        std::vector<std::vector<std::size_t>> nodeTags;
+        gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 2, id);
+       
+        elems_to_return[index].reserve(elementTags[0].size());
+        for (int i = 0; i < elementTags[0].size(); i++)
+        {
+            int n1 = nodeTags[0][i * 3];
+            int n2 = nodeTags[0][i * 3 + 1];
+            int n3 = nodeTags[0][i * 3 + 2];
+
+            n1 = node_map[n1];
+            n2 = node_map[n2];
+            n3 = node_map[n3];
+
+            std::array<int, 3> nodes{n1, n2, n3};
+            std::sort(nodes.begin(), nodes.end());
+            elems_to_return[index].push_back({ nodes, 1 });
+        }
+        index++;
+    }
+    return elems_to_return;
 }
