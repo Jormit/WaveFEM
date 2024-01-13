@@ -15,7 +15,7 @@ int main()
 	int bbox_id = mesher_interface::add_box(bbox);
 
 	mesher_interface::subtract(bbox_id, model_id);
-	mesher_interface::mesh_model(100, 100);
+	mesher_interface::mesh_model(10, 10);
 	mesher_interface::view_model();
 	
 	auto node_map = mesher_interface::get_node_map();
