@@ -16,13 +16,16 @@ int main()
 
 	mesher_interface::subtract(bbox_id, model_id);
 	mesher_interface::mesh_model(10, 10);
-	mesher_interface::view_model();
+	//mesher_interface::view_model();
 	
 	auto nodes = mesher_interface::get_all_nodes();
 	auto volume_elements = mesher_interface::get_volume_elems();
 
 	auto port_ids = mesher_interface::get_surface_ids_from_coms(port_points);
 	auto port_surface_elements = mesher_interface::get_surface_elems_by_ids(port_ids);
+
+	auto dof_map = fem::_2d::mixed_order::dof_map(nodes, port_surface_elements[0]);
+	auto S_T = fem::_2d::mixed_order::assemble_S_T(nodes, port_surface_elements[0], dof_map);
 
 	return 0;
 }
