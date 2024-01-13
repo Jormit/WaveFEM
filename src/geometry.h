@@ -45,49 +45,21 @@ struct node
 
 struct tri
 {
-	std::array<int, 3> nodes;
-	int tag;
-	tri(std::array<int, 3> nodes, int tag)
-		: nodes(nodes), tag(tag)
+	std::array<size_t, 3> nodes;
+	std::array<size_t, 3> edges;
+	size_t tag;
+	tri(std::array<size_t, 3> nodes, std::array<size_t, 3> edges, size_t tag)
+		: nodes(nodes), edges(edges), tag(tag)
 	{}
-
-	std::array<int, 2> get_edge_nodes(int edge) {
-		switch (edge) {
-		case 0: return { nodes[0], nodes[1] };
-		case 1: return { nodes[0], nodes[2] };
-		case 2: return { nodes[1], nodes[2] };
-		default: return { nodes[0], nodes[0] };
-		}
-	}
 };
 
 struct tet
 {
-	std::array<int, 4> nodes;
-	int tag;
-	tet(std::array<int, 4> nodes, int tag)
-		: nodes(nodes), tag(tag)
+	std::array<size_t, 4> nodes;
+	std::array<size_t, 6> edges;
+	std::array<size_t, 4> faces;
+	size_t tag;
+	tet(std::array<size_t, 4> nodes, std::array<size_t, 6> edges, std::array<size_t, 4> faces, size_t tag)
+		: nodes(nodes), edges(edges), faces(faces), tag(tag)
 	{}
-
-	std::array<int, 2> get_edge_nodes(int edge) {
-		switch (edge) {
-		case 0: return { nodes[0], nodes[1] };
-		case 1: return { nodes[0], nodes[2] };
-		case 2: return { nodes[0], nodes[3] };
-		case 3: return { nodes[1], nodes[2] };
-		case 4: return { nodes[1], nodes[3] };
-		case 5: return { nodes[2], nodes[3] };
-		default: return { nodes[0], nodes[0] };
-		}
-	}
-
-	std::array<int, 3> get_face_nodes(int face) {
-		switch (face) {
-		case 0: return { nodes[0], nodes[1], nodes[2] };
-		case 1: return { nodes[0], nodes[1], nodes[3] };
-		case 2: return { nodes[0], nodes[2], nodes[3] };
-		case 3: return { nodes[1], nodes[2], nodes[3] };
-		default: return { nodes[0], nodes[0], nodes[0] };
-		}
-	}
 };
