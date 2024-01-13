@@ -230,7 +230,16 @@ std::vector<std::vector<tri>> mesher_interface::get_surface_elems_by_ids(std::ve
                   nodes[1], nodes[2]},
                 edge_tags, edge_orientations);
 
-            elems_to_return[index].push_back({ nodes, {edge_tags[0], edge_tags[1], edge_tags[2]}, 1 });
+            // Get single face
+            std::vector<size_t> face_tags;
+            std::vector<int> face_orientations;
+            gmsh::model::mesh::getFaces(3,
+                {
+                    nodes[0], nodes[1], nodes[2]
+                },
+                face_tags, face_orientations);
+
+            elems_to_return[index].push_back({ nodes, {edge_tags[0], edge_tags[1], edge_tags[2]}, face_tags[0], 1 });
         }
         index++;
     }

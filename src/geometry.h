@@ -47,10 +47,19 @@ struct tri
 {
 	std::array<size_t, 3> nodes;
 	std::array<size_t, 3> edges;
+	size_t face;
 	size_t tag;
-	tri(std::array<size_t, 3> nodes, std::array<size_t, 3> edges, size_t tag)
-		: nodes(nodes), edges(edges), tag(tag)
+	tri(std::array<size_t, 3> nodes, std::array<size_t, 3> edges, size_t face, size_t tag)
+		: nodes(nodes), edges(edges), face(face), tag(tag)
 	{}
+
+	std::array<size_t, 2> get_edge_nodes(size_t edge) const {
+		switch (edge) {
+		case 0: return { nodes[0], nodes[1] };
+		case 1: return { nodes[0], nodes[2] };
+		case 2: return { nodes[1], nodes[2] };
+		}
+	}
 };
 
 struct tet
