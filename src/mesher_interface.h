@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "geometry.h"
-#include "../include/gmsh.h_cwrap"
+#include "../include/gmsh/gmsh.h_cwrap"
 
 namespace mesher_interface {
 	// Initializes GMSH.

@@ -1,5 +1,5 @@
 #include <string>
-#include "../include/gmsh.h_cwrap"
+#include "../include/gmsh/gmsh.h_cwrap"
 #include "mesher_interface.h"
 #include <algorithm>
 #include <unordered_map>

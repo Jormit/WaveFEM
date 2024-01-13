@@ -25,7 +25,10 @@ int main()
 	auto port_surface_elements = mesher_interface::get_surface_elems_by_ids(port_ids);
 
 	auto dof_map = fem::_2d::mixed_order::dof_map(nodes, port_surface_elements[0]);
-	auto S_T = fem::_2d::mixed_order::assemble_S_T(nodes, port_surface_elements[0], dof_map);
+
+	Eigen::SparseMatrix<double> S;
+	Eigen::SparseMatrix<double> T;
+	std::tie(S, T) = fem::_2d::mixed_order::assemble_S_T(nodes, port_surface_elements[0], dof_map);
 
 	return 0;
 }
