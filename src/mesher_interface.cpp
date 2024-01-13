@@ -43,6 +43,8 @@ void mesher_interface::mesh_model(int mesh_size_min, int mesh_size_max)
     gmsh::option::setNumber("Mesh.MeshSizeMax", mesh_size_max);
     gmsh::model::mesh::generate(3);
     gmsh::model::mesh::removeDuplicateNodes();
+    gmsh::model::mesh::createEdges();
+    gmsh::model::mesh::createFaces();
 }
 
 void mesher_interface::view_model()
