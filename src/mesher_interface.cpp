@@ -81,28 +81,16 @@ int mesher_interface::subtract(int id1, int id2)
     return ov[0].second;
 }
 
-std::unordered_map<int, int> mesher_interface::get_node_map()
+std::vector<node> mesher_interface::get_all_nodes()
 {
+    // Get total number of nodes
     std::vector<size_t> nodeTags;
     std::vector<double> coord;
     std::vector<double> parametric_coord;
     gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, -1, -1, false, false);
 
-    std::unordered_map<int, int> node_map;
-    node_map.reserve(nodeTags.size());
-    for (int i = 0; i < nodeTags.size(); i++)
-    {
-        int node = nodeTags[i];
-        node_map[node] = i;
-    }
-
-    return node_map;
-}
-
-std::vector<node> mesher_interface::get_all_nodes(std::unordered_map<int, int> node_map)
-{
     // Create node array object
-    std::vector<node> nodes_to_return(node_map.size());
+    std::vector<node> nodes_to_return(nodeTags.size());
    
     // Get nodes on 2d surfaces.
     std::vector<size_t> nodeTags2;
@@ -118,25 +106,23 @@ std::vector<node> mesher_interface::get_all_nodes(std::unordered_map<int, int> n
 
     // Insert 3d nodes.
     int i = 0;
-    for (auto e : nodeTags3) {
+    for (auto n : nodeTags3) {
         node nn({ coord3[3 * i], coord3[3 * i + 1], coord3[3 * i + 2] }, FREE_NODE);
-        int new_number = node_map[e];
-        nodes_to_return[new_number] = nn;
+        nodes_to_return[n-1] = nn;
         i++;
     }
 
     // Insert 2d nodes
     i = 0;
-    for (auto e : nodeTags2) {
-        int new_number = node_map[e];
+    for (auto n : nodeTags2) {
         node nn({ coord2[3 * i], coord2[3 * i + 1], coord2[3 * i + 2] }, BOUNDARY_NODE);
-        nodes_to_return[new_number] = nn;
+        nodes_to_return[n-1] = nn;
         i++;
     }
     return nodes_to_return;
 }
 
-std::vector<tet> mesher_interface::get_volume_elems(std::unordered_map<int, int> node_map)
+std::vector<tet> mesher_interface::get_volume_elems()
 {
     std::vector<int> elementTypes;
     std::vector<std::vector<std::size_t>> elementTags;
@@ -151,11 +137,6 @@ std::vector<tet> mesher_interface::get_volume_elems(std::unordered_map<int, int>
         int n2 = nodeTags[0][i * 4 + 1];
         int n3 = nodeTags[0][i * 4 + 2];
         int n4 = nodeTags[0][i * 4 + 3];
-
-        n1 = node_map[n1];
-        n2 = node_map[n2];
-        n3 = node_map[n3];
-        n4 = node_map[n4];
 
         std::array<int, 4> nodes{ n1, n2, n3, n4 };
         std::sort(nodes.begin(), nodes.end());
@@ -187,7 +168,7 @@ std::vector<int> mesher_interface::get_surface_ids_from_coms(std::vector<std::ve
     return ids;
 }
 
-std::vector<std::vector<tri>> mesher_interface::get_surface_elems_by_ids(std::vector<int> ids, std::unordered_map<int, int> node_map)
+std::vector<std::vector<tri>> mesher_interface::get_surface_elems_by_ids(std::vector<int> ids)
 {
     std::vector<std::vector<tri>> elems_to_return(ids.size());
     int index = 0;
@@ -204,10 +185,6 @@ std::vector<std::vector<tri>> mesher_interface::get_surface_elems_by_ids(std::ve
             int n1 = nodeTags[0][i * 3];
             int n2 = nodeTags[0][i * 3 + 1];
             int n3 = nodeTags[0][i * 3 + 2];
-
-            n1 = node_map[n1];
-            n2 = node_map[n2];
-            n3 = node_map[n3];
 
             std::array<int, 3> nodes{n1, n2, n3};
             std::sort(nodes.begin(), nodes.end());
