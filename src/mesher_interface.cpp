@@ -31,9 +31,9 @@ int mesher_interface::import_model(const std::string &filename)
     }
 
     int sl = gmsh::model::occ::addSurfaceLoop(ids, -1, true);
-    int vol = gmsh::model::occ::addVolume({sl});
-    
+    int vol = gmsh::model::occ::addVolume({sl});    
     gmsh::model::occ::synchronize();
+
     return vol;
 }
 
@@ -83,7 +83,7 @@ std::unordered_map<int, int> mesher_interface::get_node_map()
     std::vector<size_t> nodeTags;
     std::vector<double> coord;
     std::vector<double> parametric_coord;
-    gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, 3, -1, true, false);
+    gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, -1, -1, false, false);
 
     std::unordered_map<int, int> node_map;
     node_map.reserve(nodeTags.size());
@@ -98,38 +98,37 @@ std::unordered_map<int, int> mesher_interface::get_node_map()
 
 std::vector<node> mesher_interface::get_all_nodes(std::unordered_map<int, int> node_map)
 {
-    // Get all nodes
-    std::vector<size_t> nodeTags;
-    std::vector<double> coord;
-    std::vector<double> parametric_coord;
-    gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, 3, -1, true, false);
-
     // Create node array object
-    std::vector<node> nodes_to_return(nodeTags.size());
+    std::vector<node> nodes_to_return(node_map.size());
    
-    // Get boundary nodes (nodes on a surface)
-    std::vector<int> types2;
-    std::vector<std::vector<size_t>> tags2;
-    std::vector<std::vector<size_t>> nodeTags2;
-    gmsh::model::mesh::getElements(types2, tags2, nodeTags2, 2, -1);
+    // Get nodes on 2d surfaces.
+    std::vector<size_t> nodeTags2;
+    std::vector<double> coord2;
+    std::vector<double> parametric_coord2;
+    gmsh::model::mesh::getNodes(nodeTags2, coord2, parametric_coord2, 2, -1, true, false);
 
-    // Get rest of nodes
-    std::vector<int> types3;
-    std::vector<std::vector<size_t>> tags3;
-    std::vector<std::vector<size_t>> nodeTags3;
-    gmsh::model::mesh::getElements(types3, tags3, nodeTags3, 3, -1);
+    // Get nodes in 3d volume (not on boundary).
+    std::vector<size_t> nodeTags3;
+    std::vector<double> coord3;
+    std::vector<double> parametric_coord3;
+    gmsh::model::mesh::getNodes(nodeTags3, coord3, parametric_coord3, 3, -1, false, false);
 
-    // Insert all nodes.
-    for (auto e : nodeTags3[0]) {
+    // Insert 3d nodes.
+    int i = 0;
+    for (auto e : nodeTags3) {
+        node nn({ coord3[3 * i], coord3[3 * i + 1], coord3[3 * i + 2] }, FREE_NODE);
         int new_number = node_map[e];
-        node nn({ coord[3 * new_number], coord[3 * new_number + 1], coord[3 * new_number + 2] }, FREE_NODE);
-        nodes_to_return.insert(nodes_to_return.begin() + new_number, nn);
+        nodes_to_return[new_number] = nn;
+        i++;
     }
 
-    // Adjust nodes on surface.
-    for (auto e : nodeTags2[0]) {
+    // Insert 2d nodes
+    i = 0;
+    for (auto e : nodeTags2) {
         int new_number = node_map[e];
-        nodes_to_return[new_number].tag = BOUNDARY_NODE;
+        node nn({ coord2[3 * i], coord2[3 * i + 1], coord2[3 * i + 2] }, BOUNDARY_NODE);
+        nodes_to_return[new_number] = nn;
+        i++;
     }
     return nodes_to_return;
 }
