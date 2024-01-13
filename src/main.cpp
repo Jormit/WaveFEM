@@ -2,7 +2,6 @@
 #include "mesher_interface.h"
 #include "fem.h"
 #include "setup.h"
-#include "../include/gmsh.h_cwrap"
 
 int main()
 {
@@ -17,7 +16,6 @@ int main()
 
 	mesher_interface::subtract(bbox_id, model_id);
 	mesher_interface::mesh_model(100, 100);
-	gmsh::model::mesh::removeDuplicateNodes();
 	mesher_interface::view_model();
 	
 	auto node_map = mesher_interface::get_node_map();
