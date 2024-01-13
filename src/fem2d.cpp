@@ -1,8 +1,6 @@
 #include "fem.h"
-//#include "quad.h"
+#include "quad.h"
 #include <iostream>
-
-using namespace fem::_2d;
 
 Eigen::Matrix<double, 3, 3> fem::_2d::simplex_coefficients(const Eigen::Matrix<double, 3, 2>& coords)
 {
@@ -24,7 +22,7 @@ Eigen::Matrix<double, 3, 2> fem::_2d::nabla_lambda(const Eigen::Matrix<double, 3
 	return simplex_coeff(Eigen::seq(0, 2), Eigen::seq(0, 1));
 }
 
-Eigen::Matrix<double, 8, 2> mixed_order::basis(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda)
+Eigen::Matrix<double, 8, 2> fem::_2d::mixed_order::basis(const Eigen::Vector3d & lambda, const Eigen::Matrix<double, 3, 2>&nabla_lambda)
 {
 	Eigen::Matrix<double, 8, 2> func;
 
@@ -40,7 +38,7 @@ Eigen::Matrix<double, 8, 2> mixed_order::basis(const Eigen::Vector3d& lambda, co
 	return func;
 }
 
-Eigen::Matrix<double, 8, 1> mixed_order::basis_curl(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda) {
+Eigen::Matrix<double, 8, 1> fem::_2d::mixed_order::basis_curl(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda) {
 	Eigen::Matrix<double, 8, 1> func;
 	Eigen::Matrix<double, 3, 3> nabla_matrix;
 	nabla_matrix.col(0) = nabla_lambda.col(0);
@@ -59,13 +57,28 @@ Eigen::Matrix<double, 8, 1> mixed_order::basis_curl(const Eigen::Vector3d& lambd
 	return func;
 }
 
-Eigen::Matrix<double, 8, 8> mixed_order::S(const Eigen::Matrix<double, 3, 3>& simplex_coeff, const Eigen::Matrix<double, 3, 2>& nabla_lambda)
+std::pair<Eigen::Matrix<double, 8, 8>, Eigen::Matrix<double, 8, 8>> 
+fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 3>& simplex_coeff, const Eigen::Matrix<double, 3, 2>& nabla_lambda)
 {
-	
-	return {};
-}
+	Eigen::Matrix<double, 8, 8> S = Eigen::Matrix<double, 8, 8>::Zero();
+	Eigen::Matrix<double, 8, 8> T = Eigen::Matrix<double, 8, 8>::Zero();
+	for (int p = 0; p < 6; p++)
+	{
+		Eigen::Vector3d lambda;
+		lambda << quad::surface::gauss_6_point[p][1], quad::surface::gauss_6_point[p][2], quad::surface::gauss_6_point[p][3];
+		auto w = quad::surface::gauss_6_point[p][0];
 
-Eigen::Matrix<double, 8, 8> mixed_order::T(const Eigen::Matrix<double, 3, 3>& simplex_coeff, const Eigen::Matrix<double, 3, 2>& nabla_lambda)
-{
-	return {};
+		auto basis_curl = fem::_2d::mixed_order::basis_curl(lambda, nabla_lambda);
+		auto basis = fem::_2d::mixed_order::basis(lambda, nabla_lambda);
+
+		for (int i = 0; i < 8; i++)
+		{
+			for (int j = 0; j < 8; j++)
+			{
+				S(i, j) += S(i, j) + w * basis_curl(i) * basis_curl(j);
+				T(i, j) += T(i, j) + w * basis_curl(i) * basis_curl(j);
+			}
+		}
+	}
+	return { S, T };
 }
