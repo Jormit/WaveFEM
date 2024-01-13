@@ -133,14 +133,45 @@ std::vector<tet> mesher_interface::get_volume_elems()
     elems_to_return.reserve(elementTags[0].size());
     for (int i = 0; i < elementTags[0].size(); i++)
     {
-        int n1 = nodeTags[0][i * 4];
-        int n2 = nodeTags[0][i * 4 + 1];
-        int n3 = nodeTags[0][i * 4 + 2];
-        int n4 = nodeTags[0][i * 4 + 3];
+        // Get nodes and sort so that edges are always in same direction.
+        size_t n1 = nodeTags[0][i * 4];
+        size_t n2 = nodeTags[0][i * 4 + 1];
+        size_t n3 = nodeTags[0][i * 4 + 2];
+        size_t n4 = nodeTags[0][i * 4 + 3];
 
-        std::array<int, 4> nodes{ n1, n2, n3, n4 };
+        std::array<size_t, 4> nodes{ n1, n2, n3, n4 };
         std::sort(nodes.begin(), nodes.end());
-        elems_to_return.push_back({ nodes, 1 });
+
+        // Get global edges in conventional order.
+        std::vector<size_t> edge_tags;
+        std::vector<int> edge_orientations;
+        gmsh::model::mesh::getEdges(
+            { 
+                nodes[0], nodes[1],
+                nodes[0], nodes[2],
+                nodes[0], nodes[3],
+                nodes[1], nodes[2],
+                nodes[1], nodes[3],
+                nodes[2], nodes[3]
+            },
+            edge_tags, edge_orientations);
+
+        // Get global faces in conventional order.
+        std::vector<size_t> face_tags;
+        std::vector<int> face_orientations;
+        gmsh::model::mesh::getFaces(3,
+            { 
+                nodes[0], nodes[1], nodes[2],
+                nodes[0], nodes[1], nodes[3],
+                nodes[0], nodes[2], nodes[3],
+                nodes[1], nodes[2], nodes[3]
+            },
+            face_tags, face_orientations);
+
+        elems_to_return.push_back({ nodes,
+            {edge_tags[0], edge_tags[1], edge_tags[2], edge_tags[3], edge_tags[4], edge_tags[5]},
+            {face_tags[0], face_tags[1], face_tags[2], face_tags[3], },
+            1});
     }
 
     return elems_to_return;
@@ -180,15 +211,25 @@ std::vector<std::vector<tri>> mesher_interface::get_surface_elems_by_ids(std::ve
         gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 2, id);
        
         elems_to_return[index].reserve(elementTags[0].size());
-        for (int i = 0; i < elementTags[0].size(); i++)
+        for (size_t i = 0; i < elementTags[0].size(); i++)
         {
-            int n1 = nodeTags[0][i * 3];
-            int n2 = nodeTags[0][i * 3 + 1];
-            int n3 = nodeTags[0][i * 3 + 2];
+            size_t n1 = nodeTags[0][i * 3];
+            size_t n2 = nodeTags[0][i * 3 + 1];
+            size_t n3 = nodeTags[0][i * 3 + 2];
 
-            std::array<int, 3> nodes{n1, n2, n3};
+            std::array<size_t, 3> nodes{n1, n2, n3};
             std::sort(nodes.begin(), nodes.end());
-            elems_to_return[index].push_back({ nodes, 1 });
+
+            // Get global edges in conventional order.
+            std::vector<size_t> edge_tags;
+            std::vector<int> edge_orientations;
+            gmsh::model::mesh::getEdges(
+                { nodes[0], nodes[1],
+                  nodes[0], nodes[2],       
+                  nodes[1], nodes[2]},
+                edge_tags, edge_orientations);
+
+            elems_to_return[index].push_back({ nodes, {edge_tags[0], edge_tags[1], edge_tags[2]}, 1 });
         }
         index++;
     }
