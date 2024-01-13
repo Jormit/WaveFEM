@@ -82,3 +82,12 @@ fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 3>& simplex_coeff, con
 	}
 	return { S, T };
 }
+
+std::pair<Eigen::MatrixXf, Eigen::MatrixXf> fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems)
+{
+	for (auto e : elems)
+	{
+		
+	}
+	return {};
+}

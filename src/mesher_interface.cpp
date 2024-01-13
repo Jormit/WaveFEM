@@ -185,7 +185,7 @@ std::vector<int> mesher_interface::get_surface_ids_from_coms(std::vector<std::ve
     return ids;
 }
 
-std::vector<std::vector<tri>> mesher_interface::get_surface_elems_by_id(std::vector<int> ids, std::unordered_map<int, int> node_map)
+std::vector<std::vector<tri>> mesher_interface::get_surface_elems_by_ids(std::vector<int> ids, std::unordered_map<int, int> node_map)
 {
     std::vector<std::vector<tri>> elems_to_return(ids.size());
     int index = 0;

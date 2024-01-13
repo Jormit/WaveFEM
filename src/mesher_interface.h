@@ -40,7 +40,7 @@ namespace mesher_interface {
 	std::vector<int> get_surface_ids_from_coms(std::vector<std::vector<double>> coms);
 
 	// Get Surface elements (triangles)
-	std::vector<std::vector<tri>> get_surface_elems_by_id(std::vector<int> ids, std::unordered_map<int, int> node_map);
+	std::vector<std::vector<tri>> get_surface_elems_by_ids(std::vector<int> ids, std::unordered_map<int, int> node_map);
 
 }
 
