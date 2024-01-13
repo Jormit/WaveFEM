@@ -1,6 +1,7 @@
 #include <functional>
 #include "geometry.h"
 #include "../include/Eigen/dense"
+#include "../include/Eigen/sparse"
 #include <array>
 
 namespace fem
@@ -24,10 +25,14 @@ namespace fem
 			std::pair<Eigen::Matrix<double, 8, 8>, Eigen::Matrix<double, 8, 8>>
 				S_T(const Eigen::Matrix<double, 3, 3>& simplex_coeff, const Eigen::Matrix<double, 3, 2>& nabla_lambda);
 
-			// Maps elem number and local dof index to global dof index. 
-			std::unordered_map<std::pair<int, int>, int> dof_map(const std::vector<node>& nodes, const std::vector<tri>& elems);
+			// Maps edge/face number and identifier to global dof index. (Excludes boundary dofs).
+			std::map<std::pair<size_t, size_t>, size_t> dof_map(const std::vector<node>& nodes, const std::vector<tri>& elems);
 
-			std::pair<Eigen::MatrixXf, Eigen::MatrixXf> assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems);
+			// Maps elem and dof_num to pair that can be used to lookup dof_map.
+			std::pair<size_t, size_t> global_dof_pair(tri elem, size_t dof_num);
+
+			// Assemble the global matrix.
+			std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>> assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems, std::map<std::pair<size_t, size_t>, size_t> dof_map);
 		}
 	}
 

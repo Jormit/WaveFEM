@@ -59,7 +59,7 @@ struct tri
 		case 1: return { nodes[0], nodes[2] };
 		case 2: return { nodes[1], nodes[2] };
 		}
-	}
+	}	
 };
 
 struct tet
