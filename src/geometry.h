@@ -35,9 +35,10 @@ public:
 struct node
 {
 	std::array<double, 3> coords;
-	int tag;
-	node(std::array<double, 3> coords, int tag)
-		: coords(coords), tag(tag)
+	int type_2d;
+	int type_3d;
+	node(std::array<double, 3> coords, int type_2d, int type_3d)
+		: coords(coords), type_2d(type_2d), type_3d(type_3d)
 	{}
 
 	node() = default;
