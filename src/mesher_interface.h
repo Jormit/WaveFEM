@@ -27,20 +27,17 @@ namespace mesher_interface {
 	// Subtracts volume with id2 from id1
 	int subtract(int id1, int id2);
 
-	// Get node map
-	std::unordered_map<int, int> get_node_map();
-
-	// Get nodes
-	std::vector<node> get_all_nodes(std::unordered_map<int, int> node_map);
+	// Get nodes. Vector is indexed by node number - 1
+	std::vector<node> get_all_nodes();
 
 	// Get elements (tetrahedrons)
-	std::vector<tet> get_volume_elems(std::unordered_map<int, int> node_map);
+	std::vector<tet> get_volume_elems();
 
 	// Get surface ids by comparing center of mass
 	std::vector<int> get_surface_ids_from_coms(std::vector<std::vector<double>> coms);
 
 	// Get Surface elements (triangles)
-	std::vector<std::vector<tri>> get_surface_elems_by_ids(std::vector<int> ids, std::unordered_map<int, int> node_map);
+	std::vector<std::vector<tri>> get_surface_elems_by_ids(std::vector<int> ids);
 
 }
 
