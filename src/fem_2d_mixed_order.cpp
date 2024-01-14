@@ -91,7 +91,7 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_2d::mixed_order::dof_map(const
 	return map;
 }
 
-std::pair<size_t, size_t> fem::_2d::mixed_order::global_dof_pair(tri elem, size_t dof_num)
+std::pair<size_t, size_t> fem::_2d::mixed_order::global_dof_pair(const tri& elem, const size_t& dof_num)
 {
 	switch (dof_num) {
 	case 0: return { elem.edges[0], 1 };
