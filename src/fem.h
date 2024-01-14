@@ -6,7 +6,9 @@
 
 namespace fem
 {
-	//void solve_eigenproblem(Eigen::SparseMatrix<double> S, Eigen::SparseMatrix<double> T);
+
+	void solve_eigenproblem(Eigen::SparseMatrix<double> S, Eigen::SparseMatrix<double> T);
+	//void solve_eigenproblem(Eigen::MatrixXd S, Eigen::MatrixXd T);
 
 	namespace _2d
 	{

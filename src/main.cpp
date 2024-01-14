@@ -3,6 +3,8 @@
 #include "fem.h"
 #include "setup.h"
 
+#include <Eigen/dense>
+
 int main()
 {
 	mesher_interface::initialize();
@@ -30,7 +32,10 @@ int main()
 	Eigen::SparseMatrix<double> T;
 	std::tie(S, T) = fem::_2d::mixed_order::assemble_S_T(nodes, port_surface_elements[0], dof_map);
 
-	//fem::solve_eigenproblem(S, T);
+	auto S_ = Eigen::MatrixXd(S);
+	auto T_ = Eigen::MatrixXd(T);
+
+	fem::solve_eigenproblem(S, T);
 
 	return 0;
 }
