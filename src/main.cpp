@@ -32,9 +32,6 @@ int main()
 	Eigen::SparseMatrix<double> T;
 	std::tie(S, T) = fem::_2d::mixed_order::assemble_S_T(nodes, port_surface_elements[0], dof_map);
 
-	auto S_ = Eigen::MatrixXd(S);
-	auto T_ = Eigen::MatrixXd(T);
-
 	fem::solve_eigenproblem(S, T);
 
 	return 0;
