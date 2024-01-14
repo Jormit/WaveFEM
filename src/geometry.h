@@ -1,6 +1,7 @@
 #pragma once
 #include <ostream>
 #include <array>
+#include <vector>
 
 const int BOUNDARY_NODE = 0;
 const int FREE_NODE = -1;
@@ -44,3 +45,5 @@ struct tet
 	size_t tag;
 	tet(std::array<size_t, 4> nodes, std::array<size_t, 6> edges, std::array<size_t, 4> faces, size_t tag);
 };
+
+std::vector<std::array<double, 3>> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z);

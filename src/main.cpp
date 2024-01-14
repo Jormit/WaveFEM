@@ -2,6 +2,7 @@
 #include "mesher_interface.h"
 #include "sim.h"
 #include "setup.h"
+#include "geometry.h"
 
 #include <Eigen/dense>
 
@@ -28,6 +29,7 @@ int main()
 
 	sim sim(nodes, volume_elements, port_ids, port_surface_elements);
 	sim.solve_ports();
+	auto points = generate_grid_points({0, 1, 0, 1, 0, 1}, 11, 11, 11);
 
 	return 0;
 }
