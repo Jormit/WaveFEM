@@ -114,15 +114,16 @@ std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>> fem::_2d::mi
 	{
 		Eigen::Matrix<double, 3, 2> coords;
 		coords <<
-			nodes[e.nodes[0]].coords[0], nodes[e.nodes[0]].coords[1],
-			nodes[e.nodes[1]].coords[0], nodes[e.nodes[1]].coords[1],
-			nodes[e.nodes[2]].coords[0], nodes[e.nodes[2]].coords[1];
+			nodes[e.nodes[0] - 1].coords[0], nodes[e.nodes[0] - 1].coords[1],
+			nodes[e.nodes[1] - 1].coords[0], nodes[e.nodes[1] - 1].coords[1],
+			nodes[e.nodes[2] - 1].coords[0], nodes[e.nodes[2] - 1].coords[1];
 
 		Eigen::Matrix<double, 3, 3> simplex_coeff = fem::_2d::simplex_coefficients(coords);
 		Eigen::Matrix<double, 3, 2> nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
 
 		Eigen::Matrix<double, 8, 8> S_local, T_local;
 		std::tie(S_local, T_local) = S_T(simplex_coeff, nabla_lambda);
+
 		for (int local_dof_i = 0; local_dof_i < 8; local_dof_i++)
 		{
 			auto global_dof_pair_i = global_dof_pair(e, local_dof_i);
