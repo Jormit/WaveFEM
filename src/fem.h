@@ -7,8 +7,7 @@
 namespace fem
 {
 
-	void solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T);
-	//void solve_eigenproblem(Eigen::MatrixXd S, Eigen::MatrixXd T);
+	std::pair<Eigen::VectorXd, Eigen::MatrixXd> solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T);
 
 	namespace _2d
 	{

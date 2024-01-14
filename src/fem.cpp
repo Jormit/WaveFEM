@@ -5,7 +5,7 @@
 #include <Spectra/MatOp/SymShiftInvert.h>
 #include <Spectra/MatOp/SparseSymMatProd.h>
 
-void fem::solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T)
+std::pair<Eigen::VectorXd, Eigen::MatrixXd> fem::solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T)
 {
     using OpType = Spectra::SymShiftInvert<double, Eigen::Sparse, Eigen::Sparse>;
     using BOpType = Spectra::SparseSymMatProd<double>;
@@ -17,7 +17,6 @@ void fem::solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::
     geigs.init();
     int nconv = geigs.compute(Spectra::SortRule::LargestMagn);
 
-    // Retrieve results
     Eigen::VectorXd evalues;
     Eigen::MatrixXd evecs;
     if (geigs.info() == Spectra::CompInfo::Successful)
@@ -26,21 +25,6 @@ void fem::solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::
         evecs = geigs.eigenvectors();
     }
 
-    std::cout << "Number of converged generalized eigenvalues: " << nconv << std::endl;
-    std::cout << "Generalized eigenvalues found:\n" << evalues << std::endl;
-    std::cout << "Generalized eigenvectors found:\n" << evecs.topRows(10) << std::endl;
+    return { evalues, evecs };
 }
-
-/*
-#include <Eigen/Eigenvalues>
-
-void fem::solve_eigenproblem(Eigen::MatrixXd S, Eigen::MatrixXd T)
-{
-    Eigen::GeneralizedEigenSolver<Eigen::MatrixXd> ges;
-    ges.compute(S, T);
-    std::cout << "The (complex) numerators of the generalzied eigenvalues are: " << ges.alphas().transpose() << std::endl;
-    std::cout << "The (real) denominatore of the generalzied eigenvalues are: " << ges.betas().transpose() << std::endl;
-    std::cout << "The (complex) generalzied eigenvalues are (alphas./beta): " << ges.eigenvalues().transpose() << std::endl;
-}
-*/
 
