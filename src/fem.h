@@ -1,11 +1,12 @@
 #include <functional>
 #include "geometry.h"
-#include "../include/Eigen/dense"
-#include "../include/Eigen/sparse"
+#include <Eigen/dense>
+#include <Eigen/sparse>
 #include <array>
 
 namespace fem
 {
+	//void solve_eigenproblem(Eigen::SparseMatrix<double> S, Eigen::SparseMatrix<double> T);
 
 	namespace _2d
 	{

@@ -16,7 +16,7 @@ int main()
 
 	mesher_interface::subtract(bbox_id, model_id);
 	mesher_interface::mesh_model(10, 10);
-	//mesher_interface::view_model();
+	mesher_interface::view_model();
 	
 	auto nodes = mesher_interface::get_all_nodes();
 	auto volume_elements = mesher_interface::get_volume_elems();
@@ -29,6 +29,8 @@ int main()
 	Eigen::SparseMatrix<double> S;
 	Eigen::SparseMatrix<double> T;
 	std::tie(S, T) = fem::_2d::mixed_order::assemble_S_T(nodes, port_surface_elements[0], dof_map);
+
+	//fem::solve_eigenproblem(S, T);
 
 	return 0;
 }
