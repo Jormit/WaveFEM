@@ -7,7 +7,7 @@
 namespace fem
 {
 
-	void solve_eigenproblem(Eigen::SparseMatrix<double> S, Eigen::SparseMatrix<double> T);
+	void solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T);
 	//void solve_eigenproblem(Eigen::MatrixXd S, Eigen::MatrixXd T);
 
 	namespace _2d
@@ -32,7 +32,7 @@ namespace fem
 			std::map<std::pair<size_t, size_t>, size_t> dof_map(const std::vector<node>& nodes, const std::vector<tri>& elems);
 
 			// Maps elem and dof_num to pair that can be used to lookup dof_map.
-			std::pair<size_t, size_t> global_dof_pair(tri elem, size_t dof_num);
+			std::pair<size_t, size_t> global_dof_pair(const tri& elem, const size_t& dof_num);
 
 			// Assemble the global matrix.
 			std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>> assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems, std::map<std::pair<size_t, size_t>, size_t> dof_map);
