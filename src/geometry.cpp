@@ -1,9 +1,5 @@
 #include "geometry.h"
 
-box::box(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax)
-	: xmin(xmin), ymin(ymin), zmin(zmin), xmax(xmax), ymax(ymax), zmax(zmax)
-{}
-
 void box::add_padding(double x, double y, double z)
 {
 	xmin -= x;
@@ -22,14 +18,6 @@ std::ostream& operator << (std::ostream& os, box const& b)
 		<< " ymax: " << b.ymax << " zmax: " << b.zmax;
 }
 
-node::node(std::array<double, 3> coords, int type_2d, int type_3d)
-	: coords(coords), type_2d(type_2d), type_3d(type_3d)
-{}
-
-tri::tri(std::array<size_t, 3> nodes, std::array<size_t, 3> edges, size_t face, size_t tag)
-	: nodes(nodes), edges(edges), face(face), tag(tag)
-{}
-
 std::array<size_t, 2> tri::get_edge_nodes(size_t edge) const 
 {
 	switch (edge) {
@@ -39,13 +27,9 @@ std::array<size_t, 2> tri::get_edge_nodes(size_t edge) const
 	}
 }
 
-tet::tet(std::array<size_t, 4> nodes, std::array<size_t, 6> edges, std::array<size_t, 4> faces, size_t tag)
-	: nodes(nodes), edges(edges), faces(faces), tag(tag)
-{}
-
-std::vector<std::array<double,3>> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z)
+std::vector<point> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z)
 {
-	std::vector<std::array<double, 3>> points;
+	std::vector<point> points;
 	points.reserve(num_x * num_y * num_z);
 	for (int x = 0; x < num_x; x++)
 	{
