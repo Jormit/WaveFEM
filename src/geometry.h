@@ -15,6 +15,12 @@ public:
 	friend std::ostream& operator << (std::ostream& os, box const& b);
 };
 
+struct parameterized_surface_point
+{
+	double u;
+	double v;
+};
+
 struct point
 {
 	double x;
@@ -25,6 +31,7 @@ struct point
 struct node
 {
 	point coords;
+	parameterized_surface_point parameterized_coords;
 	int type_2d;
 	int type_3d;
 };
