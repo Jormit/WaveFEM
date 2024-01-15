@@ -102,7 +102,7 @@ std::vector<node> mesher_interface::get_all_nodes()
     std::vector<size_t> nodeTags2;
     std::vector<double> coord2;
     std::vector<double> parametric_coord2;
-    gmsh::model::mesh::getNodes(nodeTags2, coord2, parametric_coord2, 2, -1, false, false);
+    gmsh::model::mesh::getNodes(nodeTags2, coord2, parametric_coord2, 2, -1, true, true);
 
     // Get 3d nodes (nodes on volumes).
     std::vector<size_t> nodeTags3;
@@ -113,7 +113,7 @@ std::vector<node> mesher_interface::get_all_nodes()
     // Insert 3d nodes.
     int i = 0;
     for (auto n : nodeTags3) {
-        node nn{ { coord3[3 * i], coord3[3 * i + 1], coord3[3 * i + 2] }, FREE_NODE, FREE_NODE };
+        node nn{ { coord3[3 * i], coord3[3 * i + 1], coord3[3 * i + 2] }, {}, FREE_NODE, FREE_NODE };
         nodes_to_return[n - 1] = nn;
         i++;
     }
@@ -121,17 +121,17 @@ std::vector<node> mesher_interface::get_all_nodes()
     // Insert 2d nodes
     i = 0;
     for (auto n : nodeTags2) {
-        node nn{ { coord2[3 * i], coord2[3 * i + 1], coord2[3 * i + 2] }, FREE_NODE, BOUNDARY_NODE };
+        node nn{ 
+            { coord2[3 * i], coord2[3 * i + 1], coord2[3 * i + 2] },
+            { parametric_coord2[2 * i], parametric_coord2[2 * i + 1] },
+            FREE_NODE, BOUNDARY_NODE};
         nodes_to_return[n - 1] = nn;
         i++;
     }
 
     // Insert 1d nodes
-    i = 0;
     for (auto n : nodeTags1) {
-        node nn{ { coord1[3 * i], coord1[3 * i + 1], coord1[3 * i + 2] }, BOUNDARY_NODE, BOUNDARY_NODE };
-        nodes_to_return[n - 1] = nn;
-        i++;
+        nodes_to_return[n - 1].type_2d = BOUNDARY_NODE;
     }
     return nodes_to_return;
 }
