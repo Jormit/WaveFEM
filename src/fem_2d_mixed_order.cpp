@@ -114,9 +114,9 @@ std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>> fem::_2d::mi
 	{
 		Eigen::Matrix<double, 3, 2> coords;
 		coords <<
-			nodes[e.nodes[0] - 1].coords[0], nodes[e.nodes[0] - 1].coords[1],
-			nodes[e.nodes[1] - 1].coords[0], nodes[e.nodes[1] - 1].coords[1],
-			nodes[e.nodes[2] - 1].coords[0], nodes[e.nodes[2] - 1].coords[1];
+			nodes[e.nodes[0] - 1].coords.x, nodes[e.nodes[0] - 1].coords.y,
+			nodes[e.nodes[1] - 1].coords.x, nodes[e.nodes[1] - 1].coords.y,
+			nodes[e.nodes[2] - 1].coords.x, nodes[e.nodes[2] - 1].coords.y;
 
 		Eigen::Matrix<double, 3, 3> simplex_coeff = fem::_2d::simplex_coefficients(coords);
 		Eigen::Matrix<double, 3, 2> nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);

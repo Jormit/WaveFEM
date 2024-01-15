@@ -36,8 +36,11 @@ namespace mesher_interface {
 	// Get surface ids by comparing center of mass
 	std::vector<int> get_surface_ids_from_coms(std::vector<std::vector<double>> coms);
 
-	// Get Surface elements (triangles)
+	// Get surface elements (triangles)
 	std::vector<std::vector<tri>> get_surface_elems_by_ids(std::vector<int> ids);
+
+	// Get elements by coordinates
+	std::vector<size_t> get_elements_by_coordinates(std::vector<point> points, int dim);
 
 }
 

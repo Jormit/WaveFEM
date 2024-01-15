@@ -113,7 +113,7 @@ std::vector<node> mesher_interface::get_all_nodes()
     // Insert 3d nodes.
     int i = 0;
     for (auto n : nodeTags3) {
-        node nn({ coord3[3 * i], coord3[3 * i + 1], coord3[3 * i + 2] }, FREE_NODE, FREE_NODE);
+        node nn{ { coord3[3 * i], coord3[3 * i + 1], coord3[3 * i + 2] }, FREE_NODE, FREE_NODE };
         nodes_to_return[n - 1] = nn;
         i++;
     }
@@ -121,7 +121,7 @@ std::vector<node> mesher_interface::get_all_nodes()
     // Insert 2d nodes
     i = 0;
     for (auto n : nodeTags2) {
-        node nn({ coord2[3 * i], coord2[3 * i + 1], coord2[3 * i + 2] }, FREE_NODE, BOUNDARY_NODE);
+        node nn{ { coord2[3 * i], coord2[3 * i + 1], coord2[3 * i + 2] }, FREE_NODE, BOUNDARY_NODE };
         nodes_to_return[n - 1] = nn;
         i++;
     }
@@ -129,7 +129,7 @@ std::vector<node> mesher_interface::get_all_nodes()
     // Insert 1d nodes
     i = 0;
     for (auto n : nodeTags1) {
-        node nn({ coord1[3 * i], coord1[3 * i + 1], coord1[3 * i + 2] }, BOUNDARY_NODE, BOUNDARY_NODE);
+        node nn{ { coord1[3 * i], coord1[3 * i + 1], coord1[3 * i + 2] }, BOUNDARY_NODE, BOUNDARY_NODE };
         nodes_to_return[n - 1] = nn;
         i++;
     }
@@ -257,4 +257,20 @@ std::vector<std::vector<tri>> mesher_interface::get_surface_elems_by_ids(std::ve
         index++;
     }
     return elems_to_return;
+}
+
+std::vector<size_t> mesher_interface::get_elements_by_coordinates(std::vector<point> points, int dim)
+{
+    std::vector<size_t> elements;
+    elements.reserve(points.size());
+    for (auto p : points)
+    {
+        double u, v, w;
+        size_t element_tag;
+        int element_type;
+        std::vector<size_t> node_tags;
+        gmsh::model::mesh::getElementByCoordinates(p.x, p.y, p.z, element_tag, element_type, node_tags, u, v, w, dim, false);
+        elements.push_back(element_tag);
+    }
+    return elements;
 }

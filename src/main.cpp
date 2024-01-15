@@ -31,5 +31,6 @@ int main()
 	sim.solve_ports();
 	auto points = generate_grid_points({0, 1, 0, 1, 0, 1}, 11, 11, 11);
 
+	auto port_elements = mesher_interface::get_elements_by_coordinates(points, 2);
 	return 0;
 }
