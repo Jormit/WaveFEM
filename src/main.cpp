@@ -18,7 +18,7 @@ int main()
 	int bbox_id = mesher_interface::add_box(bbox);
 
 	mesher_interface::subtract(bbox_id, model_id);
-	mesher_interface::mesh_model(3, 3);
+	mesher_interface::mesh_model(5, 5);
 	mesher_interface::view_model();
 	
 	auto nodes = mesher_interface::get_all_nodes();
@@ -29,6 +29,17 @@ int main()
 
 	sim sim(nodes, volume_elements, port_ids, port_surface_elements);
 	sim.solve_ports();
-	sim.eval_ports();
+	auto result = sim.eval_ports();
+
+	auto values = result.first[0];
+	auto points = result.second[0];
+
+	for (size_t i = 0; i < values.size(); i++)
+	{
+		std::cout << points[i](0) << ", " << points[i](1) << ", ";
+		std::cout << values[i](0) << ", " << values[i](1);
+		std::cout << std::endl;
+	}
+
 	return 0;
 }
