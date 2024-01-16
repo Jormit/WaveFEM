@@ -35,7 +35,12 @@ namespace fem
 			std::pair<size_t, size_t> global_dof_pair(const tri& elem, const size_t& dof_num);
 
 			// Assemble the global matrix.
-			std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>> assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems, std::map<std::pair<size_t, size_t>, size_t> dof_map);
+			std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
+				assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems, const std::map<std::pair<size_t, size_t>, size_t>& dof_map);
+
+			// Evaluates the field at the center of the given element
+			std::pair <Eigen::Vector2d, Eigen::Vector2d> eval_elem(const std::vector<node>& nodes, const tri& e, 
+				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, Eigen::VectorXd solution);
 		}
 	}
 
