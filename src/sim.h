@@ -9,7 +9,7 @@ class sim
 public:
 	sim(std::vector<node> nodes, std::vector<tet> volume_elems, std::vector<int> port_surface_ids, std::vector<std::vector<tri>> port_elems);
 	void solve_ports();
-	void eval_port_fields(std::vector<std::array<double, 3>> points, std::vector<int> element_ids);
+
 
 
 private:

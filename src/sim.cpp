@@ -1,6 +1,8 @@
 #include "sim.h"
 #include "fem.h"
 
+#include <iostream>
+
 sim::sim(std::vector<node> nodes, std::vector<tet> volume_elems, std::vector<int> port_surface_ids, std::vector<std::vector<tri>> port_elems) :
 	nodes(nodes), volume_elems(volume_elems), port_surface_ids(port_surface_ids), port_elems(port_elems),
 	port_eigen_vectors(), port_eigen_wave_numbers()
@@ -24,5 +26,7 @@ void sim::solve_ports()
 
 		port_eigen_wave_numbers.push_back(values.cwiseSqrt());
 		port_eigen_vectors.push_back(vecs);
+
+		std::cout << port_eigen_wave_numbers.back() << std::endl;
 	}
 }

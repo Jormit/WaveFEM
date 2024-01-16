@@ -1,5 +1,6 @@
 #include "fem.h"
 #include <iostream>
+#include "constants.h"
 
 #include <Spectra/SymGEigsShiftSolver.h>
 #include <Spectra/MatOp/SymShiftInvert.h>
@@ -12,7 +13,7 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> fem::solve_eigenproblem(const Eigen:
     OpType op(S, T);
     BOpType Bop(T);
 
-    Spectra::SymGEigsShiftSolver<OpType, BOpType, Spectra::GEigsMode::ShiftInvert> geigs(op, Bop, 3, 6, 3.0);
+    Spectra::SymGEigsShiftSolver<OpType, BOpType, Spectra::GEigsMode::ShiftInvert> geigs(op, Bop, 10, 11, constants::pi * constants::pi);
 
     geigs.init();
     int nconv = geigs.compute(Spectra::SortRule::LargestMagn);
