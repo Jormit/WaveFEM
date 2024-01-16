@@ -37,9 +37,12 @@ Eigen::Matrix<double, 8, 1> fem::_2d::mixed_order::basis_curl(const Eigen::Vecto
 	return func;
 }
 
-std::pair<Eigen::Matrix<double, 8, 8>, Eigen::Matrix<double, 8, 8>> 
-fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 3>& simplex_coeff, const Eigen::Matrix<double, 3, 2>& nabla_lambda)
+std::pair<Eigen::Matrix<double, 8, 8>, Eigen::Matrix<double, 8, 8>>
+fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords)
 {
+	Eigen::Matrix<double, 3, 3> simplex_coeff = fem::_2d::simplex_coefficients(coords);
+	Eigen::Matrix<double, 3, 2> nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
+
 	Eigen::Matrix<double, 8, 8> S = Eigen::Matrix<double, 8, 8>::Zero();
 	Eigen::Matrix<double, 8, 8> T = Eigen::Matrix<double, 8, 8>::Zero();
 	for (int p = 0; p < 6; p++)
@@ -60,7 +63,9 @@ fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 3>& simplex_coeff, con
 			}
 		}
 	}
-	return { S, T };
+
+	auto area = fem::_2d::area(coords);
+	return { S * area, T * area };
 }
 
 std::map<std::pair<size_t, size_t>, size_t> fem::_2d::mixed_order::dof_map(const std::vector<node>& nodes, const std::vector<tri>& elems)
@@ -114,15 +119,12 @@ std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>> fem::_2d::mi
 	{
 		Eigen::Matrix<double, 3, 2> coords;
 		coords <<
-			nodes[e.nodes[0] - 1].coords.x, nodes[e.nodes[0] - 1].coords.y,
-			nodes[e.nodes[1] - 1].coords.x, nodes[e.nodes[1] - 1].coords.y,
-			nodes[e.nodes[2] - 1].coords.x, nodes[e.nodes[2] - 1].coords.y;
-
-		Eigen::Matrix<double, 3, 3> simplex_coeff = fem::_2d::simplex_coefficients(coords);
-		Eigen::Matrix<double, 3, 2> nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
+			nodes[e.nodes[0] - 1].parameterized_coords.u, nodes[e.nodes[0] - 1].parameterized_coords.v,
+			nodes[e.nodes[1] - 1].parameterized_coords.u, nodes[e.nodes[1] - 1].parameterized_coords.v,
+			nodes[e.nodes[2] - 1].parameterized_coords.u, nodes[e.nodes[2] - 1].parameterized_coords.v;
 
 		Eigen::Matrix<double, 8, 8> S_local, T_local;
-		std::tie(S_local, T_local) = S_T(simplex_coeff, nabla_lambda);
+		std::tie(S_local, T_local) = S_T(coords);
 
 		for (int local_dof_i = 0; local_dof_i < 8; local_dof_i++)
 		{
