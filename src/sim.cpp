@@ -5,16 +5,18 @@
 
 sim::sim(std::vector<node> nodes, std::vector<tet> volume_elems, std::vector<int> port_surface_ids, std::vector<std::vector<tri>> port_elems) :
 	nodes(nodes), volume_elems(volume_elems), port_surface_ids(port_surface_ids), port_elems(port_elems),
-	port_eigen_vectors(), port_eigen_wave_numbers()
+	port_eigen_vectors(), port_eigen_wave_numbers(), port_dof_maps()
 {}
 
 void sim::solve_ports()
 {
 	port_eigen_vectors.clear();
 	port_eigen_wave_numbers.clear();
+	port_dof_maps.clear();
 	for (int p = 0; p < port_elems.size(); p++)
 	{
 		auto dof_map = fem::_2d::mixed_order::dof_map(nodes, port_elems[p]);
+		port_dof_maps.push_back(dof_map);
 
 		Eigen::SparseMatrix<double> S;
 		Eigen::SparseMatrix<double> T;
