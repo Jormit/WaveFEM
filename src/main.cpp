@@ -18,8 +18,8 @@ int main()
 	int bbox_id = mesher_interface::add_box(bbox);
 
 	mesher_interface::subtract(bbox_id, model_id);
-	mesher_interface::mesh_model(10, 10);
-	//mesher_interface::view_model();
+	mesher_interface::mesh_model(3, 3);
+	mesher_interface::view_model();
 	
 	auto nodes = mesher_interface::get_all_nodes();
 	auto volume_elements = mesher_interface::get_volume_elems();
@@ -29,8 +29,6 @@ int main()
 
 	sim sim(nodes, volume_elements, port_ids, port_surface_elements);
 	sim.solve_ports();
-	auto points = generate_grid_points({0, 1, 0, 1, 0, 1}, 11, 11, 11);
-
-	auto port_elements = mesher_interface::get_elements_by_coordinates(points, 2);
+	sim.eval_ports();
 	return 0;
 }

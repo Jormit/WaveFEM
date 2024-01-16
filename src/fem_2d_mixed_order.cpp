@@ -110,7 +110,8 @@ std::pair<size_t, size_t> fem::_2d::mixed_order::global_dof_pair(const tri& elem
 	}
 }
 
-std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>> fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems, std::map<std::pair<size_t, size_t>, size_t> dof_map)
+std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>> 
+fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems, const std::map<std::pair<size_t, size_t>, size_t> & dof_map)
 {
 	Eigen::SparseMatrix<double> S_global(dof_map.size(), dof_map.size());
 	Eigen::SparseMatrix<double> T_global(dof_map.size(), dof_map.size());
@@ -119,9 +120,9 @@ std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>> fem::_2d::mi
 	{
 		Eigen::Matrix<double, 3, 2> coords;
 		coords <<
-			nodes[e.nodes[0] - 1].parameterized_coords.u, nodes[e.nodes[0] - 1].parameterized_coords.v,
-			nodes[e.nodes[1] - 1].parameterized_coords.u, nodes[e.nodes[1] - 1].parameterized_coords.v,
-			nodes[e.nodes[2] - 1].parameterized_coords.u, nodes[e.nodes[2] - 1].parameterized_coords.v;
+			nodes[e.nodes[0] - 1].coords.x, nodes[e.nodes[0] - 1].coords.y,
+			nodes[e.nodes[1] - 1].coords.x, nodes[e.nodes[1] - 1].coords.y,
+			nodes[e.nodes[2] - 1].coords.x, nodes[e.nodes[2] - 1].coords.y;
 
 		Eigen::Matrix<double, 8, 8> S_local, T_local;
 		std::tie(S_local, T_local) = S_T(coords);
@@ -130,12 +131,12 @@ std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>> fem::_2d::mi
 		{
 			auto global_dof_pair_i = global_dof_pair(e, local_dof_i);
 			if (!dof_map.contains(global_dof_pair_i)) continue;
-			auto global_dof_i = dof_map[global_dof_pair_i];
+			auto global_dof_i = dof_map.at(global_dof_pair_i);
 			for (int local_dof_j = 0; local_dof_j < 8; local_dof_j++)
 			{
 				auto global_dof_pair_j = global_dof_pair(e, local_dof_j);
 				if (!dof_map.contains(global_dof_pair_j)) continue;
-				auto global_dof_j = dof_map[global_dof_pair_j];
+				auto global_dof_j = dof_map.at(global_dof_pair_j);
 
 				S_global.coeffRef(global_dof_i, global_dof_j) = S_global.coeff(global_dof_i, global_dof_j) + S_local(local_dof_i, local_dof_j);
 				T_global.coeffRef(global_dof_i, global_dof_j) = T_global.coeff(global_dof_i, global_dof_j) + T_local(local_dof_i, local_dof_j);;
@@ -143,4 +144,35 @@ std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>> fem::_2d::mi
 		}
 	}
 	return { S_global, T_global };
+}
+
+std::pair <Eigen::Vector2d, Eigen::Vector2d>
+fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes, const tri& e,
+	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, Eigen::VectorXd solution)
+{
+	Eigen::Matrix<double, 3, 2> coords;
+	coords <<
+		nodes[e.nodes[0] - 1].coords.x, nodes[e.nodes[0] - 1].coords.y,
+		nodes[e.nodes[1] - 1].coords.x, nodes[e.nodes[1] - 1].coords.y,
+		nodes[e.nodes[2] - 1].coords.x, nodes[e.nodes[2] - 1].coords.y;
+
+	Eigen::Vector2d center;
+	center << coords.col(0).mean(), coords.col(1).mean();
+
+	auto simplex_coeff = fem::_2d::simplex_coefficients(coords);
+	auto nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
+	auto lambda = fem::_2d::lambda(center, simplex_coeff);
+
+	auto func = basis(lambda, nabla_lambda);
+	
+	Eigen::Vector2d value = Eigen::Vector2d::Zero();
+	for (int i = 0; i < 8; i++)
+	{
+		auto dof_pair = global_dof_pair(e, i);
+		if (dof_map.contains(dof_pair))
+		{
+			value += func.row(i) * solution[dof_map.at(dof_pair)];
+		}		
+	}
+	return { value, center };
 }

@@ -32,3 +32,19 @@ void sim::solve_ports()
 		std::cout << port_eigen_wave_numbers.back() << std::endl;
 	}
 }
+
+void sim::eval_ports()
+{
+	std::vector<std::vector<Eigen::Vector3d>> field;
+	std::vector < std::vector<parameterized_surface_point>> points;
+
+	for (int p = 0; p < port_elems.size(); p++)
+	{
+		for (auto e : port_elems[p])
+		{
+			auto result = fem::_2d::mixed_order::eval_elem(nodes, e, port_dof_maps[p], port_eigen_vectors[p].col(0));
+			std::cout << result.first.transpose() << std::endl;
+			std::cout << result.second.transpose() << std::endl << std::endl;
+		}
+	}
+}
