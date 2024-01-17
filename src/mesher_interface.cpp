@@ -52,17 +52,32 @@ void mesher_interface::view_model()
     gmsh::fltk::run();
 }
 
-box mesher_interface::get_bounding_box()
+box mesher_interface::get_bounding_box(size_t dim, size_t tag)
 {
     double xmin = 0, ymin = 0, zmin = 0, xmax = 0, ymax = 0, zmax = 0;
     try
     {
-        gmsh::model::getBoundingBox(-1, -1, xmin, ymin, zmin, xmax, ymax, zmax);
+        gmsh::model::getBoundingBox(dim, tag, xmin, ymin, zmin, xmax, ymax, zmax);
     }
     catch (...)
     {
     }
-    return { xmin, ymin, zmin, xmax, ymax, zmax };
+    return box(xmin, ymin, zmin, xmax, ymax, zmax);
+}
+
+std::vector<box> mesher_interface::get_bounding_box(size_t dim, std::vector<size_t> tags)
+{
+    std::vector<box> boxes;
+    for (auto t : tags)
+    {
+        boxes.push_back(get_bounding_box(dim, t));
+    }
+    return boxes;
+}
+
+box mesher_interface::get_bounding_box()
+{
+    return get_bounding_box(-1, -1);
 }
 
 int mesher_interface::add_box(box b)
@@ -191,24 +206,34 @@ std::vector<tet> mesher_interface::get_volume_elems()
     return elems_to_return;
 }
 
-std::vector<int> mesher_interface::get_surface_ids_from_coms(std::vector<std::vector<double>> coms)
+int mesher_interface::get_surface_from_com(point p)
 {
     std::vector<std::pair<int, int>> entities;
     gmsh::model::occ::getEntities(entities, 2);
+
+    for (auto e : entities)
+    {
+        double x, y, z;
+        gmsh::model::occ::getCenterOfMass(e.first, e.second, x, y, z);
+        if (helpers::isEqual(p.x, x) && helpers::isEqual(p.y, y) && helpers::isEqual(p.z, z))
+        {
+            return e.second;
+        }
+    }
+    return -1;
+}
+
+std::vector<int> mesher_interface::get_surface_from_com(std::vector<point> coms)
+{
     std::vector<int> ids;
 
     for (auto p : coms)
     {
-        for (auto e : entities)
+        auto id = get_surface_from_com(p);
+        if (id != -1)
         {
-            double x, y, z;
-            gmsh::model::occ::getCenterOfMass(e.first, e.second, x, y, z);        
-            if (helpers::isEqual(p[0], x) && helpers::isEqual(p[1], y) && helpers::isEqual(p[2], z))
-            {
-                ids.push_back(e.second);
-                break;
-            }
-        }
+            ids.push_back(id);
+        }        
     }
     return ids;
 }
@@ -227,6 +252,7 @@ std::vector<std::vector<tri>> mesher_interface::get_surface_elems_by_ids(std::ve
         elems_to_return[index].reserve(elementTags[0].size());
         for (size_t i = 0; i < elementTags[0].size(); i++)
         {
+            // Get nodes and sort so that edges are always in same direction.
             size_t n1 = nodeTags[0][i * 3];
             size_t n2 = nodeTags[0][i * 3 + 1];
             size_t n3 = nodeTags[0][i * 3 + 2];
@@ -259,18 +285,23 @@ std::vector<std::vector<tri>> mesher_interface::get_surface_elems_by_ids(std::ve
     return elems_to_return;
 }
 
-std::vector<size_t> mesher_interface::get_elements_by_coordinates(std::vector<point> points, int dim)
+size_t mesher_interface::get_element_by_coordinate(point p, int dim)
+{
+    double u, v, w;
+    size_t element_tag;
+    int element_type;
+    std::vector<size_t> node_tags;
+    gmsh::model::mesh::getElementByCoordinates(p.x, p.y, p.z, element_tag, element_type, node_tags, u, v, w, dim, false);
+    return element_tag;
+}
+
+std::vector<size_t> mesher_interface::get_elements_by_coordinate(std::vector<point> points, int dim)
 {
     std::vector<size_t> elements;
     elements.reserve(points.size());
     for (auto p : points)
     {
-        double u, v, w;
-        size_t element_tag;
-        int element_type;
-        std::vector<size_t> node_tags;
-        gmsh::model::mesh::getElementByCoordinates(p.x, p.y, p.z, element_tag, element_type, node_tags, u, v, w, dim, false);
-        elements.push_back(element_tag);
+        elements.push_back(get_element_by_coordinate(p, 2));
     }
     return elements;
 }

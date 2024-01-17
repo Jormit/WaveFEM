@@ -1,7 +1,8 @@
 #include <vector>
 #include <string>
+#include "geometry.h"
 
 namespace setup
 {
-	std::vector<std::vector<double>> load_port_setup(std::string filename);
+	std::vector<point> load_port_setup(std::string filename);
 }

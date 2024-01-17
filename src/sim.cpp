@@ -32,23 +32,3 @@ void sim::solve_ports()
 		std::cout << port_eigen_wave_numbers.back() << std::endl;
 	}
 }
-
-std::pair<std::vector<std::vector<Eigen::Vector2d>>, std::vector<std::vector<Eigen::Vector2d>>> sim::eval_ports()
-{
-	std::vector<std::vector<Eigen::Vector2d>> field(port_elems.size());
-	std::vector<std::vector<Eigen::Vector2d>> points(port_elems.size());
-
-	for (int p = 0; p < port_elems.size(); p++)
-	{
-		field[p].reserve(port_elems.size());
-		points[p].reserve(port_elems.size());
-
-		for (auto e : port_elems[p])
-		{
-			auto result = fem::_2d::mixed_order::eval_elem(nodes, e, port_dof_maps[p], port_eigen_vectors[p].col(0));
-			field[p].push_back(result.first);
-			points[p].push_back(result.second);
-		}
-	}
-	return { field, points };
-}

@@ -24,22 +24,11 @@ int main()
 	auto nodes = mesher_interface::get_all_nodes();
 	auto volume_elements = mesher_interface::get_volume_elems();
 
-	auto port_ids = mesher_interface::get_surface_ids_from_coms(port_points);
+	auto port_ids = mesher_interface::get_surface_from_com(port_points);
 	auto port_surface_elements = mesher_interface::get_surface_elems_by_ids(port_ids);
 
 	sim sim(nodes, volume_elements, port_ids, port_surface_elements);
-	sim.solve_ports();
-	auto result = sim.eval_ports();
-
-	auto values = result.first[0];
-	auto points = result.second[0];
-
-	for (size_t i = 0; i < values.size(); i++)
-	{
-		std::cout << points[i](0) << ", " << points[i](1) << ", ";
-		std::cout << values[i](0) << ", " << values[i](1);
-		std::cout << std::endl;
-	}
+	sim.solve_ports();	
 
 	return 0;
 }
