@@ -34,6 +34,9 @@ namespace mesher_interface {
 
 	size_t get_element_by_coordinate(point points, int dim);
 	std::vector<size_t> get_elements_by_coordinate(std::vector<point> points, int dim);
+
+	dimensions get_surface_dimensions(int id);
+	std::vector <dimensions> get_surface_dimensions(std::vector<int> id);
 }
 
 

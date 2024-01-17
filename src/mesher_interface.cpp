@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <iostream>
 #include "helpers.h"
+#include <cmath>
 
 void mesher_interface::initialize() {
     gmsh::initialize();
@@ -311,4 +312,24 @@ std::vector<size_t> mesher_interface::get_elements_by_coordinate(std::vector<poi
         elements.push_back(get_element_by_coordinate(p, 2));
     }
     return elements;
+}
+
+dimensions mesher_interface::get_surface_dimensions(int id)
+{
+    std::vector <double> corner_param_coords{ 0, 0, 1, 0, 0, 1 };
+    std::vector <double> coords;
+    gmsh::model::getValue(2, id, corner_param_coords, coords);
+    double width = std::sqrt(std::pow(coords[3] - coords[0], 2) + std::pow(coords[4] - coords[1], 2) + std::pow(coords[5] - coords[2], 2));
+    double height = std::sqrt(std::pow(coords[6] - coords[0], 2) + std::pow(coords[7] - coords[1], 2) + std::pow(coords[8] - coords[2], 2));
+    return { width, height };
+}
+
+std::vector<dimensions> mesher_interface::get_surface_dimensions(std::vector<int> id)
+{
+    std::vector<dimensions> dim;
+    for (auto i : id)
+    {
+        dim.push_back(get_surface_dimensions(i));
+    }
+    return dim;
 }
