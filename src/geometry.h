@@ -21,6 +21,12 @@ struct parameterized_surface_point
 	double v;
 };
 
+struct dimensions
+{
+	double width;
+	double height;
+};
+
 struct point
 {
 	double x;
