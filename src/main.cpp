@@ -24,10 +24,10 @@ int main()
 	auto nodes = mesher_interface::get_all_nodes();
 	auto volume_elements = mesher_interface::get_volume_elems();
 
-	auto port_ids = mesher_interface::get_surface_from_com(port_points);
-	auto port_surface_elements = mesher_interface::get_surface_elems_by_ids(port_ids);
+	auto port_entity_ids = mesher_interface::get_surface_from_com(port_points);
+	auto port_surface_elements = mesher_interface::get_surface_elems_by_ids(port_entity_ids);
 
-	sim sim(nodes, volume_elements, port_ids, port_surface_elements);
+	sim sim(nodes, volume_elements, port_entity_ids, port_surface_elements);
 	sim.solve_ports();	
 
 	return 0;
