@@ -24,12 +24,13 @@ namespace mesher_interface {
 	// Vector is indexed by node number - 1 !!!!!
 	std::vector<node> get_all_nodes();
 
-	std::vector<tet> get_volume_elems();
+	std::vector<tet> get_all_volume_elems();
 
 	int get_surface_from_com(point);
 	std::vector<int> get_surface_from_com(std::vector<point> coms);
 
-	std::vector<std::vector<tri>> get_surface_elems_by_ids(std::vector<int> ids);
+	std::vector<tri> get_surface_elems_by_id(int id);
+	std::vector<std::vector<tri>> get_surface_elems_by_id(std::vector<int> ids);
 
 	size_t get_element_by_coordinate(point points, int dim);
 	std::vector<size_t> get_elements_by_coordinate(std::vector<point> points, int dim);
