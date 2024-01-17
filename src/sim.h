@@ -10,7 +10,6 @@ class sim
 public:
 	sim(std::vector<node> nodes, std::vector<tet> volume_elems, std::vector<int> port_surface_ids, std::vector<std::vector<tri>> port_elems);
 	void solve_ports();
-	std::pair<std::vector<std::vector<Eigen::Vector2d>>, std::vector<std::vector<Eigen::Vector2d>>> eval_ports();
 
 private:
 	// Element information

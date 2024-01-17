@@ -146,9 +146,8 @@ fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::v
 	return { S_global, T_global };
 }
 
-std::pair <Eigen::Vector2d, Eigen::Vector2d>
-fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes, const tri& e,
-	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, Eigen::VectorXd solution)
+Eigen::Vector2d fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes, const tri& e, const Eigen::Vector2d& eval_point,
+	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution)
 {
 	Eigen::Matrix<double, 3, 2> coords;
 	coords <<
@@ -156,12 +155,9 @@ fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes, const tri& e,
 		nodes[e.nodes[1] - 1].coords.x, nodes[e.nodes[1] - 1].coords.y,
 		nodes[e.nodes[2] - 1].coords.x, nodes[e.nodes[2] - 1].coords.y;
 
-	Eigen::Vector2d center;
-	center << coords.col(0).mean(), coords.col(1).mean();
-
 	auto simplex_coeff = fem::_2d::simplex_coefficients(coords);
 	auto nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
-	auto lambda = fem::_2d::lambda(center, simplex_coeff);
+	auto lambda = fem::_2d::lambda(eval_point, simplex_coeff);
 
 	auto func = basis(lambda, nabla_lambda);
 	
@@ -174,5 +170,5 @@ fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes, const tri& e,
 			value += func.row(i) * solution[dof_map.at(dof_pair)];
 		}		
 	}
-	return { value, center };
+	return value;
 }

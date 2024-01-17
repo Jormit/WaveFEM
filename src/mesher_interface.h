@@ -4,44 +4,35 @@
 #include <gmsh/gmsh.h_cwrap>
 
 namespace mesher_interface {
-	// Initializes GMSH.
 	void initialize();
 
 	// Loads file of BREP, STEP or IGES format into GMSH environment.
-	// Returns: id of model
 	int import_model(const std::string& filename);
 
-	// Perform meshing.
 	void mesh_model(int mesh_size_min, int mesh_size_max);
 
-	// Loads gmsh viwer.
 	void view_model();
 
-	// Returns bounding box of entire model
 	box get_bounding_box();
+	box get_bounding_box(size_t dim, size_t tag);
+	std::vector<box> get_bounding_box(size_t dim, std::vector<size_t> tags);
 
-	// Adds box to model
-	// Returns: id of box
 	int add_box(box b);
 
-	// Subtracts volume with id2 from id1
 	int subtract(int id1, int id2);
 
-	// Get nodes. Vector is indexed by node number - 1
+	// Vector is indexed by node number - 1 !!!!!
 	std::vector<node> get_all_nodes();
 
-	// Get elements (tetrahedrons)
 	std::vector<tet> get_volume_elems();
 
-	// Get surface ids by comparing center of mass
-	std::vector<int> get_surface_ids_from_coms(std::vector<std::vector<double>> coms);
+	int get_surface_from_com(point);
+	std::vector<int> get_surface_from_com(std::vector<point> coms);
 
-	// Get surface elements (triangles)
 	std::vector<std::vector<tri>> get_surface_elems_by_ids(std::vector<int> ids);
 
-	// Get elements by coordinates
-	std::vector<size_t> get_elements_by_coordinates(std::vector<point> points, int dim);
-
+	size_t get_element_by_coordinate(point points, int dim);
+	std::vector<size_t> get_elements_by_coordinate(std::vector<point> points, int dim);
 }
 
 
