@@ -1,22 +1,26 @@
 #pragma once
 #include <vector>
-#include "geometry.h"
 #include <Eigen/Dense>
 #include <map>
+
+#include "ports.h"
+#include "geometry.h"
+
 
 // This class manages all the elements within a simulation context
 class sim
 {
 public:
-	sim(std::vector<node> nodes, std::vector<tet> volume_elems, std::vector<int> port_surface_ids, std::vector<std::vector<tri>> port_elems);
+	sim(std::vector<node> nodes, std::vector<tet> volume_elems, ports ports);
 	void solve_ports();
 
 private:
 	// Element information
 	std::vector<node> nodes;
 	std::vector<tet> volume_elems;
-	std::vector<int> port_surface_ids;
-	std::vector<std::vector<tri>> port_elems;
+
+	// Port information
+	ports sim_ports;
 
 	// Results
 	std::vector<Eigen::VectorXd> port_eigen_wave_numbers;

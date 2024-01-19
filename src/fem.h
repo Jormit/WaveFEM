@@ -1,3 +1,4 @@
+#pragma once
 #include <functional>
 #include "geometry.h"
 #include <Eigen/dense>
