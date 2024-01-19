@@ -14,8 +14,8 @@ namespace mesher_interface {
 	void view_model();
 
 	box get_bounding_box();
-	box get_bounding_box(size_t dim, size_t tag);
-	std::vector<box> get_bounding_box(size_t dim, std::vector<size_t> tags);
+	box get_bounding_box(int dim, size_t tag);
+	std::vector<box> get_bounding_box(int dim, std::vector<size_t> tags);
 
 	int add_box(box b);
 
