@@ -118,7 +118,7 @@ std::vector<node> mesher_interface::get_all_nodes()
     std::vector<size_t> nodeTags2;
     std::vector<double> coord2;
     std::vector<double> parametric_coord2;
-    gmsh::model::mesh::getNodes(nodeTags2, coord2, parametric_coord2, 2, -1, true, true);
+    gmsh::model::mesh::getNodes(nodeTags2, coord2, parametric_coord2, 2, -1, true, false);
 
     // Get 3d nodes (nodes on volumes).
     std::vector<size_t> nodeTags3;
@@ -129,7 +129,7 @@ std::vector<node> mesher_interface::get_all_nodes()
     // Insert 3d nodes.
     int i = 0;
     for (auto n : nodeTags3) {
-        node nn{ { coord3[3 * i], coord3[3 * i + 1], coord3[3 * i + 2] }, {}, FREE_NODE, FREE_NODE };
+        node nn{ { coord3[3 * i], coord3[3 * i + 1], coord3[3 * i + 2] }, FREE_NODE, FREE_NODE };
         nodes_to_return[n - 1] = nn;
         i++;
     }
@@ -139,7 +139,6 @@ std::vector<node> mesher_interface::get_all_nodes()
     for (auto n : nodeTags2) {
         node nn{ 
             { coord2[3 * i], coord2[3 * i + 1], coord2[3 * i + 2] },
-            { parametric_coord2[2 * i], parametric_coord2[2 * i + 1] },
             FREE_NODE, BOUNDARY_NODE};
         nodes_to_return[n - 1] = nn;
         i++;
@@ -332,4 +331,21 @@ std::vector<dimensions> mesher_interface::get_surface_dimensions(std::vector<int
         dim.push_back(get_surface_dimensions(i));
     }
     return dim;
+}
+
+parameterized_surface_point mesher_interface::parameterize_on_surface(point coord, int id)
+{
+    std::vector<double> param_coords;
+    gmsh::model::getParametrization(2, id, { coord.x, coord.y, coord.z }, param_coords);
+    return { param_coords[0], param_coords[1] };
+}
+
+std::vector<parameterized_surface_point> mesher_interface::parameterize_on_surface(std::vector <point> coord, int id)
+{
+    std::vector<parameterized_surface_point> param_coords;
+    for (const auto &p : coord)
+    {
+        param_coords.push_back(parameterize_on_surface(p, id));
+    }
+    return param_coords;
 }

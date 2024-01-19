@@ -37,6 +37,9 @@ namespace mesher_interface {
 
 	dimensions get_surface_dimensions(int id);
 	std::vector <dimensions> get_surface_dimensions(std::vector<int> id);
+
+	parameterized_surface_point parameterize_on_surface(point coord, int id);
+	std::vector<parameterized_surface_point> parameterize_on_surface(std::vector <point> coord, int id);
 }
 
 

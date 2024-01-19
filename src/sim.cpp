@@ -21,7 +21,7 @@ void sim::solve_ports()
 
 		Eigen::SparseMatrix<double> S;
 		Eigen::SparseMatrix<double> T;
-		std::tie(S, T) = fem::_2d::mixed_order::assemble_S_T(nodes, sim_ports.elements[p], dof_map);
+		std::tie(S, T) = fem::_2d::mixed_order::assemble_S_T(nodes, sim_ports.elements[p], dof_map, sim_ports.dimensions[p], sim_ports.entity_ids[p]);
 
 		Eigen::VectorXd values;
 		Eigen::MatrixXd vecs;
