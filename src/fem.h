@@ -29,7 +29,8 @@ namespace fem
 			std::pair<size_t, size_t> global_dof_pair(const tri& elem, const size_t& dof_num);
 
 			std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
-				assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems, const std::map<std::pair<size_t, size_t>, size_t>& dof_map);
+				assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems,
+					const std::map<std::pair<size_t, size_t>, size_t>& dof_map, dimensions face_dimensions, int surface_id);
 
 			Eigen::Vector2d eval_elem(const std::vector<node>& nodes, const tri& e, const Eigen::Vector2d& eval_point,
 				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution);

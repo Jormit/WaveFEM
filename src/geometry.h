@@ -37,7 +37,6 @@ struct point
 struct node
 {
 	point coords;
-	parameterized_surface_point parameterized_coords;
 	int type_2d;
 	int type_3d;
 };

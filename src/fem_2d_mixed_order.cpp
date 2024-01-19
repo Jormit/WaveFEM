@@ -1,5 +1,6 @@
 #include "fem.h"
 #include "quad.h"
+#include "mesher_interface.h"
 #include <iostream>
 
 Eigen::Matrix<double, 8, 2> fem::_2d::mixed_order::basis(const Eigen::Vector3d & lambda, const Eigen::Matrix<double, 3, 2>&nabla_lambda)
@@ -111,18 +112,25 @@ std::pair<size_t, size_t> fem::_2d::mixed_order::global_dof_pair(const tri& elem
 }
 
 std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>> 
-fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems, const std::map<std::pair<size_t, size_t>, size_t> & dof_map)
+fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems,
+	const std::map<std::pair<size_t, size_t>, size_t> & dof_map, dimensions face_dimensions, int surface_id)
 {
 	Eigen::SparseMatrix<double> S_global(dof_map.size(), dof_map.size());
 	Eigen::SparseMatrix<double> T_global(dof_map.size(), dof_map.size());
 
 	for (const auto& e : elems)
 	{
+		auto surface_points = mesher_interface::parameterize_on_surface(
+			{ nodes[e.nodes[0] - 1].coords, nodes[e.nodes[1] - 1].coords, nodes[e.nodes[2] - 1].coords }, surface_id);
+
 		Eigen::Matrix<double, 3, 2> coords;
 		coords <<
-			nodes[e.nodes[0] - 1].coords.x, nodes[e.nodes[0] - 1].coords.y,
-			nodes[e.nodes[1] - 1].coords.x, nodes[e.nodes[1] - 1].coords.y,
-			nodes[e.nodes[2] - 1].coords.x, nodes[e.nodes[2] - 1].coords.y;
+			surface_points[0].u, surface_points[0].v,
+			surface_points[1].u, surface_points[1].v,
+			surface_points[2].u, surface_points[2].v;
+
+		coords.col(0) = coords.col(0) * face_dimensions.width;
+		coords.col(1) = coords.col(1) * face_dimensions.height;
 
 		Eigen::Matrix<double, 8, 8> S_local, T_local;
 		std::tie(S_local, T_local) = S_T(coords);
