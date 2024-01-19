@@ -53,7 +53,7 @@ void mesher_interface::view_model()
     gmsh::fltk::run();
 }
 
-box mesher_interface::get_bounding_box(size_t dim, size_t tag)
+box mesher_interface::get_bounding_box(int dim, size_t tag)
 {
     double xmin = 0, ymin = 0, zmin = 0, xmax = 0, ymax = 0, zmax = 0;
     try
@@ -66,7 +66,7 @@ box mesher_interface::get_bounding_box(size_t dim, size_t tag)
     return box(xmin, ymin, zmin, xmax, ymax, zmax);
 }
 
-std::vector<box> mesher_interface::get_bounding_box(size_t dim, std::vector<size_t> tags)
+std::vector<box> mesher_interface::get_bounding_box(int dim, std::vector<size_t> tags)
 {
     std::vector<box> boxes;
     for (auto t : tags)
@@ -228,7 +228,7 @@ std::vector<int> mesher_interface::get_surface_from_com(std::vector<point> coms)
 {
     std::vector<int> ids;
 
-    for (auto p : coms)
+    for (const auto& p : coms)
     {
         auto id = get_surface_from_com(p);
         if (id != -1)
@@ -307,7 +307,7 @@ std::vector<size_t> mesher_interface::get_elements_by_coordinate(std::vector<poi
 {
     std::vector<size_t> elements;
     elements.reserve(points.size());
-    for (auto p : points)
+    for (const auto& p : points)
     {
         elements.push_back(get_element_by_coordinate(p, 2));
     }
