@@ -24,11 +24,13 @@ namespace mesher_interface {
 	// Vector is indexed by node number - 1 !!!!!
 	std::vector<node> get_all_nodes();
 
+	tet assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4);
 	std::vector<tet> get_all_volume_elems();
 
 	int get_surface_from_com(point);
 	std::vector<int> get_surface_from_com(std::vector<point> coms);
 
+	tri assemble_tri(size_t n1, size_t n2, size_t n3);
 	std::vector<tri> get_surface_elems_by_id(int id);
 	std::vector<std::vector<tri>> get_surface_elems_by_id(std::vector<int> ids);
 
@@ -40,6 +42,9 @@ namespace mesher_interface {
 
 	parameterized_surface_point parameterize_on_surface(point coord, int id);
 	std::vector<parameterized_surface_point> parameterize_on_surface(std::vector <point> coord, int id);
+
+	void parameterize_surface_nodes(std::vector<node>& nodes, int surface_id, const std::vector<tri> elements, dimensions surface_dimensions);
+	void parameterize_surface_nodes(std::vector<node>& nodes, std::vector <int> surface_id, const std::vector<std::vector<tri>> elements, std::vector <dimensions> surface_dimensions);
 }
 
 

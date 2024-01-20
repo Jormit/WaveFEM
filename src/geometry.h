@@ -2,6 +2,7 @@
 #include <ostream>
 #include <array>
 #include <vector>
+#include <optional>
 
 const int BOUNDARY_NODE = 0;
 const int FREE_NODE = -1;
@@ -37,6 +38,7 @@ struct point
 struct node
 {
 	point coords;
+	std::optional<parameterized_surface_point> parameterized_surface_point;
 	int type_2d;
 	int type_3d;
 };

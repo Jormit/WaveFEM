@@ -30,9 +30,9 @@ namespace fem
 
 			std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
 				assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems,
-					const std::map<std::pair<size_t, size_t>, size_t>& dof_map, dimensions face_dimensions, int surface_id);
+					const std::map<std::pair<size_t, size_t>, size_t>& dof_map);
 
-			Eigen::Vector2d eval_elem(const std::vector<node>& nodes, const tri& e, const Eigen::Vector2d& eval_point,
+			Eigen::Vector2d eval_elem(const std::vector<node>& nodes, const tri& e, const parameterized_surface_point& eval_point,
 				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution);
 		}
 	}

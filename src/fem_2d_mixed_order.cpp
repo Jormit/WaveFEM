@@ -113,24 +113,18 @@ std::pair<size_t, size_t> fem::_2d::mixed_order::global_dof_pair(const tri& elem
 
 std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>> 
 fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems,
-	const std::map<std::pair<size_t, size_t>, size_t> & dof_map, dimensions face_dimensions, int surface_id)
+	const std::map<std::pair<size_t, size_t>, size_t> & dof_map)
 {
 	Eigen::SparseMatrix<double> S_global(dof_map.size(), dof_map.size());
 	Eigen::SparseMatrix<double> T_global(dof_map.size(), dof_map.size());
 
 	for (const auto& e : elems)
 	{
-		auto surface_points = mesher_interface::parameterize_on_surface(
-			{ nodes[e.nodes[0] - 1].coords, nodes[e.nodes[1] - 1].coords, nodes[e.nodes[2] - 1].coords }, surface_id);
-
 		Eigen::Matrix<double, 3, 2> coords;
 		coords <<
-			surface_points[0].u, surface_points[0].v,
-			surface_points[1].u, surface_points[1].v,
-			surface_points[2].u, surface_points[2].v;
-
-		coords.col(0) = coords.col(0) * face_dimensions.width;
-		coords.col(1) = coords.col(1) * face_dimensions.height;
+			nodes[e.nodes[0] - 1].parameterized_surface_point->u, nodes[e.nodes[0] - 1].parameterized_surface_point->v,
+			nodes[e.nodes[1] - 1].parameterized_surface_point->u, nodes[e.nodes[1] - 1].parameterized_surface_point->v,
+			nodes[e.nodes[2] - 1].parameterized_surface_point->u, nodes[e.nodes[2] - 1].parameterized_surface_point->v;
 
 		Eigen::Matrix<double, 8, 8> S_local, T_local;
 		std::tie(S_local, T_local) = S_T(coords);
@@ -154,18 +148,21 @@ fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::v
 	return { S_global, T_global };
 }
 
-Eigen::Vector2d fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes, const tri& e, const Eigen::Vector2d& eval_point,
+Eigen::Vector2d fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes, const tri& e, const parameterized_surface_point& eval_point,
 	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution)
 {
 	Eigen::Matrix<double, 3, 2> coords;
 	coords <<
-		nodes[e.nodes[0] - 1].coords.x, nodes[e.nodes[0] - 1].coords.y,
-		nodes[e.nodes[1] - 1].coords.x, nodes[e.nodes[1] - 1].coords.y,
-		nodes[e.nodes[2] - 1].coords.x, nodes[e.nodes[2] - 1].coords.y;
+		nodes[e.nodes[0] - 1].parameterized_surface_point->u, nodes[e.nodes[0] - 1].parameterized_surface_point->v,
+		nodes[e.nodes[1] - 1].parameterized_surface_point->u, nodes[e.nodes[1] - 1].parameterized_surface_point->v,
+		nodes[e.nodes[2] - 1].parameterized_surface_point->u, nodes[e.nodes[2] - 1].parameterized_surface_point->v;
+
+	Eigen::Vector2d modified_eval_point;
+	modified_eval_point << eval_point.u, eval_point.v;
 
 	auto simplex_coeff = fem::_2d::simplex_coefficients(coords);
 	auto nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
-	auto lambda = fem::_2d::lambda(eval_point, simplex_coeff);
+	auto lambda = fem::_2d::lambda(modified_eval_point, simplex_coeff);
 
 	auto func = basis(lambda, nabla_lambda);
 	
@@ -176,7 +173,7 @@ Eigen::Vector2d fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes,
 		if (dof_map.contains(dof_pair))
 		{
 			value += func.row(i) * solution[dof_map.at(dof_pair)];
-		}		
+		}
 	}
 	return value;
 }
