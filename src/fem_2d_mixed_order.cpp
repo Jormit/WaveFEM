@@ -80,7 +80,7 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_2d::mixed_order::dof_map(const
 			if (!map.contains({ e.edges[edge], 1}))
 			{
 				auto edge_nodes = e.get_edge_nodes(edge);
-				if (nodes[edge_nodes[0]-1].type_2d != BOUNDARY_NODE && nodes[edge_nodes[1]-1].type_2d != BOUNDARY_NODE)
+				if (nodes[edge_nodes[0]-1].type_2d != BOUNDARY_NODE || nodes[edge_nodes[1]-1].type_2d != BOUNDARY_NODE)
 				{
 					map[{e.edges[edge], 1}] = i++;
 					map[{e.edges[edge], 2}] = i++;
@@ -172,7 +172,7 @@ Eigen::Vector2d fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes,
 		auto dof_pair = global_dof_pair(e, i);
 		if (dof_map.contains(dof_pair))
 		{
-			value += func.row(i) * solution[dof_map.at(dof_pair)];
+			value += func.row(i) * solution(dof_map.at(dof_pair));
 		}
 	}
 	return value;
