@@ -13,28 +13,10 @@ void mesher_interface::initialize() {
 int mesher_interface::import_model(const std::string &filename)
 {
     std::vector<std::pair<int, int> > v;
-    try 
-    {
-        gmsh::model::occ::importShapes(filename, v);
-    }
-    catch (...) 
-    {
-        gmsh::logger::write("Could not load STEP file: bye!");
-        gmsh::finalize();
-        return -1;
-    }
-    
-    auto ids = std::vector<int>();
-    for (auto i : v)
-    {
-        ids.push_back(i.second);
-    }
-
-    int sl = gmsh::model::occ::addSurfaceLoop(ids, -1, true);
-    int vol = gmsh::model::occ::addVolume({sl});    
+    gmsh::model::occ::importShapes(filename, v);    
     gmsh::model::occ::synchronize();
 
-    return vol;
+    return 1;
 }
 
 void mesher_interface::mesh_model(int mesh_size_min, int mesh_size_max) 
@@ -92,7 +74,7 @@ int mesher_interface::subtract(int id1, int id2)
 {
     std::vector<std::pair<int, int> > ov;
     std::vector<std::vector<std::pair<int, int> > > ovv;
-    gmsh::model::occ::cut({ {3, id1} }, { {3, id2} }, ov, ovv, 3);
+    gmsh::model::occ::cut({ {3, id1} }, { {3, id2} }, ov, ovv, -1);
     gmsh::model::occ::synchronize();
     return ov[0].second;
 }
