@@ -43,8 +43,8 @@ namespace mesher_interface {
 	parameterized_surface_point parameterize_on_surface(point coord, int id);
 	std::vector<parameterized_surface_point> parameterize_on_surface(std::vector <point> coord, int id);
 
-	void parameterize_surface_nodes(std::vector<node>& nodes, int surface_id, const std::vector<tri> elements, dimensions surface_dimensions);
-	void parameterize_surface_nodes(std::vector<node>& nodes, std::vector <int> surface_id, const std::vector<std::vector<tri>> elements, std::vector <dimensions> surface_dimensions);
+	void parameterize_surface_nodes(std::vector<node>& nodes, int surface_id, const std::vector<tri> elements);
+	void parameterize_surface_nodes(std::vector<node>& nodes, std::vector <int> surface_id, const std::vector<std::vector<tri>> elements);
 }
 
 

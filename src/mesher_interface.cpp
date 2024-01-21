@@ -304,11 +304,11 @@ std::vector<size_t> mesher_interface::get_elements_by_coordinate(std::vector<poi
 
 dimensions mesher_interface::get_surface_dimensions(int id)
 {
-    std::vector <double> corner_param_coords{ 0, 0, 1, 0, 0, 1 };
-    std::vector <double> coords;
-    gmsh::model::getValue(2, id, corner_param_coords, coords);
-    double width = std::sqrt(std::pow(coords[3] - coords[0], 2) + std::pow(coords[4] - coords[1], 2) + std::pow(coords[5] - coords[2], 2));
-    double height = std::sqrt(std::pow(coords[6] - coords[0], 2) + std::pow(coords[7] - coords[1], 2) + std::pow(coords[8] - coords[2], 2));
+    std::vector<double> min;
+    std::vector<double> max;
+    gmsh::model::getParametrizationBounds(2, id, min, max);
+    double width = max[0] - min[0];
+    double height = max[1] - min[1];
     return { width, height };
 }
 
@@ -339,7 +339,7 @@ std::vector<parameterized_surface_point> mesher_interface::parameterize_on_surfa
     return param_coords;
 }
 
-void mesher_interface::parameterize_surface_nodes(std::vector<node>& nodes, int surface_id, const std::vector<tri> elements, dimensions surface_dimensions)
+void mesher_interface::parameterize_surface_nodes(std::vector<node>& nodes, int surface_id, const std::vector<tri> elements)
 {
     for (const auto& e : elements)
     {
@@ -348,16 +348,16 @@ void mesher_interface::parameterize_surface_nodes(std::vector<node>& nodes, int 
             if (!nodes[n - 1].parameterized_surface_point)
             {
                 auto param_normalized = parameterize_on_surface(nodes[n - 1].coords, surface_id);
-                nodes[n - 1].parameterized_surface_point = { param_normalized.u * surface_dimensions.width, param_normalized.v * surface_dimensions.height };
+                nodes[n - 1].parameterized_surface_point = { param_normalized.u, param_normalized.v };
             }
         }
     }
 }
 
-void mesher_interface::parameterize_surface_nodes(std::vector<node>& nodes, std::vector <int> surface_id, const std::vector<std::vector<tri>> elements, std::vector <dimensions> surface_dimensions)
+void mesher_interface::parameterize_surface_nodes(std::vector<node>& nodes, std::vector <int> surface_id, const std::vector<std::vector<tri>> elements)
 {
     for (int i = 0; i < surface_id.size(); i++)
     {
-        parameterize_surface_nodes(nodes, surface_id[i], elements[i], surface_dimensions[i]);
+        parameterize_surface_nodes(nodes, surface_id[i], elements[i]);
     }
 }
