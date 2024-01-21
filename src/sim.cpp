@@ -9,7 +9,7 @@ sim::sim(std::vector<node> nodes, std::vector<tet> volume_elems, ports ports) :
 	nodes(nodes), volume_elems(volume_elems), sim_ports(ports),
 	port_eigen_vectors(), port_eigen_wave_numbers(), port_dof_maps()
 {
-	mesher_interface::parameterize_surface_nodes(this->nodes, sim_ports.entity_ids, sim_ports.elements, sim_ports.dimensions);
+	mesher_interface::parameterize_surface_nodes(this->nodes, sim_ports.entity_ids, sim_ports.elements);
 }
 
 void sim::solve_ports()
