@@ -10,7 +10,7 @@ int main()
 {
 	mesher_interface::initialize();
 
-	int model_id = mesher_interface::import_model("../../../data/Horn.IGS");
+	int model_id = mesher_interface::import_model("../../../data/Horn.STEP");
 	auto bbox = mesher_interface::get_bounding_box();
 	bbox.add_padding(20, 20, 20);
 	int bbox_id = mesher_interface::add_box(bbox);
