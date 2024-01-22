@@ -27,9 +27,9 @@ std::array<size_t, 2> tri::get_edge_nodes(size_t edge) const
 	}
 }
 
-std::vector<point> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z)
+std::vector<point_3d> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z)
 {
-	std::vector<point> points;
+	std::vector<point_3d> points;
 	points.reserve(num_x * num_y * num_z);
 	for (int x = 0; x < num_x; x++)
 	{
@@ -42,6 +42,22 @@ std::vector<point> generate_grid_points(box box, size_t num_x, size_t num_y, siz
 				double point_z = static_cast<double>(z) / static_cast<double>(num_z - 1) * (box.zmax - box.zmin) + box.zmin;
 				points.push_back({ point_x, point_y, point_z });
 			}
+		}
+	}
+	return points;
+}
+
+std::vector<point_2d> generate_grid_points(rectangle rect, size_t num_x, size_t num_y)
+{
+	std::vector<point_2d> points;
+	points.reserve(num_x * num_y);
+	for (int x = 0; x < num_x; x++)
+	{
+		for (int y = 0; y < num_y; y++)
+		{			
+				double point_x = static_cast<double>(x) / static_cast<double>(num_x - 1) * (rect.xmax - rect.xmin) + rect.xmin;
+				double point_y = static_cast<double>(y) / static_cast<double>(num_y - 1) * (rect.ymax - rect.ymin) + rect.ymin;
+				points.push_back({ point_x, point_y});
 		}
 	}
 	return points;

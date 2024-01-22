@@ -7,6 +7,11 @@
 const int BOUNDARY_NODE = 0;
 const int FREE_NODE = -1;
 
+struct rectangle
+{
+	double xmin, ymin, xmax, ymax;
+};
+
 class box
 {
 public:
@@ -16,19 +21,13 @@ public:
 	friend std::ostream& operator << (std::ostream& os, box const& b);
 };
 
-struct parameterized_surface_point
+struct point_2d
 {
 	double u;
 	double v;
 };
 
-struct dimensions
-{
-	double width;
-	double height;
-};
-
-struct point
+struct point_3d
 {
 	double x;
 	double y;
@@ -37,8 +36,8 @@ struct point
 
 struct node
 {
-	point coords;
-	std::optional<parameterized_surface_point> parameterized_surface_point;
+	point_3d coords;
+	std::optional<point_2d> point_2d;
 	int type_2d;
 	int type_3d;
 };
@@ -60,4 +59,5 @@ struct tet
 	size_t tag;
 };
 
-std::vector<point> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z);
+std::vector<point_3d> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z);
+std::vector<point_2d> generate_grid_points(rectangle rect, size_t num_x, size_t num_y);

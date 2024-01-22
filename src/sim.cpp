@@ -40,22 +40,20 @@ void sim::solve_ports()
 std::vector<Eigen::Vector2d> sim::eval_port(size_t port_num, size_t num_x, size_t num_y)
 {
 	std::vector<Eigen::Vector2d> field;
-	auto points = generate_grid_points(
-		{-sim_ports.dimensions[port_num].width / 2 + 0.1, -sim_ports.dimensions[port_num].height / 2 + 0.1, 0,
-		sim_ports.dimensions[port_num].width / 2 - 0.1, sim_ports.dimensions[port_num].height / 2 - 0.1, 0}, num_x, num_y, 1);
+	auto points = generate_grid_points(sim_ports.bounds[0], num_x, num_y);
 	for (const auto& p : points)
 	{
 		for (const auto& e : sim_ports.elements[port_num])
 		{
 			Eigen::Matrix<double, 3, 2> coords;
 			coords <<
-				nodes[e.nodes[0] - 1].parameterized_surface_point->u, nodes[e.nodes[0] - 1].parameterized_surface_point->v,
-				nodes[e.nodes[1] - 1].parameterized_surface_point->u, nodes[e.nodes[1] - 1].parameterized_surface_point->v,
-				nodes[e.nodes[2] - 1].parameterized_surface_point->u, nodes[e.nodes[2] - 1].parameterized_surface_point->v;
+				nodes[e.nodes[0] - 1].point_2d->u, nodes[e.nodes[0] - 1].point_2d->v,
+				nodes[e.nodes[1] - 1].point_2d->u, nodes[e.nodes[1] - 1].point_2d->v,
+				nodes[e.nodes[2] - 1].point_2d->u, nodes[e.nodes[2] - 1].point_2d->v;
 
 			auto coefficients = fem::_2d::simplex_coefficients(coords);
 			Eigen::Vector2d coord;
-			coord << p.x, p.y;
+			coord << p.u, p.v;
 
 			auto lambda = fem::_2d::lambda(coord, coefficients);
 
@@ -63,8 +61,8 @@ std::vector<Eigen::Vector2d> sim::eval_port(size_t port_num, size_t num_x, size_
 				lambda(1) >= 0 && lambda(1) <= 1 &&
 				lambda(2) >= 0 && lambda(2) <= 1) {
 
-				field.push_back(fem::_2d::mixed_order::eval_elem(nodes, e, { p.x, p.y }, port_dof_maps[port_num], port_eigen_vectors[port_num].col(0)));
-				std::cout << p.x << " " << p.y << " ";
+				field.push_back(fem::_2d::mixed_order::eval_elem(nodes, e, { p.u, p.v }, port_dof_maps[port_num], port_eigen_vectors[port_num].col(0)));
+				std::cout << p.u << " " << p.v << " ";
 				std::cout << field.back().transpose()(0) << " " << field.back().transpose()(1) << std::endl;
 				break;
 			}
