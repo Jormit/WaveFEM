@@ -54,7 +54,14 @@ Eigen::Matrix<double, 20, 3> fem::_3d::mixed_order::basis_curl(const Eigen::Vect
 	func.row(11) = Eigen::Vector3d::Zero();
 
 	// LT/QN Face Functions (consecutive functions belong to same face).
-
+	func.row(12) = - 3 * lambda(1) * nabla_lambda.row(0).cross(nabla_lambda.row(2)) - 3 * lambda(0) * nabla_lambda.row(1).cross(nabla_lambda.row(2));
+	func.row(13) = - 3 * lambda(2) * nabla_lambda.row(1).cross(nabla_lambda.row(0)) - 3 * lambda(1) * nabla_lambda.row(2).cross(nabla_lambda.row(0));
+	func.row(14) = - 3 * lambda(1) * nabla_lambda.row(0).cross(nabla_lambda.row(3)) - 3 * lambda(0) * nabla_lambda.row(1).cross(nabla_lambda.row(3));
+	func.row(15) = - 3 * lambda(3) * nabla_lambda.row(1).cross(nabla_lambda.row(0)) - 3 * lambda(1) * nabla_lambda.row(3).cross(nabla_lambda.row(0));
+	func.row(16) = - 3 * lambda(2) * nabla_lambda.row(0).cross(nabla_lambda.row(3)) - 3 * lambda(0) * nabla_lambda.row(2).cross(nabla_lambda.row(3));
+	func.row(17) = - 3 * lambda(3) * nabla_lambda.row(2).cross(nabla_lambda.row(0)) - 3 * lambda(2) * nabla_lambda.row(3).cross(nabla_lambda.row(0));
+	func.row(18) = - 3 * lambda(2) * nabla_lambda.row(1).cross(nabla_lambda.row(3)) - 3 * lambda(1) * nabla_lambda.row(2).cross(nabla_lambda.row(3));
+	func.row(19) = - 3 * lambda(3) * nabla_lambda.row(2).cross(nabla_lambda.row(1)) - 3 * lambda(2) * nabla_lambda.row(3).cross(nabla_lambda.row(1));
 
 	return func;
 }
