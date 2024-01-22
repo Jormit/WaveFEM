@@ -40,7 +40,9 @@ void sim::solve_ports()
 std::vector<Eigen::Vector2d> sim::eval_port(size_t port_num, size_t num_x, size_t num_y)
 {
 	std::vector<Eigen::Vector2d> field;
-	auto points = generate_grid_points({0, 0, 0, sim_ports.dimensions[port_num].width, sim_ports.dimensions[port_num].height, 0}, num_x, num_y, 1);
+	auto points = generate_grid_points(
+		{-sim_ports.dimensions[port_num].width / 2, -sim_ports.dimensions[port_num].height / 2, 0,
+		sim_ports.dimensions[port_num].width / 2, sim_ports.dimensions[port_num].height / 2, 0}, num_x, num_y, 1);
 	for (const auto& p : points)
 	{
 		for (const auto& e : sim_ports.elements[port_num])
@@ -63,7 +65,7 @@ std::vector<Eigen::Vector2d> sim::eval_port(size_t port_num, size_t num_x, size_
 
 				field.push_back(fem::_2d::mixed_order::eval_elem(nodes, e, { p.x, p.y }, port_dof_maps[port_num], port_eigen_vectors[port_num].col(0)));
 				std::cout << p.x << " " << p.y << " ";
-				std::cout << field.back().transpose() << std::endl;
+				std::cout << field.back().transpose()(0) << " " << field.back().transpose()(1) << std::endl;
 				break;
 			}
 		}
