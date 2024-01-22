@@ -41,8 +41,8 @@ std::vector<Eigen::Vector2d> sim::eval_port(size_t port_num, size_t num_x, size_
 {
 	std::vector<Eigen::Vector2d> field;
 	auto points = generate_grid_points(
-		{-sim_ports.dimensions[port_num].width / 2, -sim_ports.dimensions[port_num].height / 2, 0,
-		sim_ports.dimensions[port_num].width / 2, sim_ports.dimensions[port_num].height / 2, 0}, num_x, num_y, 1);
+		{-sim_ports.dimensions[port_num].width / 2 + 0.1, -sim_ports.dimensions[port_num].height / 2 + 0.1, 0,
+		sim_ports.dimensions[port_num].width / 2 - 0.1, sim_ports.dimensions[port_num].height / 2 - 0.1, 0}, num_x, num_y, 1);
 	for (const auto& p : points)
 	{
 		for (const auto& e : sim_ports.elements[port_num])
