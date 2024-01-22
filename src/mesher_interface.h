@@ -6,7 +6,7 @@
 namespace mesher_interface {
 	void initialize();
 
-	// Loads file of BREP, STEP or IGES format into GMSH environment.
+	// Loads STEP file into GMSH environment.
 	int import_model(const std::string& filename);
 
 	void mesh_model(int mesh_size_min, int mesh_size_max);
@@ -27,21 +27,21 @@ namespace mesher_interface {
 	tet assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4);
 	std::vector<tet> get_all_volume_elems();
 
-	int get_surface_from_com(point);
-	std::vector<int> get_surface_from_com(std::vector<point> coms);
+	int get_surface_from_com(point_3d);
+	std::vector<int> get_surface_from_com(std::vector<point_3d> coms);
 
 	tri assemble_tri(size_t n1, size_t n2, size_t n3);
 	std::vector<tri> get_surface_elems_by_id(int id);
 	std::vector<std::vector<tri>> get_surface_elems_by_id(std::vector<int> ids);
 
-	size_t get_element_by_coordinate(point points, int dim);
-	std::vector<size_t> get_elements_by_coordinate(std::vector<point> points, int dim);
+	size_t get_element_by_coordinate(point_3d points, int dim);
+	std::vector<size_t> get_elements_by_coordinate(std::vector<point_3d> points, int dim);
 
-	dimensions get_surface_dimensions(int id);
-	std::vector <dimensions> get_surface_dimensions(std::vector<int> id);
+	rectangle get_surface_bounds(int id);
+	std::vector <rectangle> get_surface_bounds(std::vector<int> id);
 
-	parameterized_surface_point parameterize_on_surface(point coord, int id);
-	std::vector<parameterized_surface_point> parameterize_on_surface(std::vector <point> coord, int id);
+	point_2d parameterize_on_surface(point_3d coord, int id);
+	std::vector<point_2d> parameterize_on_surface(std::vector <point_3d> coord, int id);
 
 	void parameterize_surface_nodes(std::vector<node>& nodes, int surface_id, const std::vector<tri> elements);
 	void parameterize_surface_nodes(std::vector<node>& nodes, std::vector <int> surface_id, const std::vector<std::vector<tri>> elements);

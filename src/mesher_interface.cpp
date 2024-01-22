@@ -191,7 +191,7 @@ std::vector<tet> mesher_interface::get_all_volume_elems()
     return elems_to_return;
 }
 
-int mesher_interface::get_surface_from_com(point p)
+int mesher_interface::get_surface_from_com(point_3d p)
 {
     std::vector<std::pair<int, int>> entities;
     gmsh::model::occ::getEntities(entities, 2);
@@ -208,7 +208,7 @@ int mesher_interface::get_surface_from_com(point p)
     return -1;
 }
 
-std::vector<int> mesher_interface::get_surface_from_com(std::vector<point> coms)
+std::vector<int> mesher_interface::get_surface_from_com(std::vector<point_3d> coms)
 {
     std::vector<int> ids;
 
@@ -281,7 +281,7 @@ std::vector<std::vector<tri>> mesher_interface::get_surface_elems_by_id(std::vec
     return elems_to_return;
 }
 
-size_t mesher_interface::get_element_by_coordinate(point p, int dim)
+size_t mesher_interface::get_element_by_coordinate(point_3d p, int dim)
 {
     double u, v, w;
     size_t element_tag;
@@ -291,7 +291,7 @@ size_t mesher_interface::get_element_by_coordinate(point p, int dim)
     return element_tag;
 }
 
-std::vector<size_t> mesher_interface::get_elements_by_coordinate(std::vector<point> points, int dim)
+std::vector<size_t> mesher_interface::get_elements_by_coordinate(std::vector<point_3d> points, int dim)
 {
     std::vector<size_t> elements;
     elements.reserve(points.size());
@@ -302,36 +302,34 @@ std::vector<size_t> mesher_interface::get_elements_by_coordinate(std::vector<poi
     return elements;
 }
 
-dimensions mesher_interface::get_surface_dimensions(int id)
+rectangle mesher_interface::get_surface_bounds(int id)
 {
     std::vector<double> min;
     std::vector<double> max;
     gmsh::model::getParametrizationBounds(2, id, min, max);
-    double width = max[0] - min[0];
-    double height = max[1] - min[1];
-    return { width, height };
+    return { min[0], min[1], max[0], max[1] };
 }
 
-std::vector<dimensions> mesher_interface::get_surface_dimensions(std::vector<int> id)
+std::vector<rectangle> mesher_interface::get_surface_bounds(std::vector<int> id)
 {
-    std::vector<dimensions> dim;
+    std::vector<rectangle> dim;
     for (auto i : id)
     {
-        dim.push_back(get_surface_dimensions(i));
+        dim.push_back(get_surface_bounds(i));
     }
     return dim;
 }
 
-parameterized_surface_point mesher_interface::parameterize_on_surface(point coord, int id)
+point_2d mesher_interface::parameterize_on_surface(point_3d coord, int id)
 {
     std::vector<double> param_coords;
     gmsh::model::getParametrization(2, id, { coord.x, coord.y, coord.z }, param_coords);
     return { param_coords[0], param_coords[1] };
 }
 
-std::vector<parameterized_surface_point> mesher_interface::parameterize_on_surface(std::vector <point> coord, int id)
+std::vector<point_2d> mesher_interface::parameterize_on_surface(std::vector <point_3d> coord, int id)
 {
-    std::vector<parameterized_surface_point> param_coords;
+    std::vector<point_2d> param_coords;
     for (const auto &p : coord)
     {
         param_coords.push_back(parameterize_on_surface(p, id));
@@ -345,10 +343,10 @@ void mesher_interface::parameterize_surface_nodes(std::vector<node>& nodes, int 
     {
         for (auto n : e.nodes)
         {
-            if (!nodes[n - 1].parameterized_surface_point)
+            if (!nodes[n - 1].point_2d)
             {
                 auto param_normalized = parameterize_on_surface(nodes[n - 1].coords, surface_id);
-                nodes[n - 1].parameterized_surface_point = { param_normalized.u, param_normalized.v };
+                nodes[n - 1].point_2d = { param_normalized.u, param_normalized.v };
             }
         }
     }
