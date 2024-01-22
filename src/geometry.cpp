@@ -37,9 +37,9 @@ std::vector<point> generate_grid_points(box box, size_t num_x, size_t num_y, siz
 		{
 			for (int z = 0; z < num_z; z++)
 			{
-				double point_x = static_cast<double>(x) / static_cast<double>(num_x - 1) * (box.xmax - box.xmin);
-				double point_y = static_cast<double>(y) / static_cast<double>(num_y - 1) * (box.ymax - box.ymin);
-				double point_z = static_cast<double>(z) / static_cast<double>(num_z - 1) * (box.zmax - box.zmin);
+				double point_x = static_cast<double>(x) / static_cast<double>(num_x - 1) * (box.xmax - box.xmin) + box.xmin;
+				double point_y = static_cast<double>(y) / static_cast<double>(num_y - 1) * (box.ymax - box.ymin) + box.ymin;
+				double point_z = static_cast<double>(z) / static_cast<double>(num_z - 1) * (box.zmax - box.zmin) + box.zmin;
 				points.push_back({ point_x, point_y, point_z });
 			}
 		}
