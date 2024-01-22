@@ -39,6 +39,11 @@ namespace fem
 
 	namespace _3d
 	{
+		Eigen::Matrix<double, 4, 4> simplex_coefficients(const Eigen::Matrix<double, 4, 3>& coords);
+		Eigen::Vector3d lambda(const Eigen::Vector3d& coords, const Eigen::Matrix<double, 4, 4>& simplex_coeff);
+		Eigen::Matrix<double, 4, 3> nabla_lambda(const Eigen::Matrix<double, 4, 4>& simplex_coeff);
+		double volume(const Eigen::Matrix<double, 4, 3>& coords);
+
 		namespace mixed_order
 		{
 
