@@ -10,6 +10,8 @@ const int FREE_NODE = -1;
 struct rectangle
 {
 	double xmin, ymin, xmax, ymax;
+
+	void add_padding(double x, double y);
 };
 
 class box
