@@ -40,33 +40,15 @@ void sim::solve_ports()
 std::vector<Eigen::Vector2d> sim::eval_port(size_t port_num, size_t num_x, size_t num_y)
 {
 	std::vector<Eigen::Vector2d> field;
-	auto points = generate_grid_points(sim_ports.bounds[0], num_x, num_y);
+	auto bounds = sim_ports.bounds[port_num];
+	bounds.add_padding(-1, -1);
+	auto points = generate_grid_points(bounds, num_x, num_y);
 	for (const auto& p : points)
 	{
-		for (const auto& e : sim_ports.elements[port_num])
-		{
-			Eigen::Matrix<double, 3, 2> coords;
-			coords <<
-				nodes[e.nodes[0] - 1].point_2d->u, nodes[e.nodes[0] - 1].point_2d->v,
-				nodes[e.nodes[1] - 1].point_2d->u, nodes[e.nodes[1] - 1].point_2d->v,
-				nodes[e.nodes[2] - 1].point_2d->u, nodes[e.nodes[2] - 1].point_2d->v;
-
-			auto coefficients = fem::_2d::simplex_coefficients(coords);
-			Eigen::Vector2d coord;
-			coord << p.u, p.v;
-
-			auto lambda = fem::_2d::lambda(coord, coefficients);
-
-			if (lambda(0) >= 0 && lambda(0) <= 1 &&
-				lambda(1) >= 0 && lambda(1) <= 1 &&
-				lambda(2) >= 0 && lambda(2) <= 1) {
-
-				field.push_back(fem::_2d::mixed_order::eval_elem(nodes, e, { p.u, p.v }, port_dof_maps[port_num], port_eigen_vectors[port_num].col(0)));
-				std::cout << p.u << " " << p.v << " ";
-				std::cout << field.back().transpose()(0) << " " << field.back().transpose()(1) << std::endl;
-				break;
-			}
-		}
+		auto e = mesher_interface::get_surface_element_by_parametric_coordinate(p, sim_ports.entity_ids[port_num]);
+		field.push_back(fem::_2d::mixed_order::eval_elem(nodes, e, { p.u, p.v }, port_dof_maps[port_num], port_eigen_vectors[port_num].col(0)));
+		std::cout << p.u << " " << p.v << " ";
+		std::cout << field.back().transpose()(0) << " " << field.back().transpose()(1) << std::endl;
 	}
 	return field;
 }

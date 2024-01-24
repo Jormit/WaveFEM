@@ -1,5 +1,13 @@
 #include "geometry.h"
 
+void rectangle::add_padding(double x, double y)
+{
+	xmin -= x;
+	ymin -= y;
+	xmax += x;
+	ymax += y;
+}
+
 void box::add_padding(double x, double y, double z)
 {
 	xmin -= x;
