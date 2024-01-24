@@ -31,11 +31,12 @@ namespace mesher_interface {
 	std::vector<int> get_surface_from_com(std::vector<point_3d> coms);
 
 	tri assemble_tri(size_t n1, size_t n2, size_t n3);
-	std::vector<tri> get_surface_elems_by_id(int id);
-	std::vector<std::vector<tri>> get_surface_elems_by_id(std::vector<int> ids);
+	std::vector<tri> get_surface_elems(int id);
+	std::vector<std::vector<tri>> get_surface_elems(std::vector<int> ids);
 
 	size_t get_element_by_coordinate(point_3d points, int dim);
-	std::vector<size_t> get_elements_by_coordinate(std::vector<point_3d> points, int dim);
+	std::vector<size_t> get_element_by_coordinate(std::vector<point_3d> points, int dim);
+	size_t get_element_by_parametric_coordinate(point_2d point, int id);
 
 	rectangle get_surface_bounds(int id);
 	std::vector <rectangle> get_surface_bounds(std::vector<int> id);

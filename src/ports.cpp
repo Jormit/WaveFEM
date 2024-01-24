@@ -22,7 +22,7 @@ ports::ports(std::string filename)
 	}
 	this->port_points = port_points;
 	entity_ids = mesher_interface::get_surface_from_com(port_points);
-	elements = mesher_interface::get_surface_elems_by_id(entity_ids);
+	elements = mesher_interface::get_surface_elems(entity_ids);
 	bounds = mesher_interface::get_surface_bounds(entity_ids);
 }
 
@@ -30,6 +30,6 @@ ports::ports(std::vector<point_3d> points)
 {
 	port_points = points;
 	entity_ids = mesher_interface::get_surface_from_com(port_points);
-	elements = mesher_interface::get_surface_elems_by_id(entity_ids);
+	elements = mesher_interface::get_surface_elems(entity_ids);
 	bounds = mesher_interface::get_surface_bounds(entity_ids);
 }
