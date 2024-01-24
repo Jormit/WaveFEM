@@ -249,7 +249,7 @@ tri mesher_interface::assemble_tri(size_t n1, size_t n2, size_t n3)
     return { nodes, {edge_tags[0], edge_tags[1], edge_tags[2]}, face_tags[0], 1 };
 }
 
-std::vector<tri> mesher_interface::get_surface_elems_by_id(int id)
+std::vector<tri> mesher_interface::get_surface_elems(int id)
 {
     std::vector<int> elementTypes;
     std::vector<std::vector<std::size_t>> elementTags;
@@ -271,12 +271,12 @@ std::vector<tri> mesher_interface::get_surface_elems_by_id(int id)
     return elems_to_return;
 }
 
-std::vector<std::vector<tri>> mesher_interface::get_surface_elems_by_id(std::vector<int> ids)
+std::vector<std::vector<tri>> mesher_interface::get_surface_elems(std::vector<int> ids)
 {
     std::vector<std::vector<tri>> elems_to_return;
     for (auto id : ids)
     {
-        elems_to_return.push_back(get_surface_elems_by_id(id));
+        elems_to_return.push_back(get_surface_elems(id));
     }
     return elems_to_return;
 }
@@ -291,7 +291,7 @@ size_t mesher_interface::get_element_by_coordinate(point_3d p, int dim)
     return element_tag;
 }
 
-std::vector<size_t> mesher_interface::get_elements_by_coordinate(std::vector<point_3d> points, int dim)
+std::vector<size_t> mesher_interface::get_element_by_coordinate(std::vector<point_3d> points, int dim)
 {
     std::vector<size_t> elements;
     elements.reserve(points.size());
@@ -300,6 +300,13 @@ std::vector<size_t> mesher_interface::get_elements_by_coordinate(std::vector<poi
         elements.push_back(get_element_by_coordinate(p, 2));
     }
     return elements;
+}
+
+size_t mesher_interface::get_element_by_parametric_coordinate(point_2d point, int id)
+{
+    std::vector<double> coord;
+    gmsh::model::getValue(2, id, {point.u, point.v}, coord);
+    return get_element_by_coordinate({ coord[0], coord[1], coord[2] }, 2);
 }
 
 rectangle mesher_interface::get_surface_bounds(int id)
