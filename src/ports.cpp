@@ -33,3 +33,17 @@ ports::ports(std::vector<point_3d> points)
 	elements = mesher_interface::get_surface_elems(entity_ids);
 	bounds = mesher_interface::get_surface_bounds(entity_ids);
 }
+
+void ports::update_node_tags(std::vector<node>& nodes)
+{
+	for (int p = 0; p < entity_ids.size(); p++)
+	{
+		for (const auto& e : elements[p])
+		{
+			for (auto n : e.nodes)
+			{
+				nodes[n - 1].type_3d = p + 1;
+			}
+		}
+	}	
+}
