@@ -94,5 +94,6 @@ fem::_3d::mixed_order::S_T(const Eigen::Matrix<double, 4, 3>& coords)
 		}
 	}
 
-	return { S, T };
+	auto volume = fem::_3d::volume(coords);
+	return { volume * S, volume * T };
 }
