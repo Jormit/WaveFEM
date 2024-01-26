@@ -59,6 +59,8 @@ struct tet
 	std::array<size_t, 6> edges;
 	std::array<size_t, 4> faces;
 	size_t tag;
+	std::array<size_t, 2> get_edge_nodes(size_t edge) const;
+	std::array<size_t, 3> get_face_nodes(size_t face) const;
 };
 
 std::vector<point_3d> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z);
