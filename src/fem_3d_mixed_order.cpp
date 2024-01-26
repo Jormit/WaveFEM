@@ -213,14 +213,14 @@ std::pair<size_t, size_t> fem::_3d::mixed_order::global_dof_pair(const tet& elem
 	case 9:  return { elem.edges[3], 2 };
 	case 10: return { elem.edges[4], 2 };
 	case 11: return { elem.edges[5], 2 };
-	case 12: return { elem.faces[0], 4 };
-	case 13: return { elem.faces[1], 4 };
-	case 14: return { elem.faces[2], 4 };
-	case 15: return { elem.faces[3], 4 };
-	case 16: return { elem.faces[0], 5 };
-	case 17: return { elem.faces[1], 5 };
-	case 18: return { elem.faces[2], 5 };
-	case 19: return { elem.faces[3], 5 };
+	case 12: return { elem.faces[0], 3 };
+	case 13: return { elem.faces[1], 3 };
+	case 14: return { elem.faces[2], 3 };
+	case 15: return { elem.faces[3], 3 };
+	case 16: return { elem.faces[0], 4 };
+	case 17: return { elem.faces[1], 4 };
+	case 18: return { elem.faces[2], 4 };
+	case 19: return { elem.faces[3], 4 };
 	}
 
 	return std::pair<size_t, size_t>();
@@ -295,6 +295,8 @@ Eigen::VectorXcd  fem::_3d::mixed_order::assemble_b(const std::vector<node>& nod
 	size_t>& excitation_dof_map, const Eigen::VectorXd& excitation, std::complex<double> ki)
 {
 	Eigen::VectorXcd b(dof_map.size());
+	b.setZero();
+
 	for (const auto& e : surface_elems)
 	{
 		Eigen::Matrix<double, 3, 2> coords;
