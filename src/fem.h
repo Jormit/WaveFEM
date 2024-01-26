@@ -8,7 +8,7 @@
 
 namespace fem
 {
-    std::pair<Eigen::VectorXd, Eigen::MatrixXd> solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T);
+	std::pair<Eigen::VectorXd, Eigen::MatrixXd> solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T);
 
 	namespace _2d
 	{
@@ -57,9 +57,9 @@ namespace fem
 
 			Eigen::Matrix<double, 8, 8> B(const Eigen::Matrix<double, 3, 2>& coords);
 
-			Eigen::Matrix<double, 8, 1> b(const tri& e, const Eigen::Matrix<double, 3, 2>& coords, 
+			Eigen::Matrix<double, 8, 1> b(const tri& e, const Eigen::Matrix<double, 3, 2>& coords,
 				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution);
-			
+
 			std::map<std::pair<size_t, size_t>, size_t> dof_map(const std::vector<node>& nodes, const std::vector<tet>& elems);
 			std::pair<size_t, size_t> global_dof_pair(const tet& elem, const size_t& dof_num);
 
@@ -67,7 +67,7 @@ namespace fem
 				const std::vector<tri>& surface_elems, const std::map<std::pair<size_t, size_t>, size_t>& dof_map,
 				std::complex<double> ki, std::complex<double> gamma);
 
-			Eigen::VectorXcd assemble_b(const std::vector<node>& nodes, const std::vector<tri>& surface_elems, 
+			Eigen::VectorXcd assemble_b(const std::vector<node>& nodes, const std::vector<tri>& surface_elems,
 				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const std::map<std::pair<size_t, size_t>,
 				size_t>& excitation_dof_map, const Eigen::VectorXd& excitation, std::complex<double> ki);
 

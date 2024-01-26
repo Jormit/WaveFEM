@@ -45,5 +45,5 @@ void ports::update_node_tags(std::vector<node>& nodes)
 				nodes[n - 1].type_3d = p + 1;
 			}
 		}
-	}	
+	}
 }

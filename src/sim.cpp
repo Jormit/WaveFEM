@@ -59,7 +59,7 @@ void sim::solve_full()
 	{
 		auto b = fem::_3d::mixed_order::assemble_b(nodes, sim_ports.elements[p], dof_map, port_dof_maps[p], port_eigen_vectors[p], k);
 		Eigen::VectorXcd x = solver.solve(b);
-	}	
+	}
 }
 
 std::vector<Eigen::Vector2d> sim::eval_port(size_t port_num, size_t num_x, size_t num_y)

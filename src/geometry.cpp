@@ -18,7 +18,7 @@ void box::add_padding(double x, double y, double z)
 	zmax += z;
 }
 
-std::ostream& operator << (std::ostream& os, box const& b) 
+std::ostream& operator << (std::ostream& os, box const& b)
 {
 	return os
 		<< "xmin: " << b.xmin << " ymin: " << b.ymin
@@ -26,7 +26,7 @@ std::ostream& operator << (std::ostream& os, box const& b)
 		<< " ymax: " << b.ymax << " zmax: " << b.zmax;
 }
 
-std::array<size_t, 2> tri::get_edge_nodes(size_t edge) const 
+std::array<size_t, 2> tri::get_edge_nodes(size_t edge) const
 {
 	switch (edge) {
 	case 0: return { nodes[0], nodes[1] };
@@ -62,10 +62,10 @@ std::vector<point_2d> generate_grid_points(rectangle rect, size_t num_x, size_t 
 	for (int x = 0; x < num_x; x++)
 	{
 		for (int y = 0; y < num_y; y++)
-		{			
-				double point_x = static_cast<double>(x) / static_cast<double>(num_x - 1) * (rect.xmax - rect.xmin) + rect.xmin;
-				double point_y = static_cast<double>(y) / static_cast<double>(num_y - 1) * (rect.ymax - rect.ymin) + rect.ymin;
-				points.push_back({ point_x, point_y});
+		{
+			double point_x = static_cast<double>(x) / static_cast<double>(num_x - 1) * (rect.xmax - rect.xmin) + rect.xmin;
+			double point_y = static_cast<double>(y) / static_cast<double>(num_y - 1) * (rect.ymax - rect.ymin) + rect.ymin;
+			points.push_back({ point_x, point_y });
 		}
 	}
 	return points;

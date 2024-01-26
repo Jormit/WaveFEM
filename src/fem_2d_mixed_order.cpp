@@ -3,7 +3,7 @@
 #include "mesher_interface.h"
 #include <iostream>
 
-Eigen::Matrix<double, 8, 2> fem::_2d::mixed_order::basis(const Eigen::Vector3d & lambda, const Eigen::Matrix<double, 3, 2>&nabla_lambda)
+Eigen::Matrix<double, 8, 2> fem::_2d::mixed_order::basis(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda)
 {
 	Eigen::Matrix<double, 8, 2> func;
 
@@ -77,10 +77,10 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_2d::mixed_order::dof_map(const
 	{
 		for (size_t edge = 0; edge < 3; edge++)
 		{
-			if (!map.contains({ e.edges[edge], 1}))
+			if (!map.contains({ e.edges[edge], 1 }))
 			{
 				auto edge_nodes = e.get_edge_nodes(edge);
-				if (nodes[edge_nodes[0]-1].type_2d != BOUNDARY_NODE || nodes[edge_nodes[1]-1].type_2d != BOUNDARY_NODE)
+				if (nodes[edge_nodes[0] - 1].type_2d != BOUNDARY_NODE || nodes[edge_nodes[1] - 1].type_2d != BOUNDARY_NODE)
 				{
 					map[{e.edges[edge], 1}] = i++;
 					map[{e.edges[edge], 2}] = i++;
@@ -111,9 +111,9 @@ std::pair<size_t, size_t> fem::_2d::mixed_order::global_dof_pair(const tri& elem
 	}
 }
 
-std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>> 
+std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
 fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems,
-	const std::map<std::pair<size_t, size_t>, size_t> & dof_map)
+	const std::map<std::pair<size_t, size_t>, size_t>& dof_map)
 {
 	Eigen::SparseMatrix<double> S_global(dof_map.size(), dof_map.size());
 	Eigen::SparseMatrix<double> T_global(dof_map.size(), dof_map.size());
@@ -171,7 +171,7 @@ Eigen::Vector2d fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes,
 	return eval_elem(e, lambda, nabla_lambda, dof_map, solution);
 }
 
-Eigen::Vector2d fem::_2d::mixed_order::eval_elem(	
+Eigen::Vector2d fem::_2d::mixed_order::eval_elem(
 	const tri& e, const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda,
 	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution)
 {
