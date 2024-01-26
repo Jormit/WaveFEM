@@ -50,6 +50,11 @@ void sim::solve_full()
 	auto surface_elems = helpers::flatten_vector<tri>(sim_ports.elements);
 	auto A = fem::_3d::mixed_order::assemble_A(nodes, volume_elems, surface_elems, dof_map, k, { 0, k });
 
+	for (int p = 0; p < sim_ports.elements.size(); p++)
+	{
+		auto b = fem::_3d::mixed_order::assemble_b(nodes, sim_ports.elements[p], dof_map, port_dof_maps[p], port_eigen_vectors[p], k);
+	}
+
 	
 }
 

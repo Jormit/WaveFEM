@@ -285,5 +285,36 @@ Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(cons
 		}
 	}
 
+	A.makeCompressed();
+
 	return A;
+}
+
+Eigen::VectorXcd  fem::_3d::mixed_order::assemble_b(const std::vector<node>& nodes, const std::vector<tri>& surface_elems,
+	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const std::map<std::pair<size_t, size_t>,
+	size_t>& excitation_dof_map, const Eigen::VectorXd& excitation, std::complex<double> ki)
+{
+	Eigen::VectorXcd b(dof_map.size());
+	for (const auto& e : surface_elems)
+	{
+		Eigen::Matrix<double, 3, 2> coords;
+		coords <<
+			nodes[e.nodes[0] - 1].point_2d->u, nodes[e.nodes[0] - 1].point_2d->v,
+			nodes[e.nodes[1] - 1].point_2d->u, nodes[e.nodes[1] - 1].point_2d->v,
+			nodes[e.nodes[2] - 1].point_2d->u, nodes[e.nodes[2] - 1].point_2d->v;
+
+		auto b_local = fem::_3d::mixed_order::b(e, coords, excitation_dof_map, excitation);
+
+		for (int local_dof_i = 0; local_dof_i < 8; local_dof_i++)
+		{
+			auto global_dof_pair_i = fem::_2d::mixed_order::global_dof_pair(e, local_dof_i);
+			if (!dof_map.contains(global_dof_pair_i)) continue;
+			auto global_dof_i = dof_map.at(global_dof_pair_i);
+
+			b(global_dof_i) = b(global_dof_i) - 2.0 * std::complex<double>({ 0,1 }) * ki * b_local(local_dof_i);
+
+		}
+	}
+
+	return b;
 }

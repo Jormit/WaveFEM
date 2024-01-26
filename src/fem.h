@@ -67,6 +67,10 @@ namespace fem
 				const std::vector<tri>& surface_elems, const std::map<std::pair<size_t, size_t>, size_t>& dof_map,
 				std::complex<double> ki, std::complex<double> gamma);
 
+			Eigen::VectorXcd assemble_b(const std::vector<node>& nodes, const std::vector<tri>& surface_elems, 
+				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const std::map<std::pair<size_t, size_t>,
+				size_t>& excitation_dof_map, const Eigen::VectorXd& excitation, std::complex<double> ki);
+
 		}
 	}
 
