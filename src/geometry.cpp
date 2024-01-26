@@ -70,3 +70,25 @@ std::vector<point_2d> generate_grid_points(rectangle rect, size_t num_x, size_t 
 	}
 	return points;
 }
+
+std::array<size_t, 2> tet::get_edge_nodes(size_t edge) const
+{
+	switch (edge) {
+	case 0: return { nodes[0], nodes[1] };
+	case 1: return { nodes[0], nodes[2] };
+	case 2: return { nodes[0], nodes[3] };
+	case 3: return { nodes[1], nodes[2] };
+	case 4: return { nodes[1], nodes[3] };
+	case 5: return { nodes[2], nodes[3] };
+	}
+}
+
+std::array<size_t, 3> tet::get_face_nodes(size_t face) const
+{
+	switch (face) {
+	case 0: return { nodes[0], nodes[1], nodes[2] };
+	case 1: return { nodes[0], nodes[1], nodes[3] };
+	case 2: return { nodes[0], nodes[2], nodes[3] };
+	case 3: return { nodes[1], nodes[2], nodes[3] };
+	}
+}

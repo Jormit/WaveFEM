@@ -21,16 +21,17 @@ Eigen::Matrix<double, 20, 3> fem::_3d::mixed_order::basis(const Eigen::Vector4d 
 	func.row(10) = lambda(1) * nabla_lambda.row(3) + lambda(3) * nabla_lambda.row(1);
 	func.row(11) = lambda(2) * nabla_lambda.row(3) + lambda(3) * nabla_lambda.row(2);
 
-	// LT/QN Face Functions (consecutive functions belong to same face).
+	// LT/QN Face Functions
 	func.row(12) = lambda(1) * lambda(2) * nabla_lambda.row(0) + lambda(0) * lambda(2) * nabla_lambda.row(1) - 2 * lambda(0) * lambda(1) * nabla_lambda.row(2);
-	func.row(13) = lambda(2) * lambda(0) * nabla_lambda.row(1) + lambda(1) * lambda(0) * nabla_lambda.row(2) - 2 * lambda(1) * lambda(2) * nabla_lambda.row(0);
-	func.row(14) = lambda(1) * lambda(3) * nabla_lambda.row(0) + lambda(0) * lambda(3) * nabla_lambda.row(1) - 2 * lambda(0) * lambda(1) * nabla_lambda.row(3);
-	func.row(15) = lambda(3) * lambda(0) * nabla_lambda.row(1) + lambda(1) * lambda(0) * nabla_lambda.row(3) - 2 * lambda(1) * lambda(3) * nabla_lambda.row(0);
-	func.row(16) = lambda(2) * lambda(3) * nabla_lambda.row(0) + lambda(0) * lambda(3) * nabla_lambda.row(2) - 2 * lambda(0) * lambda(2) * nabla_lambda.row(3);
-	func.row(17) = lambda(3) * lambda(0) * nabla_lambda.row(2) + lambda(2) * lambda(0) * nabla_lambda.row(3) - 2 * lambda(2) * lambda(3) * nabla_lambda.row(0);
-	func.row(16) = lambda(2) * lambda(3) * nabla_lambda.row(1) + lambda(1) * lambda(3) * nabla_lambda.row(2) - 2 * lambda(1) * lambda(2) * nabla_lambda.row(3);
-	func.row(17) = lambda(3) * lambda(1) * nabla_lambda.row(2) + lambda(2) * lambda(0) * nabla_lambda.row(3) - 2 * lambda(2) * lambda(3) * nabla_lambda.row(1);
+	func.row(13) = lambda(1) * lambda(3) * nabla_lambda.row(0) + lambda(0) * lambda(3) * nabla_lambda.row(1) - 2 * lambda(0) * lambda(1) * nabla_lambda.row(3);
+	func.row(14) = lambda(2) * lambda(3) * nabla_lambda.row(0) + lambda(0) * lambda(3) * nabla_lambda.row(2) - 2 * lambda(0) * lambda(2) * nabla_lambda.row(3);
+	func.row(15) = lambda(2) * lambda(3) * nabla_lambda.row(1) + lambda(1) * lambda(3) * nabla_lambda.row(2) - 2 * lambda(1) * lambda(2) * nabla_lambda.row(3);
 
+	func.row(16) = lambda(2) * lambda(0) * nabla_lambda.row(1) + lambda(1) * lambda(0) * nabla_lambda.row(2) - 2 * lambda(1) * lambda(2) * nabla_lambda.row(0);
+	func.row(17) = lambda(3) * lambda(0) * nabla_lambda.row(1) + lambda(1) * lambda(0) * nabla_lambda.row(3) - 2 * lambda(1) * lambda(3) * nabla_lambda.row(0);
+	func.row(18) = lambda(3) * lambda(0) * nabla_lambda.row(2) + lambda(2) * lambda(0) * nabla_lambda.row(3) - 2 * lambda(2) * lambda(3) * nabla_lambda.row(0);
+	func.row(19) = lambda(3) * lambda(1) * nabla_lambda.row(2) + lambda(2) * lambda(0) * nabla_lambda.row(3) - 2 * lambda(2) * lambda(3) * nabla_lambda.row(1);
+	
 	return func;
 }
 
@@ -54,15 +55,16 @@ Eigen::Matrix<double, 20, 3> fem::_3d::mixed_order::basis_curl(const Eigen::Vect
 	func.row(10) = Eigen::Vector3d::Zero();
 	func.row(11) = Eigen::Vector3d::Zero();
 
-	// LT/QN Face Functions (consecutive functions belong to same face).
+	// LT/QN Face Functions
 	func.row(12) = - 3 * lambda(1) * nabla_lambda.row(0).cross(nabla_lambda.row(2)) - 3 * lambda(0) * nabla_lambda.row(1).cross(nabla_lambda.row(2));
-	func.row(13) = - 3 * lambda(2) * nabla_lambda.row(1).cross(nabla_lambda.row(0)) - 3 * lambda(1) * nabla_lambda.row(2).cross(nabla_lambda.row(0));
-	func.row(14) = - 3 * lambda(1) * nabla_lambda.row(0).cross(nabla_lambda.row(3)) - 3 * lambda(0) * nabla_lambda.row(1).cross(nabla_lambda.row(3));
-	func.row(15) = - 3 * lambda(3) * nabla_lambda.row(1).cross(nabla_lambda.row(0)) - 3 * lambda(1) * nabla_lambda.row(3).cross(nabla_lambda.row(0));
-	func.row(16) = - 3 * lambda(2) * nabla_lambda.row(0).cross(nabla_lambda.row(3)) - 3 * lambda(0) * nabla_lambda.row(2).cross(nabla_lambda.row(3));
-	func.row(17) = - 3 * lambda(3) * nabla_lambda.row(2).cross(nabla_lambda.row(0)) - 3 * lambda(2) * nabla_lambda.row(3).cross(nabla_lambda.row(0));
-	func.row(18) = - 3 * lambda(2) * nabla_lambda.row(1).cross(nabla_lambda.row(3)) - 3 * lambda(1) * nabla_lambda.row(2).cross(nabla_lambda.row(3));
-	func.row(19) = - 3 * lambda(3) * nabla_lambda.row(2).cross(nabla_lambda.row(1)) - 3 * lambda(2) * nabla_lambda.row(3).cross(nabla_lambda.row(1));
+	func.row(13) = - 3 * lambda(1) * nabla_lambda.row(0).cross(nabla_lambda.row(3)) - 3 * lambda(0) * nabla_lambda.row(1).cross(nabla_lambda.row(3));
+	func.row(14) = - 3 * lambda(2) * nabla_lambda.row(0).cross(nabla_lambda.row(3)) - 3 * lambda(0) * nabla_lambda.row(2).cross(nabla_lambda.row(3));
+	func.row(15) = - 3 * lambda(2) * nabla_lambda.row(1).cross(nabla_lambda.row(3)) - 3 * lambda(1) * nabla_lambda.row(2).cross(nabla_lambda.row(3));
+
+	func.row(16) = -3 * lambda(2) * nabla_lambda.row(1).cross(nabla_lambda.row(0)) - 3 * lambda(1) * nabla_lambda.row(2).cross(nabla_lambda.row(0));
+	func.row(17) = -3 * lambda(3) * nabla_lambda.row(1).cross(nabla_lambda.row(0)) - 3 * lambda(1) * nabla_lambda.row(3).cross(nabla_lambda.row(0));
+	func.row(18) = -3 * lambda(3) * nabla_lambda.row(2).cross(nabla_lambda.row(0)) - 3 * lambda(2) * nabla_lambda.row(3).cross(nabla_lambda.row(0));
+	func.row(19) = -3 * lambda(3) * nabla_lambda.row(2).cross(nabla_lambda.row(1)) - 3 * lambda(2) * nabla_lambda.row(3).cross(nabla_lambda.row(1));
 
 	return func;
 }
@@ -155,3 +157,130 @@ Eigen::Matrix<double, 8, 1> fem::_3d::mixed_order::b(
 	return b * area;
 }
 
+std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const std::vector<node>& nodes, const std::vector<tet>& elems)
+{
+	int i = 0;
+	std::map<std::pair<size_t, size_t>, size_t> map;
+	for (const auto& e : elems)
+	{
+		for (size_t edge = 0; edge < 6; edge++)
+		{
+			if (!map.contains({ e.edges[edge], 1 }))
+			{
+				auto edge_nodes = e.get_edge_nodes(edge);
+				if (nodes[edge_nodes[0] - 1].type_3d != BOUNDARY_NODE || nodes[edge_nodes[1] - 1].type_3d != BOUNDARY_NODE)
+				{
+					map[{e.edges[edge], 1}] = i++;
+					map[{e.edges[edge], 2}] = i++;
+				}
+			}
+		}
+
+		for (size_t face = 0; face < 4; face++)
+		{
+			if (!map.contains({ e.faces[face], 3}))
+			{
+				auto face_nodes = e.get_face_nodes(face);
+
+				if (nodes[face_nodes[0] - 1].type_3d != BOUNDARY_NODE || 
+					nodes[face_nodes[1] - 1].type_3d != BOUNDARY_NODE || 
+					nodes[face_nodes[2] - 1].type_3d != BOUNDARY_NODE)
+				{
+					map[{e.faces[face], 3}] = i++;
+					map[{e.faces[face], 4}] = i++;
+				}
+			}
+		}		
+	}
+	return map;
+}
+
+std::pair<size_t, size_t> fem::_3d::mixed_order::global_dof_pair(const tet& elem, const size_t& dof_num)
+{
+	switch (dof_num) {
+	case 0:  return { elem.edges[0], 1 };
+	case 1:  return { elem.edges[1], 1 };
+	case 2:  return { elem.edges[2], 1 };
+	case 3:  return { elem.edges[3], 1 };
+	case 4:  return { elem.edges[4], 1 };
+	case 5:  return { elem.edges[5], 1 };
+	case 6:  return { elem.edges[0], 2 };
+	case 7:  return { elem.edges[1], 2 };
+	case 8:  return { elem.edges[2], 2 };
+	case 9:  return { elem.edges[3], 2 };
+	case 10: return { elem.edges[4], 2 };
+	case 11: return { elem.edges[5], 2 };
+	case 12: return { elem.faces[0], 4 };
+	case 13: return { elem.faces[1], 4 };
+	case 14: return { elem.faces[2], 4 };
+	case 15: return { elem.faces[3], 4 };
+	case 16: return { elem.faces[0], 5 };
+	case 17: return { elem.faces[1], 5 };
+	case 18: return { elem.faces[2], 5 };
+	case 19: return { elem.faces[3], 5 };
+	}
+
+	return std::pair<size_t, size_t>();
+}
+
+Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(const std::vector<node>& nodes, const std::vector<tet>& elems,
+	const std::vector<tri>& surface_elems, const std::map<std::pair<size_t, size_t>, size_t>& dof_map, std::complex<double> ki, std::complex<double> gamma)
+{
+	Eigen::SparseMatrix<std::complex<double>> A(dof_map.size(), dof_map.size());
+
+	for (const auto& e : elems)
+	{
+		Eigen::Matrix<double, 4, 3> coords;
+		coords <<
+			nodes[e.nodes[0] - 1].coords.x, nodes[e.nodes[0] - 1].coords.y, nodes[e.nodes[0] - 1].coords.z,
+			nodes[e.nodes[1] - 1].coords.x, nodes[e.nodes[1] - 1].coords.y, nodes[e.nodes[1] - 1].coords.z,
+			nodes[e.nodes[2] - 1].coords.x, nodes[e.nodes[2] - 1].coords.y, nodes[e.nodes[2] - 1].coords.z,
+			nodes[e.nodes[3] - 1].coords.x, nodes[e.nodes[3] - 1].coords.y, nodes[e.nodes[3] - 1].coords.z;
+
+		Eigen::Matrix<double, 20, 20> S_local, T_local;
+		std::tie(S_local, T_local) = S_T(coords);
+
+		for (int local_dof_i = 0; local_dof_i < 8; local_dof_i++)
+		{
+			auto global_dof_pair_i = global_dof_pair(e, local_dof_i);
+			if (!dof_map.contains(global_dof_pair_i)) continue;
+			auto global_dof_i = dof_map.at(global_dof_pair_i);
+			for (int local_dof_j = 0; local_dof_j < 8; local_dof_j++)
+			{
+				auto global_dof_pair_j = global_dof_pair(e, local_dof_j);
+				if (!dof_map.contains(global_dof_pair_j)) continue;
+				auto global_dof_j = dof_map.at(global_dof_pair_j);
+
+				A.coeffRef(global_dof_i, global_dof_j) = A.coeff(global_dof_i, global_dof_j) + S_local(local_dof_i, local_dof_j) - ki * ki * T_local(local_dof_i, local_dof_j);
+			}
+		}
+	}
+
+	for (const auto& e : surface_elems)
+	{
+		Eigen::Matrix<double, 3, 2> coords;
+		coords <<
+			nodes[e.nodes[0] - 1].point_2d->u, nodes[e.nodes[0] - 1].point_2d->v,
+			nodes[e.nodes[1] - 1].point_2d->u, nodes[e.nodes[1] - 1].point_2d->v,
+			nodes[e.nodes[2] - 1].point_2d->u, nodes[e.nodes[2] - 1].point_2d->v;
+
+		auto B_local = B(coords);
+
+		for (int local_dof_i = 0; local_dof_i < 8; local_dof_i++)
+		{
+			auto global_dof_pair_i = fem::_2d::mixed_order::global_dof_pair(e, local_dof_i);
+			if (!dof_map.contains(global_dof_pair_i)) continue;
+			auto global_dof_i = dof_map.at(global_dof_pair_i);
+			for (int local_dof_j = 0; local_dof_j < 8; local_dof_j++)
+			{
+				auto global_dof_pair_j = fem::_2d::mixed_order::global_dof_pair(e, local_dof_j);
+				if (!dof_map.contains(global_dof_pair_j)) continue;
+				auto global_dof_j = dof_map.at(global_dof_pair_j);
+
+				A.coeffRef(global_dof_i, global_dof_j) = A.coeff(global_dof_i, global_dof_j) + gamma / 2.0 * B_local(local_dof_i, local_dof_j);
+			}
+		}
+	}
+
+	return A;
+}
