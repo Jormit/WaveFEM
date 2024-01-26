@@ -12,8 +12,12 @@ class sim
 {
 public:
 	sim(std::vector<node> nodes, std::vector<tet> volume_elems, ports ports);
+
 	void solve_ports();
+	void solve_full();
+
 	std::vector<Eigen::Vector2d> eval_port(size_t port_num, size_t num_x, size_t num_y);
+
 
 private:
 	// Element information
@@ -23,8 +27,12 @@ private:
 	// Port information
 	ports sim_ports;
 
-	// Results
+	// Port results
 	std::vector<Eigen::VectorXd> port_eigen_wave_numbers;
 	std::vector<Eigen::MatrixXd> port_eigen_vectors;
 	std::vector<std::map<std::pair<size_t, size_t>, size_t>> port_dof_maps;
+
+	// Complete results
+	std::vector<Eigen::VectorXd> full_solutions;
+	std::map<std::pair<size_t, size_t>, size_t> full_dof_map;
 };

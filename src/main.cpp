@@ -27,5 +27,7 @@ int main()
 	sim sim(nodes, volume_elements, ports);
 	sim.solve_ports();	
 	sim.eval_port(0, 10, 10);
+
+	sim.solve_full();
 	return 0;
 }

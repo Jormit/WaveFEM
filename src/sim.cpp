@@ -1,13 +1,15 @@
 #include "sim.h"
 #include "fem.h"
 #include "mesher_interface.h"
+#include "helpers.h"
 
 #include <iostream>
 
 
 sim::sim(std::vector<node> nodes, std::vector<tet> volume_elems, ports ports) :
 	nodes(nodes), volume_elems(volume_elems), sim_ports(ports),
-	port_eigen_vectors(), port_eigen_wave_numbers(), port_dof_maps()
+	port_eigen_vectors(), port_eigen_wave_numbers(), port_dof_maps(),
+	full_solutions(), full_dof_map()
 {
 	mesher_interface::parameterize_surface_nodes(this->nodes, sim_ports.entity_ids, sim_ports.elements);
 	sim_ports.update_node_tags(this->nodes);
@@ -36,6 +38,19 @@ void sim::solve_ports()
 
 		std::cout << port_eigen_wave_numbers.back() << std::endl;
 	}
+}
+
+void sim::solve_full()
+{
+	full_solutions.clear();
+	full_dof_map.clear();
+	double k = 0.003;
+
+	auto dof_map = fem::_3d::mixed_order::dof_map(nodes, volume_elems);
+	auto surface_elems = helpers::flatten_vector<tri>(sim_ports.elements);
+	auto A = fem::_3d::mixed_order::assemble_A(nodes, volume_elems, surface_elems, dof_map, k, { 0, k });
+
+	
 }
 
 std::vector<Eigen::Vector2d> sim::eval_port(size_t port_num, size_t num_x, size_t num_y)
