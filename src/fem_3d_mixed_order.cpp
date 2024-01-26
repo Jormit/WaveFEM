@@ -1,6 +1,8 @@
 #include "fem.h"
 #include "quad.h"
 
+#include <iostream>
+
 Eigen::Matrix<double, 20, 3> fem::_3d::mixed_order::basis(const Eigen::Vector4d & lambda, const Eigen::Matrix<double, 4, 3>&nabla_lambda)
 {
 	Eigen::Matrix<double, 20, 3> func;
@@ -77,6 +79,7 @@ fem::_3d::mixed_order::S_T(const Eigen::Matrix<double, 4, 3>& coords)
 
 	Eigen::Matrix<double, 20, 20> S = Eigen::Matrix<double, 20, 20>::Zero();
 	Eigen::Matrix<double, 20, 20> T = Eigen::Matrix<double, 20, 20>::Zero();
+
 	for (int p = 0; p < 11; p++)
 	{
 		Eigen::Vector4d lambda;
@@ -227,6 +230,7 @@ Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(cons
 	const std::vector<tri>& surface_elems, const std::map<std::pair<size_t, size_t>, size_t>& dof_map, std::complex<double> ki, std::complex<double> gamma)
 {
 	Eigen::SparseMatrix<std::complex<double>> A(dof_map.size(), dof_map.size());
+	A.reserve(Eigen::VectorXi::Constant(dof_map.size(), 100));
 
 	for (const auto& e : elems)
 	{
@@ -240,17 +244,16 @@ Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(cons
 		Eigen::Matrix<double, 20, 20> S_local, T_local;
 		std::tie(S_local, T_local) = S_T(coords);
 
-		for (int local_dof_i = 0; local_dof_i < 8; local_dof_i++)
+		for (int local_dof_i = 0; local_dof_i < 20; local_dof_i++)
 		{
 			auto global_dof_pair_i = global_dof_pair(e, local_dof_i);
 			if (!dof_map.contains(global_dof_pair_i)) continue;
 			auto global_dof_i = dof_map.at(global_dof_pair_i);
-			for (int local_dof_j = 0; local_dof_j < 8; local_dof_j++)
+			for (int local_dof_j = 0; local_dof_j < 20; local_dof_j++)
 			{
 				auto global_dof_pair_j = global_dof_pair(e, local_dof_j);
 				if (!dof_map.contains(global_dof_pair_j)) continue;
 				auto global_dof_j = dof_map.at(global_dof_pair_j);
-
 				A.coeffRef(global_dof_i, global_dof_j) = A.coeff(global_dof_i, global_dof_j) + S_local(local_dof_i, local_dof_j) - ki * ki * T_local(local_dof_i, local_dof_j);
 			}
 		}
