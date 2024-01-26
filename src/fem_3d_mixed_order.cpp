@@ -102,6 +102,7 @@ Eigen::Matrix<double, 8, 8>	fem::_3d::mixed_order::B(const Eigen::Matrix<double,
 {
 	Eigen::Matrix<double, 3, 3> simplex_coeff = fem::_2d::simplex_coefficients(coords);
 	Eigen::Matrix<double, 3, 2> nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
+
 	Eigen::Matrix<double, 8, 8> B = Eigen::Matrix<double, 8, 8>::Zero();
 
 	for (int p = 0; p < 6; p++)
@@ -125,3 +126,32 @@ Eigen::Matrix<double, 8, 8>	fem::_3d::mixed_order::B(const Eigen::Matrix<double,
 	auto area = fem::_2d::area(coords);
 	return B * area;
 }
+
+Eigen::Matrix<double, 8, 1> fem::_3d::mixed_order::b(
+	const tri& e, const Eigen::Matrix<double, 3, 2>& coords,
+	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution)
+{
+	Eigen::Matrix<double, 3, 3> simplex_coeff = fem::_2d::simplex_coefficients(coords);
+	Eigen::Matrix<double, 3, 2> nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
+
+	Eigen::Matrix<double, 8, 1> b = Eigen::Matrix<double, 8, 1>::Zero();
+
+	for (int p = 0; p < 6; p++)
+	{
+		Eigen::Vector3d lambda;
+		lambda << quad::surface::gauss_6_point[p][1], quad::surface::gauss_6_point[p][2], quad::surface::gauss_6_point[p][3];
+		auto w = quad::surface::gauss_6_point[p][0];
+
+		auto E_inc = fem::_2d::mixed_order::eval_elem(e, lambda, nabla_lambda, dof_map, solution);
+		auto basis = fem::_2d::mixed_order::basis(lambda, nabla_lambda);
+
+		for (int i = 0; i < 8; i++)
+		{
+			b(i) += b(i) + w * basis.row(i).dot(E_inc);
+		}
+	}
+
+	auto area = fem::_2d::area(coords);
+	return b * area;
+}
+

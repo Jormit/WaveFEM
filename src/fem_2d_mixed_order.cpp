@@ -164,8 +164,15 @@ Eigen::Vector2d fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes,
 	auto nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
 	auto lambda = fem::_2d::lambda(modified_eval_point, simplex_coeff);
 
+	return eval_elem(e, lambda, nabla_lambda, dof_map, solution);
+}
+
+Eigen::Vector2d fem::_2d::mixed_order::eval_elem(	
+	const tri& e, const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda,
+	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution)
+{
 	auto func = basis(lambda, nabla_lambda);
-	
+
 	Eigen::Vector2d value = Eigen::Vector2d::Zero();
 	for (int i = 0; i < 8; i++)
 	{
