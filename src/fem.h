@@ -48,6 +48,11 @@ namespace fem
 		{
 			Eigen::Matrix<double, 20, 3> basis(const Eigen::Vector4d& lambda, const Eigen::Matrix<double, 4, 3>& nabla_lambda);
 			Eigen::Matrix<double, 20, 3> basis_curl(const Eigen::Vector4d& lambda, const Eigen::Matrix<double, 4, 3>& nabla_lambda);
+
+			std::pair<Eigen::Matrix<double, 20, 20>, Eigen::Matrix<double, 20, 20>>
+				S_T(const Eigen::Matrix<double, 4, 3>& coords);
+
+
 		}
 	}
 
