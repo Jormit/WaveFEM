@@ -16,7 +16,7 @@ int main()
 	int bbox_id = mesher_interface::add_box(bbox);
 
 	mesher_interface::subtract(bbox_id, model_id);
-	mesher_interface::mesh_model(10, 10);
+	mesher_interface::mesh_model(20, 20);
 	mesher_interface::view_model();
 	
 	auto nodes = mesher_interface::get_all_nodes();
@@ -25,7 +25,7 @@ int main()
 	ports ports(std::string("../../../data/Horn.ports"));
 
 	sim sim(nodes, volume_elements, ports);
-	sim.solve_ports();	
+	sim.solve_ports();
 	sim.eval_port(0, 10, 10);
 
 	sim.solve_full();
