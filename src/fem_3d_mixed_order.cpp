@@ -97,3 +97,31 @@ fem::_3d::mixed_order::S_T(const Eigen::Matrix<double, 4, 3>& coords)
 	auto volume = fem::_3d::volume(coords);
 	return { volume * S, volume * T };
 }
+
+Eigen::Matrix<double, 8, 8>	fem::_3d::mixed_order::B(const Eigen::Matrix<double, 3, 2>& coords, double gamma)
+{
+	Eigen::Matrix<double, 3, 3> simplex_coeff = fem::_2d::simplex_coefficients(coords);
+	Eigen::Matrix<double, 3, 2> nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
+	Eigen::Matrix<double, 8, 8> B = Eigen::Matrix<double, 8, 8>::Zero();
+
+	for (int p = 0; p < 6; p++)
+	{
+		Eigen::Vector3d lambda;
+		lambda << quad::surface::gauss_6_point[p][1], quad::surface::gauss_6_point[p][2], quad::surface::gauss_6_point[p][3];
+		auto w = quad::surface::gauss_6_point[p][0];
+
+		auto basis_curl = fem::_2d::mixed_order::basis_curl(lambda, nabla_lambda);
+		auto basis = fem::_2d::mixed_order::basis(lambda, nabla_lambda);
+
+		for (int i = 0; i < 8; i++)
+		{
+			for (int j = 0; j < 8; j++)
+			{
+				B(i, j) += B(i, j) + w * basis.row(i).dot(basis.row(j));
+			}
+		}
+	}
+
+	auto area = fem::_2d::area(coords);
+	return B * area;
+}
