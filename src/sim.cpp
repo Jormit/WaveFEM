@@ -3,6 +3,7 @@
 #include "mesher_interface.h"
 #include "helpers.h"
 
+#include <complex>
 #include <iostream>
 
 
@@ -50,12 +51,15 @@ void sim::solve_full()
 	auto surface_elems = helpers::flatten_vector<tri>(sim_ports.elements);
 	auto A = fem::_3d::mixed_order::assemble_A(nodes, volume_elems, surface_elems, dof_map, k, { 0, k });
 
+	Eigen::SparseLU<Eigen::SparseMatrix<std::complex<double>>, Eigen::COLAMDOrdering<int>> solver;
+	solver.analyzePattern(A);
+	solver.factorize(A);
+
 	for (int p = 0; p < sim_ports.elements.size(); p++)
 	{
 		auto b = fem::_3d::mixed_order::assemble_b(nodes, sim_ports.elements[p], dof_map, port_dof_maps[p], port_eigen_vectors[p], k);
-	}
-
-	
+		Eigen::VectorXcd x = solver.solve(b);
+	}	
 }
 
 std::vector<Eigen::Vector2d> sim::eval_port(size_t port_num, size_t num_x, size_t num_y)
