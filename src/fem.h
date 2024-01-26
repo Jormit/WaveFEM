@@ -52,8 +52,9 @@ namespace fem
 			std::pair<Eigen::Matrix<double, 20, 20>, Eigen::Matrix<double, 20, 20>>
 				S_T(const Eigen::Matrix<double, 4, 3>& coords);
 
-			Eigen::Matrix<double, 8, 8>	B(const Eigen::Matrix<double, 3, 2>& coords, double gamma);
+			Eigen::Matrix<double, 8, 8>	B(const Eigen::Matrix<double, 3, 2>& coords);
 
+			Eigen::Matrix<double, 8, 1>	b(const Eigen::Matrix<double, 3, 2>& coords, );
 		}
 	}
 
