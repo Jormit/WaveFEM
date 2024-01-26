@@ -86,15 +86,15 @@ fem::_3d::mixed_order::S_T(const Eigen::Matrix<double, 4, 3>& coords)
 		lambda << quad::volume::gauss_11_point[p][1], quad::volume::gauss_11_point[p][2], quad::volume::gauss_11_point[p][3], quad::volume::gauss_11_point[p][4];
 		auto w = quad::volume::gauss_11_point[p][0];
 
-		auto basis_curl = fem::_3d::mixed_order::basis_curl(lambda, nabla_lambda);
-		auto basis = fem::_3d::mixed_order::basis(lambda, nabla_lambda);
+		auto curl_funcs = basis_curl(lambda, nabla_lambda);
+		auto basis_funcs = basis(lambda, nabla_lambda);
 
 		for (int i = 0; i < 20; i++)
 		{
 			for (int j = 0; j < 20; j++)
 			{
-				S(i, j) += S(i, j) + w * basis_curl(i) * basis_curl(j);
-				T(i, j) += T(i, j) + w * basis.row(i).dot(basis.row(j));
+				S(i, j) += S(i, j) + w * curl_funcs(i) * curl_funcs(j);
+				T(i, j) += T(i, j) + w * basis_funcs.row(i).dot(basis_funcs.row(j));
 			}
 		}
 	}
@@ -116,14 +116,13 @@ Eigen::Matrix<double, 8, 8>	fem::_3d::mixed_order::B(const Eigen::Matrix<double,
 		lambda << quad::surface::gauss_6_point[p][1], quad::surface::gauss_6_point[p][2], quad::surface::gauss_6_point[p][3];
 		auto w = quad::surface::gauss_6_point[p][0];
 
-		auto basis_curl = fem::_2d::mixed_order::basis_curl(lambda, nabla_lambda);
-		auto basis = fem::_2d::mixed_order::basis(lambda, nabla_lambda);
+		auto basis_funcs = fem::_2d::mixed_order::basis(lambda, nabla_lambda);
 
 		for (int i = 0; i < 8; i++)
 		{
 			for (int j = 0; j < 8; j++)
 			{
-				B(i, j) += B(i, j) + w * basis.row(i).dot(basis.row(j));
+				B(i, j) += B(i, j) + w * basis_funcs.row(i).dot(basis_funcs.row(j));
 			}
 		}
 	}
@@ -314,7 +313,6 @@ Eigen::VectorXcd  fem::_3d::mixed_order::assemble_b(const std::vector<node>& nod
 			auto global_dof_i = dof_map.at(global_dof_pair_i);
 
 			b(global_dof_i) = b(global_dof_i) - 2.0 * std::complex<double>({ 0,1 }) * ki * b_local(local_dof_i);
-
 		}
 	}
 
