@@ -55,9 +55,9 @@ namespace fem
 			std::pair<Eigen::Matrix<double, 20, 20>, Eigen::Matrix<double, 20, 20>>
 				S_T(const Eigen::Matrix<double, 4, 3>& coords);
 
-			Eigen::Matrix<double, 8, 8>	B(const Eigen::Matrix<double, 3, 2>& coords);
+			Eigen::Matrix<double, 8, 8> B(const Eigen::Matrix<double, 3, 2>& coords);
 
-			Eigen::Matrix<double, 8, 1>	b(const tri& e, const Eigen::Matrix<double, 3, 2>& coords, 
+			Eigen::Matrix<double, 8, 1> b(const tri& e, const Eigen::Matrix<double, 3, 2>& coords, 
 				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution);
 			
 			std::map<std::pair<size_t, size_t>, size_t> dof_map(const std::vector<node>& nodes, const std::vector<tet>& elems);
