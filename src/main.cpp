@@ -18,7 +18,7 @@ int main()
 	mesher_interface::subtract(bbox_id, model_id);
 	mesher_interface::mesh_model(20, 20);
 	mesher_interface::view_model();
-	
+
 	auto nodes = mesher_interface::get_all_nodes();
 	auto volume_elements = mesher_interface::get_all_volume_elems();
 
