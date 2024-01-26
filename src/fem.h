@@ -4,10 +4,10 @@
 #include <Eigen/dense>
 #include <Eigen/sparse>
 #include <array>
+#include <complex>
 
 namespace fem
 {
-
     std::pair<Eigen::VectorXd, Eigen::MatrixXd> solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T);
 
 	namespace _2d
@@ -52,6 +52,7 @@ namespace fem
 			std::pair<Eigen::Matrix<double, 20, 20>, Eigen::Matrix<double, 20, 20>>
 				S_T(const Eigen::Matrix<double, 4, 3>& coords);
 
+			Eigen::Matrix<double, 8, 8>	B(const Eigen::Matrix<double, 3, 2>& coords, double gamma);
 
 		}
 	}
