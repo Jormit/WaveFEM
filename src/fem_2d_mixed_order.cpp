@@ -145,6 +145,10 @@ fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::v
 			}
 		}
 	}
+
+	S_global.makeCompressed();
+	T_global.makeCompressed();
+
 	return { S_global, T_global };
 }
 
