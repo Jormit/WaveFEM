@@ -95,8 +95,8 @@ fem::_3d::mixed_order::S_T(const Eigen::Matrix<double, 4, 3>& coords)
 		{
 			for (int j = 0; j < 20; j++)
 			{
-				S(i, j) += S(i, j) + w * curl_funcs(i) * curl_funcs(j);
-				T(i, j) += T(i, j) + w * basis_funcs.row(i).dot(basis_funcs.row(j));
+				S(i, j) += w * curl_funcs.row(i).dot(curl_funcs.row(j));
+				T(i, j) += + w * basis_funcs.row(i).dot(basis_funcs.row(j));
 			}
 		}
 	}
@@ -124,7 +124,7 @@ Eigen::Matrix<double, 8, 8>	fem::_3d::mixed_order::B(const Eigen::Matrix<double,
 		{
 			for (int j = 0; j < 8; j++)
 			{
-				B(i, j) += B(i, j) + w * basis_funcs.row(i).dot(basis_funcs.row(j));
+				B(i, j) += w * basis_funcs.row(i).dot(basis_funcs.row(j));
 			}
 		}
 	}
@@ -153,7 +153,7 @@ Eigen::Matrix<double, 8, 1> fem::_3d::mixed_order::b(
 
 		for (int i = 0; i < 8; i++)
 		{
-			b(i) += b(i) + w * basis.row(i).dot(E_inc);
+			b(i) += w * basis.row(i).dot(E_inc);
 		}
 	}
 
