@@ -141,7 +141,7 @@ std::vector<node> mesher_interface::get_all_nodes()
 		std::vector<double> parametric_coord4;
 		gmsh::model::mesh::getNodes(nodeTags4, coord4, parametric_coord4, 2, e.second, true, false);
 
-		for (auto n : nodeTags)
+		for (auto n : nodeTags4)
 		{
 			nodes_to_return[n - 1].surface_entities.push_back(e.second);
 		}
