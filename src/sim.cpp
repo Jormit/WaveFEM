@@ -47,7 +47,7 @@ void sim::solve_full()
 {
 	full_solutions.clear();
 	full_dof_map.clear();
-	double k = 0.06;
+	double k = 0.1;
 
 	full_dof_map = fem::_3d::mixed_order::dof_map(nodes, volume_elems);
 	auto surface_elems = helpers::flatten_vector<tri>(sim_ports.elements);
