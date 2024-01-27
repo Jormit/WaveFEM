@@ -46,7 +46,7 @@ fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords)
 
 	Eigen::Matrix<double, 8, 8> S = Eigen::Matrix<double, 8, 8>::Zero();
 	Eigen::Matrix<double, 8, 8> T = Eigen::Matrix<double, 8, 8>::Zero();
-	for (int p = 0; p < 6; p++)
+	for (size_t p = 0; p < 6; p++)
 	{
 		Eigen::Vector3d lambda;
 		lambda << quad::surface::gauss_6_point[p][1], quad::surface::gauss_6_point[p][2], quad::surface::gauss_6_point[p][3];
@@ -55,9 +55,9 @@ fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords)
 		auto basis_curl = fem::_2d::mixed_order::basis_curl(lambda, nabla_lambda);
 		auto basis = fem::_2d::mixed_order::basis(lambda, nabla_lambda);
 
-		for (int i = 0; i < 8; i++)
+		for (size_t i = 0; i < 8; i++)
 		{
-			for (int j = 0; j < 8; j++)
+			for (size_t j = 0; j < 8; j++)
 			{
 				S(i, j) = S(i, j) + w * basis_curl(i) * basis_curl(j);
 				T(i, j) = T(i, j) + w * basis.row(i).dot(basis.row(j));
@@ -129,12 +129,12 @@ fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::v
 		Eigen::Matrix<double, 8, 8> S_local, T_local;
 		std::tie(S_local, T_local) = S_T(coords);
 
-		for (int local_dof_i = 0; local_dof_i < 8; local_dof_i++)
+		for (size_t local_dof_i = 0; local_dof_i < 8; local_dof_i++)
 		{
 			auto global_dof_pair_i = global_dof_pair(e, local_dof_i);
 			if (!dof_map.contains(global_dof_pair_i)) continue;
 			auto global_dof_i = dof_map.at(global_dof_pair_i);
-			for (int local_dof_j = 0; local_dof_j < 8; local_dof_j++)
+			for (size_t local_dof_j = 0; local_dof_j < 8; local_dof_j++)
 			{
 				auto global_dof_pair_j = global_dof_pair(e, local_dof_j);
 				if (!dof_map.contains(global_dof_pair_j)) continue;
@@ -178,7 +178,7 @@ Eigen::Vector2d fem::_2d::mixed_order::eval_elem(
 	auto func = basis(lambda, nabla_lambda);
 
 	Eigen::Vector2d value = Eigen::Vector2d::Zero();
-	for (int i = 0; i < 8; i++)
+	for (size_t i = 0; i < 8; i++)
 	{
 		auto dof_pair = global_dof_pair(e, i);
 		if (dof_map.contains(dof_pair))

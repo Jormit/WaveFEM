@@ -82,7 +82,7 @@ fem::_3d::mixed_order::S_T(const Eigen::Matrix<double, 4, 3>& coords)
 	Eigen::Matrix<double, 20, 20> S = Eigen::Matrix<double, 20, 20>::Zero();
 	Eigen::Matrix<double, 20, 20> T = Eigen::Matrix<double, 20, 20>::Zero();
 
-	for (int p = 0; p < 11; p++)
+	for (size_t p = 0; p < 11; p++)
 	{
 		Eigen::Vector4d lambda;
 		lambda << quad::volume::gauss_11_point[p][1], quad::volume::gauss_11_point[p][2], quad::volume::gauss_11_point[p][3], quad::volume::gauss_11_point[p][4];
@@ -112,7 +112,7 @@ Eigen::Matrix<double, 8, 8>	fem::_3d::mixed_order::B(const Eigen::Matrix<double,
 
 	Eigen::Matrix<double, 8, 8> B = Eigen::Matrix<double, 8, 8>::Zero();
 
-	for (int p = 0; p < 6; p++)
+	for (size_t p = 0; p < 6; p++)
 	{
 		Eigen::Vector3d lambda;
 		lambda << quad::surface::gauss_6_point[p][1], quad::surface::gauss_6_point[p][2], quad::surface::gauss_6_point[p][3];
@@ -142,7 +142,7 @@ Eigen::Matrix<double, 8, 1> fem::_3d::mixed_order::b(
 
 	Eigen::Matrix<double, 8, 1> b = Eigen::Matrix<double, 8, 1>::Zero();
 
-	for (int p = 0; p < 6; p++)
+	for (size_t p = 0; p < 6; p++)
 	{
 		Eigen::Vector3d lambda;
 		lambda << quad::surface::gauss_6_point[p][1], quad::surface::gauss_6_point[p][2], quad::surface::gauss_6_point[p][3];
@@ -251,12 +251,12 @@ Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(cons
 		Eigen::Matrix<double, 20, 20> S_local, T_local;
 		std::tie(S_local, T_local) = S_T(coords);
 
-		for (int local_dof_i = 0; local_dof_i < 20; local_dof_i++)
+		for (size_t local_dof_i = 0; local_dof_i < 20; local_dof_i++)
 		{
 			auto global_dof_pair_i = global_dof_pair(e, local_dof_i);
 			if (!dof_map.contains(global_dof_pair_i)) continue;
 			auto global_dof_i = dof_map.at(global_dof_pair_i);
-			for (int local_dof_j = 0; local_dof_j < 20; local_dof_j++)
+			for (size_t local_dof_j = 0; local_dof_j < 20; local_dof_j++)
 			{
 				auto global_dof_pair_j = global_dof_pair(e, local_dof_j);
 				if (!dof_map.contains(global_dof_pair_j)) continue;
@@ -281,7 +281,7 @@ Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(cons
 			auto global_dof_pair_i = fem::_2d::mixed_order::global_dof_pair(e, local_dof_i);
 			if (!dof_map.contains(global_dof_pair_i)) continue;
 			auto global_dof_i = dof_map.at(global_dof_pair_i);
-			for (int local_dof_j = 0; local_dof_j < 8; local_dof_j++)
+			for (size_t local_dof_j = 0; local_dof_j < 8; local_dof_j++)
 			{
 				auto global_dof_pair_j = fem::_2d::mixed_order::global_dof_pair(e, local_dof_j);
 				if (!dof_map.contains(global_dof_pair_j)) continue;
@@ -314,7 +314,7 @@ Eigen::VectorXcd  fem::_3d::mixed_order::assemble_b(const std::vector<node>& nod
 
 		auto b_local = fem::_3d::mixed_order::b(e, coords, excitation_dof_map, excitation);
 
-		for (int local_dof_i = 0; local_dof_i < 8; local_dof_i++)
+		for (size_t local_dof_i = 0; local_dof_i < 8; local_dof_i++)
 		{
 			auto global_dof_pair_i = fem::_2d::mixed_order::global_dof_pair(e, local_dof_i);
 			if (!dof_map.contains(global_dof_pair_i)) continue;
@@ -347,7 +347,7 @@ Eigen::Vector3cd fem::_3d::mixed_order::eval_elem(const std::vector<node>& nodes
 	auto func = basis(lambda, nabla_lambda);
 
 	Eigen::Vector3cd value = Eigen::Vector3cd::Zero();
-	for (int i = 0; i < 20; i++)
+	for (size_t i = 0; i < 20; i++)
 	{
 		auto dof_pair = global_dof_pair(e, i);
 		if (dof_map.contains(dof_pair))
