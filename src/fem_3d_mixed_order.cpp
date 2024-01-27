@@ -318,3 +318,35 @@ Eigen::VectorXcd  fem::_3d::mixed_order::assemble_b(const std::vector<node>& nod
 
 	return b;
 }
+
+Eigen::Vector3cd fem::_3d::mixed_order::eval_elem(const std::vector<node>& nodes, const tet& e,
+	const point_3d& eval_point, const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution)
+{
+	Eigen::Matrix<double, 4, 3> coords;
+	coords <<
+		nodes[e.nodes[0] - 1].coords.x, nodes[e.nodes[0] - 1].coords.y, nodes[e.nodes[0] - 1].coords.z,
+		nodes[e.nodes[1] - 1].coords.x, nodes[e.nodes[1] - 1].coords.y, nodes[e.nodes[1] - 1].coords.z,
+		nodes[e.nodes[2] - 1].coords.x, nodes[e.nodes[2] - 1].coords.y, nodes[e.nodes[2] - 1].coords.z,
+		nodes[e.nodes[3] - 1].coords.x, nodes[e.nodes[3] - 1].coords.y, nodes[e.nodes[3] - 1].coords.z;
+
+	Eigen::Vector3d modified_eval_point;
+	modified_eval_point << eval_point.x, eval_point.y, eval_point.z;
+
+	auto simplex_coeff = fem::_3d::simplex_coefficients(coords);
+	auto nabla_lambda = fem::_3d::nabla_lambda(simplex_coeff);
+	auto lambda = fem::_3d::lambda(modified_eval_point, simplex_coeff);
+
+	auto func = basis(lambda, nabla_lambda);
+
+	Eigen::Vector3cd value = Eigen::Vector3cd::Zero();
+	for (int i = 0; i < 20; i++)
+	{
+		auto dof_pair = global_dof_pair(e, i);
+		if (dof_map.contains(dof_pair))
+		{
+			value += func.row(i) * solution(dof_map.at(dof_pair));
+		}
+	}
+
+	return value;
+}

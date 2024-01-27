@@ -49,9 +49,9 @@ void sim::solve_full()
 	full_dof_map.clear();
 	double k = 0.003;
 
-	auto dof_map = fem::_3d::mixed_order::dof_map(nodes, volume_elems);
+	full_dof_map = fem::_3d::mixed_order::dof_map(nodes, volume_elems);
 	auto surface_elems = helpers::flatten_vector<tri>(sim_ports.elements);
-	auto A = fem::_3d::mixed_order::assemble_A(nodes, volume_elems, surface_elems, dof_map, k, { 0, k });
+	auto A = fem::_3d::mixed_order::assemble_A(nodes, volume_elems, surface_elems, full_dof_map, k, { 0, k });
 
 	Eigen::SparseLU<Eigen::SparseMatrix<std::complex<double>>, Eigen::COLAMDOrdering<int>> solver;
 	solver.analyzePattern(A);
@@ -59,8 +59,8 @@ void sim::solve_full()
 
 	for (int p = 0; p < sim_ports.elements.size(); p++)
 	{
-		auto b = fem::_3d::mixed_order::assemble_b(nodes, sim_ports.elements[p], dof_map, port_dof_maps[p], port_eigen_vectors[p], k);
-		Eigen::VectorXcd x = solver.solve(b);
+		auto b = fem::_3d::mixed_order::assemble_b(nodes, sim_ports.elements[p], full_dof_map, port_dof_maps[p], port_eigen_vectors[p], k);
+		full_solutions.push_back(solver.solve(b));
 	}
 }
 
@@ -82,10 +82,17 @@ void sim::eval_port(size_t port_num, size_t num_x, size_t num_y)
 }
 
 void sim::eval_full(size_t port_num, size_t num_x, size_t num_y, size_t num_z)
-{
-	
-	bounds.add_padding(-1, -1);
-	auto points = generate_grid_points(bounds, num_x, num_y);
+{	
+	auto points = generate_grid_points(bbox, num_x, num_y, num_z);
 
 	std::ofstream ofs(std::format("full_port{}.txt", port_num));
+
+	for (const auto& p : points)
+	{
+		auto e = mesher_interface::get_volume_element_by_coordinate(p);
+		auto elem_field = fem::_3d::mixed_order::eval_elem(nodes, e, p, full_dof_map, full_solutions[port_num]);
+
+		ofs << p.x << " " << p.y << " " << p.z << " ";
+		ofs << elem_field(0) << " " << elem_field(1) << elem_field(2) << std::endl;
+	}
 }

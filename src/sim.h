@@ -17,7 +17,7 @@ public:
 	void solve_full();
 
 	void eval_port(size_t port_num, size_t num_x, size_t num_y);
-	void eval_full(size_t port_num, size_t num_x, size_t num_y);
+	void eval_full(size_t port_num, size_t num_x, size_t num_y, size_t num_z);
 
 
 private:
@@ -36,6 +36,6 @@ private:
 	std::vector<std::map<std::pair<size_t, size_t>, size_t>> port_dof_maps;
 
 	// Complete results
-	std::vector<Eigen::VectorXd> full_solutions;
+	std::vector<Eigen::VectorXcd> full_solutions;
 	std::map<std::pair<size_t, size_t>, size_t> full_dof_map;
 };
