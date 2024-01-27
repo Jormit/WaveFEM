@@ -51,7 +51,7 @@ void sim::solve_full()
 
 	full_dof_map = fem::_3d::mixed_order::dof_map(nodes, volume_elems);
 	auto surface_elems = helpers::flatten_vector<tri>(sim_ports.elements);
-	auto A = fem::_3d::mixed_order::assemble_A(nodes, volume_elems, surface_elems, full_dof_map, k, { 0, k });
+	auto A = fem::_3d::mixed_order::assemble_A(nodes, volume_elems, surface_elems, full_dof_map, { k, 0 }, { 0, k });
 
 	Eigen::SparseLU<Eigen::SparseMatrix<std::complex<double>>, Eigen::COLAMDOrdering<int>> solver;
 	solver.analyzePattern(A);
@@ -95,6 +95,37 @@ void sim::eval_full(size_t port_num, size_t num_x, size_t num_y, size_t num_z)
 		ofs << p.x << " " << p.y << " " << p.z << " ";
 
 		ofs << elem_field(0).real();		
+		if (elem_field(0).imag() > 0) ofs << "+";
+		ofs << elem_field(0).imag() << "i ";
+
+		ofs << elem_field(1).real();
+		if (elem_field(1).imag() > 0) ofs << "+";
+		ofs << elem_field(1).imag() << "i ";
+
+		ofs << elem_field(2).real();
+		if (elem_field(2).imag() > 0) ofs << "+";
+		ofs << elem_field(2).imag() << "i ";
+
+		ofs << std::endl;
+	}
+}
+
+void sim::eval_xslice(size_t port_num, size_t num_x, size_t num_y, double x)
+{
+	rectangle plane(bbox.ymin,  bbox.zmin, bbox.ymax, bbox.zmax );
+	auto points = generate_grid_points(plane, num_x, num_y);
+
+	std::ofstream ofs(std::format("full_port{}.txt", port_num));
+
+	for (const auto& p : points)
+	{
+		point_3d p3d = { x, p.u, p.v };
+		auto e = mesher_interface::get_volume_element_by_coordinate(p3d);
+		auto elem_field = fem::_3d::mixed_order::eval_elem(nodes, e, p3d, full_dof_map, full_solutions[port_num]);
+
+		ofs << p3d.x << " " << p3d.y << " " << p3d.z << " ";
+
+		ofs << elem_field(0).real();
 		if (elem_field(0).imag() > 0) ofs << "+";
 		ofs << elem_field(0).imag() << "i ";
 
