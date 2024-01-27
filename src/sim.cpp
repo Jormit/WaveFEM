@@ -90,7 +90,12 @@ void sim::eval_full(size_t port_num, size_t num_x, size_t num_y, size_t num_z)
 	for (const auto& p : points)
 	{
 		auto e = mesher_interface::get_volume_element_by_coordinate(p);
-		auto elem_field = fem::_3d::mixed_order::eval_elem(nodes, e, p, full_dof_map, full_solutions[port_num]);
+		if (!e.has_value())
+		{
+			continue;
+		}
+
+		auto elem_field = fem::_3d::mixed_order::eval_elem(nodes, e.value(), p, full_dof_map, full_solutions[port_num]);
 
 		ofs << p.x << " " << p.y << " " << p.z << " ";
 
@@ -121,7 +126,12 @@ void sim::eval_xslice(size_t port_num, size_t num_x, size_t num_y, double x)
 	{
 		point_3d p3d = { x, p.u, p.v };
 		auto e = mesher_interface::get_volume_element_by_coordinate(p3d);
-		auto elem_field = fem::_3d::mixed_order::eval_elem(nodes, e, p3d, full_dof_map, full_solutions[port_num]);
+		if (!e.has_value())
+		{
+			continue;
+		}
+
+		auto elem_field = fem::_3d::mixed_order::eval_elem(nodes, e.value(), p3d, full_dof_map, full_solutions[port_num]);
 
 		ofs << p3d.x << " " << p3d.y << " " << p3d.z << " ";
 
