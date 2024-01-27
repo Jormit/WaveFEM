@@ -59,8 +59,8 @@ fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords)
 		{
 			for (int j = 0; j < 8; j++)
 			{
-				S(i, j) += S(i, j) + w * basis_curl(i) * basis_curl(j);
-				T(i, j) += T(i, j) + w * basis.row(i).dot(basis.row(j));
+				S(i, j) = S(i, j) + w * basis_curl(i) * basis_curl(j);
+				T(i, j) = T(i, j) + w * basis.row(i).dot(basis.row(j));
 			}
 		}
 	}
