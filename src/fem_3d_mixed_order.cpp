@@ -192,9 +192,9 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const
 					nodes[face_nodes[1] - 1].surface_entities, 
 					nodes[face_nodes[2] - 1].surface_entities) 
 					|| (
-					nodes[face_nodes[0] - 1].type_3d >= 0 &&
-					nodes[face_nodes[1] - 1].type_3d >= 0 &&
-					nodes[face_nodes[2] - 1].type_3d >= 0 ) )
+					nodes[face_nodes[0] - 1].type_3d > 0 &&
+					nodes[face_nodes[1] - 1].type_3d > 0 &&
+					nodes[face_nodes[2] - 1].type_3d > 0 ) )
 				{
 					map[{e.faces[face], 3}] = i++;
 					map[{e.faces[face], 4}] = i++;
