@@ -3,6 +3,7 @@
 #include <array>
 #include <vector>
 #include <optional>
+#include <list>
 
 const int BOUNDARY_NODE = 0;
 const int FREE_NODE = -1;
@@ -42,6 +43,7 @@ struct node
 	std::optional<point_2d> point_2d;
 	int type_2d;
 	int type_3d;
+	std::list<size_t> surface_entities;
 };
 
 struct tri
