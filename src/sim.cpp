@@ -9,8 +9,8 @@
 #include <format>
 
 
-sim::sim(std::vector<node> nodes, std::vector<tet> volume_elems, ports ports) :
-	nodes(nodes), volume_elems(volume_elems), sim_ports(ports),
+sim::sim(box bbox, std::vector<node> nodes, std::vector<tet> volume_elems, ports ports) :
+	bbox(bbox), nodes(nodes), volume_elems(volume_elems), sim_ports(ports),
 	port_eigen_vectors(), port_eigen_wave_numbers(), port_dof_maps(),
 	full_solutions(), full_dof_map()
 {
@@ -64,9 +64,8 @@ void sim::solve_full()
 	}
 }
 
-std::vector<Eigen::Vector2d> sim::eval_port(size_t port_num, size_t num_x, size_t num_y)
+void sim::eval_port(size_t port_num, size_t num_x, size_t num_y)
 {
-	std::vector<Eigen::Vector2d> field;
 	auto bounds = sim_ports.bounds[port_num];
 	bounds.add_padding(-1, -1);
 	auto points = generate_grid_points(bounds, num_x, num_y);
@@ -76,9 +75,17 @@ std::vector<Eigen::Vector2d> sim::eval_port(size_t port_num, size_t num_x, size_
 	for (const auto& p : points)
 	{
 		auto e = mesher_interface::get_surface_element_by_parametric_coordinate(p, sim_ports.entity_ids[port_num]);
-		field.push_back(fem::_2d::mixed_order::eval_elem(nodes, e, { p.u, p.v }, port_dof_maps[port_num], port_eigen_vectors[port_num].col(0)));
+		auto elem_field = fem::_2d::mixed_order::eval_elem(nodes, e, { p.u, p.v }, port_dof_maps[port_num], port_eigen_vectors[port_num].col(0));
 		ofs << p.u << " " << p.v << " ";
-		ofs << field.back().transpose()(0) << " " << field.back().transpose()(1) << std::endl;
+		ofs << elem_field(0) << " " << elem_field(1) << std::endl;
 	}
-	return field;
+}
+
+void sim::eval_full(size_t port_num, size_t num_x, size_t num_y, size_t num_z)
+{
+	
+	bounds.add_padding(-1, -1);
+	auto points = generate_grid_points(bounds, num_x, num_y);
+
+	std::ofstream ofs(std::format("full_port{}.txt", port_num));
 }

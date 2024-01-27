@@ -11,15 +11,18 @@
 class sim
 {
 public:
-	sim(std::vector<node> nodes, std::vector<tet> volume_elems, ports ports);
+	sim(box bbox, std::vector<node> nodes, std::vector<tet> volume_elems, ports ports);
 
 	void solve_ports();
 	void solve_full();
 
-	std::vector<Eigen::Vector2d> eval_port(size_t port_num, size_t num_x, size_t num_y);
+	void eval_port(size_t port_num, size_t num_x, size_t num_y);
+	void eval_full(size_t port_num, size_t num_x, size_t num_y);
 
 
 private:
+	box bbox;
+
 	// Element information
 	std::vector<node> nodes;
 	std::vector<tet> volume_elems;
