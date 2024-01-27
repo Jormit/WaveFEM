@@ -42,7 +42,10 @@ void ports::update_node_tags(std::vector<node>& nodes)
 		{
 			for (auto n : e.nodes)
 			{
-				nodes[n - 1].type_3d = p + 1;
+				if (nodes[n - 1].type_2d != BOUNDARY_NODE)
+				{
+					nodes[n - 1].type_3d = p + 1;
+				}				
 			}
 		}
 	}
