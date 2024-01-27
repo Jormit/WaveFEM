@@ -111,7 +111,7 @@ std::vector<node> mesher_interface::get_all_nodes()
 	// Insert 3d nodes.
 	int i = 0;
 	for (auto n : nodeTags3) {
-		node nn{ { coord3[3 * i], coord3[3 * i + 1], coord3[3 * i + 2] }, {}, FREE_NODE, FREE_NODE };
+		node nn{ { coord3[3 * i], coord3[3 * i + 1], coord3[3 * i + 2] }, {}, FREE_NODE, FREE_NODE, {} };
 		nodes_to_return[n - 1] = nn;
 		i++;
 	}
@@ -121,7 +121,7 @@ std::vector<node> mesher_interface::get_all_nodes()
 	for (auto n : nodeTags2) {
 		node nn{
 			{ coord2[3 * i], coord2[3 * i + 1], coord2[3 * i + 2] }, {},
-			FREE_NODE, BOUNDARY_NODE };
+			FREE_NODE, BOUNDARY_NODE, {} };
 		nodes_to_return[n - 1] = nn;
 		i++;
 	}
@@ -130,6 +130,23 @@ std::vector<node> mesher_interface::get_all_nodes()
 	for (auto n : nodeTags1) {
 		nodes_to_return[n - 1].type_2d = BOUNDARY_NODE;
 	}
+
+	std::vector<std::pair<int, int>> surface_entities;
+	gmsh::model::getEntities(surface_entities, 2);
+
+	for (const auto& e : surface_entities)
+	{
+		std::vector<size_t> nodeTags4;
+		std::vector<double> coord4;
+		std::vector<double> parametric_coord4;
+		gmsh::model::mesh::getNodes(nodeTags4, coord4, parametric_coord4, 2, e.second, true, false);
+
+		for (auto n : nodeTags)
+		{
+			nodes_to_return[n - 1].surface_entities.push_back(e.second);
+		}
+	}
+
 	return nodes_to_return;
 }
 
