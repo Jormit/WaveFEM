@@ -46,6 +46,8 @@ namespace mesher_interface {
 
 	void parameterize_surface_nodes(std::vector<node>& nodes, int surface_id, const std::vector<tri> elements);
 	void parameterize_surface_nodes(std::vector<node>& nodes, std::vector <int> surface_id, const std::vector<std::vector<tri>> elements);
+
+	tet get_volume_element_by_coordinate(point_3d points);
 }
 
 
