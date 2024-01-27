@@ -71,6 +71,9 @@ namespace fem
 				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const std::map<std::pair<size_t, size_t>,
 				size_t>& excitation_dof_map, const Eigen::VectorXd& excitation, std::complex<double> ki);
 
+			Eigen::Vector3cd eval_elem(const std::vector<node>& nodes, const tet& e, const point_3d& eval_point,
+				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution);
+
 		}
 	}
 
