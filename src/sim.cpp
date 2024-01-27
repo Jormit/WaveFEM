@@ -93,6 +93,19 @@ void sim::eval_full(size_t port_num, size_t num_x, size_t num_y, size_t num_z)
 		auto elem_field = fem::_3d::mixed_order::eval_elem(nodes, e, p, full_dof_map, full_solutions[port_num]);
 
 		ofs << p.x << " " << p.y << " " << p.z << " ";
-		ofs << elem_field(0) << " " << elem_field(1) << elem_field(2) << std::endl;
+
+		ofs << elem_field(0).real();		
+		if (elem_field(0).imag() > 0) ofs << "+";
+		ofs << elem_field(0).imag() << "i ";
+
+		ofs << elem_field(1).real();
+		if (elem_field(1).imag() > 0) ofs << "+";
+		ofs << elem_field(1).imag() << "i ";
+
+		ofs << elem_field(2).real();
+		if (elem_field(2).imag() > 0) ofs << "+";
+		ofs << elem_field(2).imag() << "i ";
+
+		ofs << std::endl;
 	}
 }

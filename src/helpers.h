@@ -1,3 +1,7 @@
+#pragma once
+#include <vector>
+#include <list>
+
 namespace helpers
 {
 	inline bool isEqual(double x, double y)
@@ -15,5 +19,17 @@ namespace helpers
 		result.reserve(total_size);
 		for (const auto& sub : v) result.insert(result.end(), sub.begin(), sub.end());
 		return result;
+	}
+
+	template <typename T>
+	bool check_for_common_elements(T list1, T list2) {
+		for (int x : list1) for (int y : list2) if (x == y) return true;
+		return false;
+	}
+
+	template <typename T>
+	bool check_for_common_elements(T list1, T list2, T list3) {
+		for (int x : list1) for (int y : list2) for (int z : list3) if (x == y && x == z && z == y) return true;
+		return false;
 	}
 }

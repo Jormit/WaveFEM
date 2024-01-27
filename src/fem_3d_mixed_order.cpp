@@ -1,7 +1,9 @@
 #include "fem.h"
 #include "quad.h"
+#include "helpers.h"
 
 #include <iostream>
+#include <list>
 
 Eigen::Matrix<double, 20, 3> fem::_3d::mixed_order::basis(const Eigen::Vector4d& lambda, const Eigen::Matrix<double, 4, 3>& nabla_lambda)
 {
@@ -170,7 +172,8 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const
 			if (!map.contains({ e.edges[edge], 1 }))
 			{
 				auto edge_nodes = e.get_edge_nodes(edge);
-				if (nodes[edge_nodes[0] - 1].type_3d != BOUNDARY_NODE || nodes[edge_nodes[1] - 1].type_3d != BOUNDARY_NODE)
+				if (!helpers::check_for_common_elements(nodes[edge_nodes[0] - 1].surface_entities, nodes[edge_nodes[1] - 1].surface_entities)
+					|| (nodes[edge_nodes[0] - 1].type_3d >= 0 && nodes[edge_nodes[1] - 1].type_3d >= 0))
 				{
 					map[{e.edges[edge], 1}] = i++;
 					map[{e.edges[edge], 2}] = i++;
@@ -184,9 +187,14 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const
 			{
 				auto face_nodes = e.get_face_nodes(face);
 
-				if (nodes[face_nodes[0] - 1].type_3d != BOUNDARY_NODE ||
-					nodes[face_nodes[1] - 1].type_3d != BOUNDARY_NODE ||
-					nodes[face_nodes[2] - 1].type_3d != BOUNDARY_NODE)
+				if (!helpers::check_for_common_elements(
+					nodes[face_nodes[0] - 1].surface_entities,
+					nodes[face_nodes[1] - 1].surface_entities, 
+					nodes[face_nodes[2] - 1].surface_entities) 
+					|| (
+					nodes[face_nodes[0] - 1].type_3d >= 0 &&
+					nodes[face_nodes[1] - 1].type_3d >= 0 &&
+					nodes[face_nodes[2] - 1].type_3d >= 0 ) )
 				{
 					map[{e.faces[face], 3}] = i++;
 					map[{e.faces[face], 4}] = i++;
