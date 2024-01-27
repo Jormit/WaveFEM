@@ -5,6 +5,8 @@
 
 #include <complex>
 #include <iostream>
+#include <fstream>
+#include <format>
 
 
 sim::sim(std::vector<node> nodes, std::vector<tet> volume_elems, ports ports) :
@@ -68,12 +70,15 @@ std::vector<Eigen::Vector2d> sim::eval_port(size_t port_num, size_t num_x, size_
 	auto bounds = sim_ports.bounds[port_num];
 	bounds.add_padding(-1, -1);
 	auto points = generate_grid_points(bounds, num_x, num_y);
+
+	std::ofstream ofs(std::format("port_{}.txt", port_num));
+
 	for (const auto& p : points)
 	{
 		auto e = mesher_interface::get_surface_element_by_parametric_coordinate(p, sim_ports.entity_ids[port_num]);
 		field.push_back(fem::_2d::mixed_order::eval_elem(nodes, e, { p.u, p.v }, port_dof_maps[port_num], port_eigen_vectors[port_num].col(0)));
-		std::cout << p.u << " " << p.v << " ";
-		std::cout << field.back().transpose()(0) << " " << field.back().transpose()(1) << std::endl;
+		ofs << p.u << " " << p.v << " ";
+		ofs << field.back().transpose()(0) << " " << field.back().transpose()(1) << std::endl;
 	}
 	return field;
 }
