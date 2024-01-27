@@ -29,6 +29,6 @@ int main()
 	sim.eval_port(0, 10, 10);
 
 	sim.solve_full();
-	sim.eval_full(0, 20, 20, 20);
+	sim.eval_xslice(0, 100, 100, 0);
 	return 0;
 }
