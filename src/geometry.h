@@ -19,9 +19,7 @@ class box
 {
 public:
 	double xmin, ymin, zmin, xmax, ymax, zmax;
-
 	void add_padding(double x, double y, double z);
-	friend std::ostream& operator << (std::ostream& os, box const& b);
 };
 
 struct point_2d

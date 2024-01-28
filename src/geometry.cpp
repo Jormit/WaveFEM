@@ -18,14 +18,6 @@ void box::add_padding(double x, double y, double z)
 	zmax += z;
 }
 
-std::ostream& operator << (std::ostream& os, box const& b)
-{
-	return os
-		<< "xmin: " << b.xmin << " ymin: " << b.ymin
-		<< " zmin: " << b.zmin << " xmax: " << b.xmax
-		<< " ymax: " << b.ymax << " zmax: " << b.zmax;
-}
-
 std::array<size_t, 2> tri::get_edge_nodes(size_t edge) const
 {
 	switch (edge) {
