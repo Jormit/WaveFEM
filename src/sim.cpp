@@ -64,13 +64,21 @@ void sim::solve_full()
 	}
 }
 
+void sim::eval_port(size_t num_x, size_t num_y)
+{
+	for (size_t p = 0; p < sim_ports.entity_ids.size(); p++)
+	{
+		eval_port(p, num_x, num_y);
+	}
+}
+
 void sim::eval_port(size_t port_num, size_t num_x, size_t num_y)
 {
 	auto bounds = sim_ports.bounds[port_num];
 	bounds.add_padding(-1, -1);
 	auto points = generate_grid_points(bounds, num_x, num_y);
 
-	std::ofstream ofs(std::format("port_{}.txt", port_num));
+	std::ofstream ofs(std::format("port_{}_solution.txt", port_num));
 
 	for (const auto& p : points)
 	{
@@ -81,11 +89,19 @@ void sim::eval_port(size_t port_num, size_t num_x, size_t num_y)
 	}
 }
 
+void sim::eval_full(size_t num_x, size_t num_y, size_t num_z)
+{
+	for (size_t p = 0; p < sim_ports.entity_ids.size(); p++)
+	{
+		eval_full(p, num_x, num_y, num_z);
+	}
+}
+
 void sim::eval_full(size_t port_num, size_t num_x, size_t num_y, size_t num_z)
 {
 	auto points = generate_grid_points(bbox, num_x, num_y, num_z);
 
-	std::ofstream ofs(std::format("full_port{}.txt", port_num));
+	std::ofstream ofs(std::format("full_port_{}_solution.txt", port_num));
 
 	for (const auto& p : points)
 	{
@@ -120,7 +136,7 @@ void sim::eval_xslice(size_t port_num, size_t num_x, size_t num_y, double x)
 	rectangle plane(bbox.ymin, bbox.zmin, bbox.ymax, bbox.zmax);
 	auto points = generate_grid_points(plane, num_x, num_y);
 
-	std::ofstream ofs(std::format("full_port{}.txt", port_num));
+	std::ofstream ofs(std::format("slice_port_{}.txt", port_num));
 
 	for (const auto& p : points)
 	{
