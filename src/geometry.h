@@ -4,6 +4,7 @@
 #include <vector>
 #include <optional>
 #include <list>
+#include <Eigen/dense>
 
 const int BOUNDARY_NODE = 0;
 const int FREE_NODE = -1;
@@ -51,6 +52,7 @@ struct tri
 	size_t face;
 	size_t tag;
 	std::array<size_t, 2> get_edge_nodes(size_t edge) const;
+	Eigen::Matrix<double, 3, 2> coordinate_matrix(const std::vector<node>& nodes) const;
 };
 
 struct tet
@@ -61,6 +63,7 @@ struct tet
 	size_t tag;
 	std::array<size_t, 2> get_edge_nodes(size_t edge) const;
 	std::array<size_t, 3> get_face_nodes(size_t face) const;
+	Eigen::Matrix<double, 4, 3> coordinate_matrix(const std::vector<node>& nodes) const;
 };
 
 std::vector<point_3d> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z);
