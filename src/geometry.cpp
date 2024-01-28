@@ -1,4 +1,14 @@
 #include "geometry.h"
+Eigen::Vector2d point_2d::to_Eigen() const
+{
+	return Eigen::Vector2d(u, v);
+}
+
+Eigen::Vector3d point_3d::to_Eigen() const
+{
+	return Eigen::Vector3d(x, y, z);
+}
+
 
 void rectangle::add_padding(double x, double y)
 {
@@ -6,6 +16,11 @@ void rectangle::add_padding(double x, double y)
 	ymin -= y;
 	xmax += x;
 	ymax += y;
+}
+
+void rectangle::add_padding(point_2d padding)
+{
+	add_padding(padding.u, padding.v);
 }
 
 void box::add_padding(double x, double y, double z)
@@ -18,15 +33,9 @@ void box::add_padding(double x, double y, double z)
 	zmax += z;
 }
 
-
-Eigen::Vector2d point_2d::to_Eigen() const
+void box::add_padding(point_3d padding)
 {
-	return Eigen::Vector2d(u, v);
-}
-
-Eigen::Vector3d point_3d::to_Eigen() const
-{
-	return Eigen::Vector3d(x, y, z);
+	add_padding(padding.x, padding.y, padding.z);
 }
 
 std::array<size_t, 2> tri::get_edge_nodes(size_t edge) const

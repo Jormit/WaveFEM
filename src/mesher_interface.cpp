@@ -69,13 +69,12 @@ int mesher_interface::add_box(box b)
 	return id;
 }
 
-int mesher_interface::subtract(int id1, int id2)
+void mesher_interface::subtract(int id1, int id2, bool remove_tool)
 {
 	std::vector<std::pair<int, int> > ov;
 	std::vector<std::vector<std::pair<int, int> > > ovv;
-	gmsh::model::occ::cut({ {3, id1} }, { {3, id2} }, ov, ovv, -1);
+	gmsh::model::occ::cut({ {3, id1} }, { {3, id2} }, ov, ovv, -1, true, remove_tool);
 	gmsh::model::occ::synchronize();
-	return ov[0].second;
 }
 
 std::vector<node> mesher_interface::get_all_nodes()
