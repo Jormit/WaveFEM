@@ -242,13 +242,7 @@ Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(cons
 
 	for (const auto& e : elems)
 	{
-		Eigen::Matrix<double, 4, 3> coords;
-		coords <<
-			nodes[e.nodes[0] - 1].coords.x, nodes[e.nodes[0] - 1].coords.y, nodes[e.nodes[0] - 1].coords.z,
-			nodes[e.nodes[1] - 1].coords.x, nodes[e.nodes[1] - 1].coords.y, nodes[e.nodes[1] - 1].coords.z,
-			nodes[e.nodes[2] - 1].coords.x, nodes[e.nodes[2] - 1].coords.y, nodes[e.nodes[2] - 1].coords.z,
-			nodes[e.nodes[3] - 1].coords.x, nodes[e.nodes[3] - 1].coords.y, nodes[e.nodes[3] - 1].coords.z;
-
+		Eigen::Matrix<double, 4, 3> coords = e.coordinate_matrix(nodes);
 		Eigen::Matrix<double, 20, 20> S_local, T_local;
 		std::tie(S_local, T_local) = S_T(coords);
 
@@ -269,12 +263,7 @@ Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(cons
 
 	for (const auto& e : surface_elems)
 	{
-		Eigen::Matrix<double, 3, 2> coords;
-		coords <<
-			nodes[e.nodes[0] - 1].point_2d->u, nodes[e.nodes[0] - 1].point_2d->v,
-			nodes[e.nodes[1] - 1].point_2d->u, nodes[e.nodes[1] - 1].point_2d->v,
-			nodes[e.nodes[2] - 1].point_2d->u, nodes[e.nodes[2] - 1].point_2d->v;
-
+		Eigen::Matrix<double, 3, 2> coords = e.coordinate_matrix(nodes);
 		auto B_local = B(coords);
 
 		for (int local_dof_i = 0; local_dof_i < 8; local_dof_i++)
@@ -307,12 +296,7 @@ Eigen::VectorXcd  fem::_3d::mixed_order::assemble_b(const std::vector<node>& nod
 
 	for (const auto& e : surface_elems)
 	{
-		Eigen::Matrix<double, 3, 2> coords;
-		coords <<
-			nodes[e.nodes[0] - 1].point_2d->u, nodes[e.nodes[0] - 1].point_2d->v,
-			nodes[e.nodes[1] - 1].point_2d->u, nodes[e.nodes[1] - 1].point_2d->v,
-			nodes[e.nodes[2] - 1].point_2d->u, nodes[e.nodes[2] - 1].point_2d->v;
-
+		Eigen::Matrix<double, 3, 2> coords = e.coordinate_matrix(nodes);
 		auto b_local = fem::_3d::mixed_order::b(e, coords, excitation_dof_map, excitation);
 
 		for (size_t local_dof_i = 0; local_dof_i < 8; local_dof_i++)
@@ -331,13 +315,7 @@ Eigen::VectorXcd  fem::_3d::mixed_order::assemble_b(const std::vector<node>& nod
 Eigen::Vector3cd fem::_3d::mixed_order::eval_elem(const std::vector<node>& nodes, const tet& e,
 	const point_3d& eval_point, const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution)
 {
-	Eigen::Matrix<double, 4, 3> coords;
-	coords <<
-		nodes[e.nodes[0] - 1].coords.x, nodes[e.nodes[0] - 1].coords.y, nodes[e.nodes[0] - 1].coords.z,
-		nodes[e.nodes[1] - 1].coords.x, nodes[e.nodes[1] - 1].coords.y, nodes[e.nodes[1] - 1].coords.z,
-		nodes[e.nodes[2] - 1].coords.x, nodes[e.nodes[2] - 1].coords.y, nodes[e.nodes[2] - 1].coords.z,
-		nodes[e.nodes[3] - 1].coords.x, nodes[e.nodes[3] - 1].coords.y, nodes[e.nodes[3] - 1].coords.z;
-
+	Eigen::Matrix<double, 4, 3> coords = e.coordinate_matrix(nodes);
 	Eigen::Vector3d modified_eval_point;
 	modified_eval_point << eval_point.x, eval_point.y, eval_point.z;
 

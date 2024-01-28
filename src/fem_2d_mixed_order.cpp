@@ -120,12 +120,7 @@ fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::v
 
 	for (const auto& e : elems)
 	{
-		Eigen::Matrix<double, 3, 2> coords;
-		coords <<
-			nodes[e.nodes[0] - 1].point_2d->u, nodes[e.nodes[0] - 1].point_2d->v,
-			nodes[e.nodes[1] - 1].point_2d->u, nodes[e.nodes[1] - 1].point_2d->v,
-			nodes[e.nodes[2] - 1].point_2d->u, nodes[e.nodes[2] - 1].point_2d->v;
-
+		Eigen::Matrix<double, 3, 2> coords = e.coordinate_matrix(nodes);
 		Eigen::Matrix<double, 8, 8> S_local, T_local;
 		std::tie(S_local, T_local) = S_T(coords);
 
@@ -155,12 +150,7 @@ fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::v
 Eigen::Vector2d fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes, const tri& e, const point_2d& eval_point,
 	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution)
 {
-	Eigen::Matrix<double, 3, 2> coords;
-	coords <<
-		nodes[e.nodes[0] - 1].point_2d->u, nodes[e.nodes[0] - 1].point_2d->v,
-		nodes[e.nodes[1] - 1].point_2d->u, nodes[e.nodes[1] - 1].point_2d->v,
-		nodes[e.nodes[2] - 1].point_2d->u, nodes[e.nodes[2] - 1].point_2d->v;
-
+	Eigen::Matrix<double, 3, 2> coords = e.coordinate_matrix(nodes);
 	Eigen::Vector2d modified_eval_point;
 	modified_eval_point << eval_point.u, eval_point.v;
 

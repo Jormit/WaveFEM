@@ -27,6 +27,16 @@ std::array<size_t, 2> tri::get_edge_nodes(size_t edge) const
 	}
 }
 
+Eigen::Matrix<double, 3, 2> tri::coordinate_matrix(const std::vector<node>& nodes) const
+{
+	Eigen::Matrix<double, 3, 2> coords;
+	coords <<
+		nodes[this->nodes[0] - 1].point_2d->u, nodes[this->nodes[0] - 1].point_2d->v,
+		nodes[this->nodes[1] - 1].point_2d->u, nodes[this->nodes[1] - 1].point_2d->v,
+		nodes[this->nodes[2] - 1].point_2d->u, nodes[this->nodes[2] - 1].point_2d->v;
+	return coords;
+}
+
 std::vector<point_3d> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z)
 {
 	std::vector<point_3d> points;
@@ -83,4 +93,15 @@ std::array<size_t, 3> tet::get_face_nodes(size_t face) const
 	case 2: return { nodes[0], nodes[2], nodes[3] };
 	case 3: return { nodes[1], nodes[2], nodes[3] };
 	}
+}
+
+Eigen::Matrix<double, 4, 3> tet::coordinate_matrix(const std::vector<node>& nodes) const
+{
+	Eigen::Matrix<double, 4, 3> coords;
+	coords <<
+		nodes[this->nodes[0] - 1].coords.x, nodes[this->nodes[0] - 1].coords.y, nodes[this->nodes[0] - 1].coords.z,
+		nodes[this->nodes[1] - 1].coords.x, nodes[this->nodes[1] - 1].coords.y, nodes[this->nodes[1] - 1].coords.z,
+		nodes[this->nodes[2] - 1].coords.x, nodes[this->nodes[2] - 1].coords.y, nodes[this->nodes[2] - 1].coords.z,
+		nodes[this->nodes[3] - 1].coords.x, nodes[this->nodes[3] - 1].coords.y, nodes[this->nodes[3] - 1].coords.z;
+	return coords;
 }
