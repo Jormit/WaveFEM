@@ -15,8 +15,7 @@ int mesher_interface::import_model(const std::string& filename)
 	std::vector<std::pair<int, int> > v;
 	gmsh::model::occ::importShapes(filename, v);
 	gmsh::model::occ::synchronize();
-
-	return 1;
+	return v[0].second;
 }
 
 void mesher_interface::mesh_model(int mesh_size_min, int mesh_size_max)
@@ -35,7 +34,7 @@ void mesher_interface::view_model()
 	gmsh::fltk::run();
 }
 
-box mesher_interface::get_bounding_box(int dim, size_t tag)
+box mesher_interface::get_bounding_box(int dim, int tag)
 {
 	double xmin = 0, ymin = 0, zmin = 0, xmax = 0, ymax = 0, zmax = 0;
 	try
@@ -48,7 +47,7 @@ box mesher_interface::get_bounding_box(int dim, size_t tag)
 	return box(xmin, ymin, zmin, xmax, ymax, zmax);
 }
 
-std::vector<box> mesher_interface::get_bounding_box(int dim, std::vector<size_t> tags)
+std::vector<box> mesher_interface::get_bounding_box(int dim, std::vector<int> tags)
 {
 	std::vector<box> boxes;
 	for (auto t : tags)
@@ -131,6 +130,7 @@ std::vector<node> mesher_interface::get_all_nodes()
 		nodes_to_return[n - 1].type_2d = BOUNDARY_NODE;
 	}
 
+	// Record which surfaces each node presides on
 	std::vector<std::pair<int, int>> surface_entities;
 	gmsh::model::getEntities(surface_entities, 2);
 
@@ -155,7 +155,6 @@ tet mesher_interface::assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4)
 	std::array<size_t, 4> nodes{ n1, n2, n3, n4 };
 	std::sort(nodes.begin(), nodes.end());
 
-	// Get global edges in conventional order.
 	std::vector<size_t> edge_tags;
 	std::vector<int> edge_orientations;
 	gmsh::model::mesh::getEdges(
@@ -169,7 +168,6 @@ tet mesher_interface::assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4)
 		},
 		edge_tags, edge_orientations);
 
-	// Get global faces in conventional order.
 	std::vector<size_t> face_tags;
 	std::vector<int> face_orientations;
 	gmsh::model::mesh::getFaces(3,
@@ -245,7 +243,6 @@ tri mesher_interface::assemble_tri(size_t n1, size_t n2, size_t n3)
 	std::array<size_t, 3> nodes{ n1, n2, n3 };
 	std::sort(nodes.begin(), nodes.end());
 
-	// Get global edges in conventional order.
 	std::vector<size_t> edge_tags;
 	std::vector<int> edge_orientations;
 	gmsh::model::mesh::getEdges(
@@ -254,7 +251,6 @@ tri mesher_interface::assemble_tri(size_t n1, size_t n2, size_t n3)
 		  nodes[1], nodes[2] },
 		edge_tags, edge_orientations);
 
-	// Get single face
 	std::vector<size_t> face_tags;
 	std::vector<int> face_orientations;
 	gmsh::model::mesh::getFaces(3,
@@ -278,7 +274,6 @@ std::vector<tri> mesher_interface::get_surface_elems(int id)
 
 	for (size_t i = 0; i < elementTags[0].size(); i++)
 	{
-		// Get nodes and sort so that edges are always in same direction.
 		size_t n1 = nodeTags[0][i * 3];
 		size_t n2 = nodeTags[0][i * 3 + 1];
 		size_t n3 = nodeTags[0][i * 3 + 2];

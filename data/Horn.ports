@@ -1,3 +1,2 @@
-# Each line defines a waveport which is surface on geometry
-# with center of mass x y z 
+# Each line defines a waveport which is surface on geometry with center of x y z
 0.0 0.0 1.6

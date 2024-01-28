@@ -23,13 +23,15 @@ namespace helpers
 
 	template <typename T>
 	bool check_for_common_elements(T list1, T list2) {
-		for (int x : list1) for (int y : list2) if (x == y) return true;
+		using B = typename T::value_type;
+		for (B x : list1) for (B y : list2) if (x == y) return true;
 		return false;
 	}
 
 	template <typename T>
 	bool check_for_common_elements(T list1, T list2, T list3) {
-		for (int x : list1) for (int y : list2) for (int z : list3) if (x == y && x == z && z == y) return true;
+		using B = typename T::value_type;
+		for (B x : list1) for (B y : list2) for (B z : list3) if (x == y && x == z && z == y) return true;
 		return false;
 	}
 }
