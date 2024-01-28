@@ -96,7 +96,7 @@ fem::_3d::mixed_order::S_T(const Eigen::Matrix<double, 4, 3>& coords)
 			for (int j = 0; j < 20; j++)
 			{
 				S(i, j) += w * curl_funcs.row(i).dot(curl_funcs.row(j));
-				T(i, j) += + w * basis_funcs.row(i).dot(basis_funcs.row(j));
+				T(i, j) += +w * basis_funcs.row(i).dot(basis_funcs.row(j));
 			}
 		}
 	}
@@ -173,7 +173,7 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const
 			{
 				auto edge_nodes = e.get_edge_nodes(edge);
 				if (!helpers::check_for_common_elements(nodes[edge_nodes[0] - 1].surface_entities, nodes[edge_nodes[1] - 1].surface_entities)
-					|| ((nodes[edge_nodes[0] - 1].type_3d > 0 && nodes[edge_nodes[1] - 1].type_3d > 0) && 
+					|| ((nodes[edge_nodes[0] - 1].type_3d > 0 && nodes[edge_nodes[1] - 1].type_3d > 0) &&
 						(nodes[edge_nodes[0] - 1].type_2d != BOUNDARY_NODE && nodes[edge_nodes[1] - 1].type_2d != BOUNDARY_NODE)))
 				{
 					map[{e.edges[edge], 1}] = i++;
@@ -190,12 +190,12 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const
 
 				if (!helpers::check_for_common_elements(
 					nodes[face_nodes[0] - 1].surface_entities,
-					nodes[face_nodes[1] - 1].surface_entities, 
-					nodes[face_nodes[2] - 1].surface_entities) 
+					nodes[face_nodes[1] - 1].surface_entities,
+					nodes[face_nodes[2] - 1].surface_entities)
 					|| (
-					nodes[face_nodes[0] - 1].type_3d > 0 &&
-					nodes[face_nodes[1] - 1].type_3d > 0 &&
-					nodes[face_nodes[2] - 1].type_3d > 0 ) )
+						nodes[face_nodes[0] - 1].type_3d > 0 &&
+						nodes[face_nodes[1] - 1].type_3d > 0 &&
+						nodes[face_nodes[2] - 1].type_3d > 0))
 				{
 					map[{e.faces[face], 3}] = i++;
 					map[{e.faces[face], 4}] = i++;
@@ -230,8 +230,7 @@ std::pair<size_t, size_t> fem::_3d::mixed_order::global_dof_pair(const tet& elem
 	case 18: return { elem.faces[2], 4 };
 	case 19: return { elem.faces[3], 4 };
 	}
-
-	return std::pair<size_t, size_t>();
+	return { 0, 0 };
 }
 
 Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(const std::vector<node>& nodes, const std::vector<tet>& elems,

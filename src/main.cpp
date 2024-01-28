@@ -26,7 +26,7 @@ int main()
 
 	sim sim(bbox, nodes, volume_elements, ports);
 	sim.solve_ports();
-	sim.eval_port(0, 10, 10);
+	sim.eval_port(0, 30, 30);
 
 	sim.solve_full();
 	sim.eval_xslice(0, 100, 100, 0);

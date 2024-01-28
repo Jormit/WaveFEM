@@ -82,7 +82,7 @@ void sim::eval_port(size_t port_num, size_t num_x, size_t num_y)
 }
 
 void sim::eval_full(size_t port_num, size_t num_x, size_t num_y, size_t num_z)
-{	
+{
 	auto points = generate_grid_points(bbox, num_x, num_y, num_z);
 
 	std::ofstream ofs(std::format("full_port{}.txt", port_num));
@@ -99,7 +99,7 @@ void sim::eval_full(size_t port_num, size_t num_x, size_t num_y, size_t num_z)
 
 		ofs << p.x << " " << p.y << " " << p.z << " ";
 
-		ofs << elem_field(0).real();		
+		ofs << elem_field(0).real();
 		if (elem_field(0).imag() > 0) ofs << "+";
 		ofs << elem_field(0).imag() << "i ";
 
@@ -117,7 +117,7 @@ void sim::eval_full(size_t port_num, size_t num_x, size_t num_y, size_t num_z)
 
 void sim::eval_xslice(size_t port_num, size_t num_x, size_t num_y, double x)
 {
-	rectangle plane(bbox.ymin,  bbox.zmin, bbox.ymax, bbox.zmax );
+	rectangle plane(bbox.ymin, bbox.zmin, bbox.ymax, bbox.zmax);
 	auto points = generate_grid_points(plane, num_x, num_y);
 
 	std::ofstream ofs(std::format("full_port{}.txt", port_num));

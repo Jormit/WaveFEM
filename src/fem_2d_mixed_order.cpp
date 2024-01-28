@@ -109,6 +109,7 @@ std::pair<size_t, size_t> fem::_2d::mixed_order::global_dof_pair(const tri& elem
 	case 6: return { elem.face    , 3 };
 	case 7: return { elem.face    , 4 };
 	}
+	return { 0, 0 };
 }
 
 std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
