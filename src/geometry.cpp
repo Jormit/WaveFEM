@@ -18,6 +18,17 @@ void box::add_padding(double x, double y, double z)
 	zmax += z;
 }
 
+
+Eigen::Vector2d point_2d::to_Eigen() const
+{
+	return Eigen::Vector2d(u, v);
+}
+
+Eigen::Vector3d point_3d::to_Eigen() const
+{
+	return Eigen::Vector3d(x, y, z);
+}
+
 std::array<size_t, 2> tri::get_edge_nodes(size_t edge) const
 {
 	switch (edge) {

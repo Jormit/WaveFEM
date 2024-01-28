@@ -27,6 +27,7 @@ struct point_2d
 {
 	double u;
 	double v;
+	Eigen::Vector2d to_Eigen() const;
 };
 
 struct point_3d
@@ -34,6 +35,7 @@ struct point_3d
 	double x;
 	double y;
 	double z;
+	Eigen::Vector3d to_Eigen() const;
 };
 
 struct node

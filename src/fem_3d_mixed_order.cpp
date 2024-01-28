@@ -316,8 +316,7 @@ Eigen::Vector3cd fem::_3d::mixed_order::eval_elem(const std::vector<node>& nodes
 	const point_3d& eval_point, const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution)
 {
 	Eigen::Matrix<double, 4, 3> coords = e.coordinate_matrix(nodes);
-	Eigen::Vector3d modified_eval_point;
-	modified_eval_point << eval_point.x, eval_point.y, eval_point.z;
+	Eigen::Vector3d modified_eval_point = eval_point.to_Eigen();
 
 	auto simplex_coeff = fem::_3d::simplex_coefficients(coords);
 	auto nabla_lambda = fem::_3d::nabla_lambda(simplex_coeff);
