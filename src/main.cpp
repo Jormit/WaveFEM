@@ -42,6 +42,7 @@ int main()
 
 	sim.eval_port(30, 30);
 	sim.eval_xslice(0, 100, 100, 0);
+	sim.eval_full(30, 30, 30);
 
 	return 0;
 }
