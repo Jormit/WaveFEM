@@ -96,7 +96,7 @@ fem::_3d::mixed_order::S_T(const Eigen::Matrix<double, 4, 3>& coords)
 			for (int j = 0; j < 20; j++)
 			{
 				S(i, j) += w * curl_funcs.row(i).dot(curl_funcs.row(j));
-				T(i, j) += +w * basis_funcs.row(i).dot(basis_funcs.row(j));
+				T(i, j) += w * basis_funcs.row(i).dot(basis_funcs.row(j));
 			}
 		}
 	}
