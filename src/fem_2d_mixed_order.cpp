@@ -151,8 +151,7 @@ Eigen::Vector2d fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes,
 	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution)
 {
 	Eigen::Matrix<double, 3, 2> coords = e.coordinate_matrix(nodes);
-	Eigen::Vector2d modified_eval_point;
-	modified_eval_point << eval_point.u, eval_point.v;
+	Eigen::Vector2d modified_eval_point = eval_point.to_Eigen();
 
 	auto simplex_coeff = fem::_2d::simplex_coefficients(coords);
 	auto nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
