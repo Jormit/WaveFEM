@@ -14,7 +14,7 @@ public:
 	sim(box bbox, std::vector<node> nodes, std::vector<tet> volume_elems, ports ports);
 
 	void solve_ports();
-	void solve_full();
+	void solve_full(double k);
 
 	void eval_port(size_t num_x, size_t num_y);
 	void eval_port(size_t port_num, size_t num_x, size_t num_y);

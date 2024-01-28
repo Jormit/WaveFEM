@@ -9,20 +9,6 @@
 const int BOUNDARY_NODE = 0;
 const int FREE_NODE = -1;
 
-struct rectangle
-{
-	double xmin, ymin, xmax, ymax;
-
-	void add_padding(double x, double y);
-};
-
-class box
-{
-public:
-	double xmin, ymin, zmin, xmax, ymax, zmax;
-	void add_padding(double x, double y, double z);
-};
-
 struct point_2d
 {
 	double u;
@@ -36,6 +22,22 @@ struct point_3d
 	double y;
 	double z;
 	Eigen::Vector3d to_Eigen() const;
+};
+
+struct rectangle
+{
+	double xmin, ymin, xmax, ymax;
+
+	void add_padding(double x, double y);
+	void add_padding(point_2d padding);
+};
+
+class box
+{
+public:
+	double xmin, ymin, zmin, xmax, ymax, zmax;
+	void add_padding(double x, double y, double z);
+	void add_padding(point_3d padding);
 };
 
 struct node

@@ -1,0 +1,7 @@
+{
+  "model_file": "Horn.STEP",
+  "port_centres": [ [ 0.0, 0.0, 1.6 ] ],
+  "bounding_box_padding": [ 20, 20, 20 ],
+  "pml_thickness": [ 10, 10, 10 ],
+  "simulation_wavenumber": 0.1
+}

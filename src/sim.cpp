@@ -38,16 +38,13 @@ void sim::solve_ports()
 
 		port_eigen_wave_numbers.push_back(values.cwiseSqrt());
 		port_eigen_vectors.push_back(vecs);
-
-		std::cout << port_eigen_wave_numbers.back() << std::endl;
 	}
 }
 
-void sim::solve_full()
+void sim::solve_full(double k)
 {
 	full_solutions.clear();
 	full_dof_map.clear();
-	double k = 0.1;
 
 	full_dof_map = fem::_3d::mixed_order::dof_map(nodes, volume_elems);
 	auto surface_elems = helpers::flatten_vector<tri>(sim_ports.elements);

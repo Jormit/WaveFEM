@@ -19,7 +19,7 @@ namespace mesher_interface {
 
 	int add_box(box b);
 
-	int subtract(int id1, int id2);
+	void subtract(int id1, int id2, bool remove_tool = true);
 
 	// Vector is indexed by node number - 1 !!!!!
 	std::vector<node> get_all_nodes();

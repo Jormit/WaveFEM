@@ -6,7 +6,6 @@
 class ports
 {
 public:
-	ports(std::string filename);
 	ports(std::vector<point_3d> points);
 
 	void update_node_tags(std::vector<node>& nodes);
