@@ -25,10 +25,14 @@ int main()
 	ports ports(std::string("../../../data/Horn.ports"));
 
 	sim sim(bbox, nodes, volume_elements, ports);
+
 	sim.solve_ports();
-	sim.eval_port(0, 30, 30);
+	sim.eval_port(30, 30);
 
 	sim.solve_full();
+	sim.eval_full(30, 30, 30);
+
 	sim.eval_xslice(0, 100, 100, 0);
+
 	return 0;
 }
