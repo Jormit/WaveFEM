@@ -4,6 +4,7 @@
 #include "geometry.h"
 #include "ports.h"
 #include "setup.h"
+#include "helpers.h"
 
 #include <Eigen/dense>
 
@@ -34,8 +35,14 @@ int main()
 	auto nodes = mesher_interface::get_all_nodes();
 	auto volume_elements = mesher_interface::get_all_volume_elems();
 
+	// Remove nodes on inner pml boundary being marked as boundary.
+	auto pml_nodes = mesher_interface::get_node_ids_in_volume(pml_id);
+	auto model_nodes = mesher_interface::get_node_ids_in_volume(boundary_id);
+	auto inner_pml_nodes = helpers::common_elements(pml_nodes, model_nodes);
+	remove_boundary_markers(nodes, inner_pml_nodes);
+
 	ports ports(config.port_centres);
-	sim sim(boundary, nodes, volume_elements, ports);
+	sim sim(pml, nodes, volume_elements, ports);
 
 	sim.solve_ports();
 	sim.solve_full(config.simulation_wavenumber);
