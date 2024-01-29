@@ -25,8 +25,8 @@ int main()
 	pml.add_padding(config.pml_thickness);
 	int pml_id = mesher_interface::add_box(pml);
 
-	mesher_interface::subtract(pml_id, boundary_id, false);
-	mesher_interface::subtract(boundary_id, model_id);
+	pml_id = mesher_interface::subtract(pml_id, boundary_id, false);
+	boundary_id = mesher_interface::subtract(boundary_id, model_id);
 	
 	mesher_interface::mesh_model(20, 20);
 	mesher_interface::view_model();	
