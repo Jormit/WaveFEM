@@ -22,6 +22,7 @@ int main()
 	boundary.add_padding(config.bounding_box_padding);
 	int boundary_id = mesher_interface::add_box(boundary);
 
+	// Setup of air boundary and then pml
 	auto pml = boundary;
 	pml.add_padding(config.pml_thickness);
 	int pml_id = mesher_interface::add_box(pml);
@@ -42,7 +43,7 @@ int main()
 	remove_boundary_markers(nodes, inner_pml_nodes);
 
 	ports ports(config.port_centres);
-	sim sim(pml, nodes, volume_elements, ports);
+	sim sim(boundary, nodes, volume_elements, ports);
 
 	sim.solve_ports();
 	sim.solve_full(config.simulation_wavenumber);
