@@ -1,4 +1,5 @@
 #include "geometry.h"
+
 Eigen::Vector2d point_2d::to_Eigen() const
 {
 	return Eigen::Vector2d(u, v);
@@ -92,6 +93,16 @@ std::vector<point_2d> generate_grid_points(rectangle rect, size_t num_x, size_t 
 		}
 	}
 	return points;
+}
+
+void remove_boundary_markers(std::vector<node>& nodes, const std::vector<size_t>& node_ids)
+{
+	for (const auto& n : node_ids)
+	{
+		nodes[n - 1].type_2d = FREE_NODE;
+		nodes[n - 1].type_3d = FREE_NODE;
+		nodes[n - 1].surface_entities.clear();
+	}
 }
 
 std::array<size_t, 2> tet::get_edge_nodes(size_t edge) const

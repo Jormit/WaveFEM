@@ -150,6 +150,15 @@ std::vector<node> mesher_interface::get_all_nodes()
 	return nodes_to_return;
 }
 
+std::vector<size_t> mesher_interface::get_node_ids_in_volume(int id)
+{
+	std::vector<size_t> nodeTags4;
+	std::vector<double> coord4;
+	std::vector<double> parametric_coord4;
+	gmsh::model::mesh::getNodes(nodeTags4, coord4, parametric_coord4, 3, id, true, false);
+	return nodeTags4;
+}
+
 tet mesher_interface::assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4)
 {
 	std::array<size_t, 4> nodes{ n1, n2, n3, n4 };
@@ -215,7 +224,7 @@ int mesher_interface::get_surface_from_com(point_3d p)
 	{
 		double x, y, z;
 		gmsh::model::occ::getCenterOfMass(e.first, e.second, x, y, z);
-		if (helpers::isEqual(p.x, x) && helpers::isEqual(p.y, y) && helpers::isEqual(p.z, z))
+		if (helpers::is_approx_equal(p.x, x) && helpers::is_approx_equal(p.y, y) && helpers::is_approx_equal(p.z, z))
 		{
 			return e.second;
 		}
