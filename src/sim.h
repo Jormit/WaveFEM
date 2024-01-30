@@ -5,13 +5,12 @@
 
 #include "ports.h"
 #include "geometry.h"
+#include "material.h"
 
-
-// This class manages all the elements within a simulation context
 class sim
 {
 public:
-	sim(box bbox, std::vector<node> nodes, std::vector<tet> volume_elems, ports ports);
+	sim(box bbox, std::vector<material> materials, std::vector<node> nodes, std::vector<tet> volume_elems, ports ports);
 
 	void solve_ports();
 	void solve_full(double k);
@@ -27,6 +26,8 @@ public:
 
 private:
 	box bbox;
+
+	std::vector<material> materials;
 
 	std::vector<node> nodes;
 	std::vector<tet> volume_elems;

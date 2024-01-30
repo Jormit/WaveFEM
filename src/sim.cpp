@@ -9,8 +9,8 @@
 #include <format>
 
 
-sim::sim(box bbox, std::vector<node> nodes, std::vector<tet> volume_elems, ports ports) :
-	bbox(bbox), nodes(nodes), volume_elems(volume_elems), sim_ports(ports),
+sim::sim(box bbox, std::vector<material> materials, std::vector<node> nodes, std::vector<tet> volume_elems, ports ports) :
+	bbox(bbox), materials(materials), nodes(nodes), volume_elems(volume_elems), sim_ports(ports),
 	port_eigen_vectors(), port_eigen_wave_numbers(), port_dof_maps(),
 	full_solutions(), full_dof_map()
 {
