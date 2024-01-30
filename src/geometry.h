@@ -54,7 +54,7 @@ struct tri
 	std::array<size_t, 3> nodes;
 	std::array<size_t, 3> edges;
 	size_t face;
-	size_t tag;
+	size_t material_id;
 	std::array<size_t, 2> get_edge_nodes(size_t edge) const;
 	Eigen::Matrix<double, 3, 2> coordinate_matrix(const std::vector<node>& nodes) const;
 };
@@ -64,7 +64,7 @@ struct tet
 	std::array<size_t, 4> nodes;
 	std::array<size_t, 6> edges;
 	std::array<size_t, 4> faces;
-	size_t tag;
+	size_t material_id;
 	std::array<size_t, 2> get_edge_nodes(size_t edge) const;
 	std::array<size_t, 3> get_face_nodes(size_t face) const;
 	Eigen::Matrix<double, 4, 3> coordinate_matrix(const std::vector<node>& nodes) const;
