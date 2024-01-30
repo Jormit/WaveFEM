@@ -24,9 +24,10 @@ namespace mesher_interface {
 	// Vector is indexed by node number - 1 !!!!!
 	std::vector<node> get_all_nodes();
 	std::vector<size_t> get_node_ids_in_volume(int id);
+	void label_boundary_nodes(std::vector<node>& nodes, std::vector <int> surface_ids);
 
 	tet assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4);
-	std::vector<tet> get_all_volume_elems();
+	std::vector<tet> get_volume_elems(int id);
 
 	int get_surface_from_com(point_3d);
 	std::vector<int> get_surface_from_com(std::vector<point_3d> coms);
@@ -49,6 +50,8 @@ namespace mesher_interface {
 	void parameterize_surface_nodes(std::vector<node>& nodes, std::vector <int> surface_id, const std::vector<std::vector<tri>> elements);
 
 	std::optional<tet> get_volume_element_by_coordinate(point_3d points);
+
+	std::vector <int> get_shared_surfaces();
 }
 
 

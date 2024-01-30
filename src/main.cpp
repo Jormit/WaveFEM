@@ -22,7 +22,6 @@ int main()
 	boundary.add_padding(config.bounding_box_padding);
 	int boundary_id = mesher_interface::add_box(boundary);
 
-	// Setup of air boundary and then pml
 	auto pml = boundary;
 	pml.add_padding(config.pml_thickness);
 	int pml_id = mesher_interface::add_box(pml);
@@ -34,16 +33,16 @@ int main()
 	mesher_interface::view_model();	
 
 	auto nodes = mesher_interface::get_all_nodes();
-	auto volume_elements = mesher_interface::get_all_volume_elems();
+	
+	auto boundaries = mesher_interface::get_shared_surfaces();
+	mesher_interface::label_boundary_nodes(nodes, boundaries);
 
-	// Remove nodes on inner pml boundary being marked as boundary.
-	auto pml_nodes = mesher_interface::get_node_ids_in_volume(pml_id);
-	auto model_nodes = mesher_interface::get_node_ids_in_volume(boundary_id);
-	auto inner_pml_nodes = helpers::common_elements(pml_nodes, model_nodes);
-	remove_boundary_markers(nodes, inner_pml_nodes);
+	auto elements = mesher_interface::get_volume_elems(boundary_id);
+	auto pml_elements = mesher_interface::get_volume_elems(pml_id);
+	elements.insert(elements.end(), pml_elements.begin(), pml_elements.end());
 
 	ports ports(config.port_centres);
-	sim sim(boundary, nodes, volume_elements, ports);
+	sim sim(pml, nodes, elements, ports);
 
 	sim.solve_ports();
 	sim.solve_full(config.simulation_wavenumber);
