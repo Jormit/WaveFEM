@@ -68,6 +68,7 @@ struct tet
 	std::array<size_t, 2> get_edge_nodes(size_t edge) const;
 	std::array<size_t, 3> get_face_nodes(size_t face) const;
 	Eigen::Matrix<double, 4, 3> coordinate_matrix(const std::vector<node>& nodes) const;
+	point_3d get_center(const std::vector<node>& nodes) const;
 };
 
 std::vector<point_3d> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z);

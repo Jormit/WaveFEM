@@ -130,3 +130,12 @@ Eigen::Matrix<double, 4, 3> tet::coordinate_matrix(const std::vector<node>& node
 		nodes[this->nodes[3] - 1].coords.x, nodes[this->nodes[3] - 1].coords.y, nodes[this->nodes[3] - 1].coords.z;
 	return coords;
 }
+
+point_3d tet::get_center(const std::vector<node>& nodes) const
+{
+	auto x_center = nodes[this->nodes[0] - 1].coords.x + nodes[this->nodes[1] - 1].coords.x + nodes[this->nodes[2] - 1].coords.x + nodes[this->nodes[3] - 1].coords.x;
+	auto y_center = nodes[this->nodes[0] - 1].coords.y + nodes[this->nodes[1] - 1].coords.y + nodes[this->nodes[2] - 1].coords.y + nodes[this->nodes[3] - 1].coords.y;
+	auto z_center = nodes[this->nodes[0] - 1].coords.z + nodes[this->nodes[1] - 1].coords.z + nodes[this->nodes[2] - 1].coords.z + nodes[this->nodes[3] - 1].coords.z;
+
+	return { x_center, y_center, z_center };
+}
