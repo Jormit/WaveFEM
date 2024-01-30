@@ -14,8 +14,8 @@ std::vector<material> generate_base_material_set()
 {
 	auto free_space = default_material();
 
-	double alpha = 0.1;
-	double beta = 0.1;
+	double alpha = 1;
+	double beta = 1;
 
 	Eigen::Matrix3cd pml_x;
 	pml_x <<
@@ -38,12 +38,12 @@ std::vector<material> generate_base_material_set()
 	return { free_space, {pml_x, pml_x}, {pml_y, pml_y}, {pml_z, pml_z} };
 }
 
-void label_pml_elements(std::vector<tet> elems, box non_pml_boundary, const std::vector<node>& nodes)
+void label_pml_elements(std::vector<tet>& elems, box non_pml_boundary, const std::vector<node>& nodes)
 {
 	for (size_t i = 0; i < elems.size(); i++)
 	{
 		auto center = elems[i].get_center(nodes);
-		if (center.x > non_pml_boundary.xmax || center.z < non_pml_boundary.xmin)
+		if (center.x > non_pml_boundary.xmax || center.x < non_pml_boundary.xmin)
 		{
 			elems[i].material_id = PML_X;
 		}

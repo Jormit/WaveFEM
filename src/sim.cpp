@@ -48,7 +48,7 @@ void sim::solve_full(double k)
 
 	full_dof_map = fem::_3d::mixed_order::dof_map(nodes, volume_elems);
 	auto surface_elems = helpers::flatten_vector<tri>(sim_ports.elements);
-	auto A = fem::_3d::mixed_order::assemble_A(nodes, volume_elems, surface_elems, full_dof_map, { k, 0 }, { 0, k });
+	auto A = fem::_3d::mixed_order::assemble_A(nodes, volume_elems, materials, surface_elems, full_dof_map, { k, 0 }, { 0, k });
 
 	Eigen::SparseLU<Eigen::SparseMatrix<std::complex<double>>, Eigen::COLAMDOrdering<int>> solver;
 	solver.analyzePattern(A);
