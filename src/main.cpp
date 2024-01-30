@@ -5,6 +5,7 @@
 #include "ports.h"
 #include "setup.h"
 #include "helpers.h"
+#include "material.h"
 
 #include <Eigen/dense>
 
@@ -32,13 +33,15 @@ int main()
 	mesher_interface::mesh_model(20, 20);
 	mesher_interface::view_model();	
 
-	auto nodes = mesher_interface::get_all_nodes();
-	
+	auto nodes = mesher_interface::get_all_nodes();	
 	auto boundaries = mesher_interface::get_shared_surfaces();
 	mesher_interface::label_boundary_nodes(nodes, boundaries);
 
 	auto elements = mesher_interface::get_volume_elems(boundary_id);
 	auto pml_elements = mesher_interface::get_volume_elems(pml_id);
+	
+	auto base_materials = generate_base_material_set();
+	label_pml_elements(pml_elements, boundary, nodes);
 	elements.insert(elements.end(), pml_elements.begin(), pml_elements.end());
 
 	ports ports(config.port_centres);
