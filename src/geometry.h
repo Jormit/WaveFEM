@@ -72,5 +72,3 @@ struct tet
 
 std::vector<point_3d> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z);
 std::vector<point_2d> generate_grid_points(rectangle rect, size_t num_x, size_t num_y);
-
-void remove_boundary_markers(std::vector<node>& nodes, const std::vector<size_t>& node_ids);

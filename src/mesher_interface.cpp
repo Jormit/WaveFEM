@@ -80,71 +80,18 @@ int mesher_interface::subtract(int id1, int id2, bool remove_tool)
 
 std::vector<node> mesher_interface::get_all_nodes()
 {
-	// Get total number of nodes
 	std::vector<size_t> nodeTags;
 	std::vector<double> coord;
 	std::vector<double> parametric_coord;
 	gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, -1, -1, false, false);
 
-	// Create node array object
 	std::vector<node> nodes_to_return(nodeTags.size());
 
-	// Get 1d nodes (nodes on lines).
-	std::vector<size_t> nodeTags1;
-	std::vector<double> coord1;
-	std::vector<double> parametric_coord1;
-	gmsh::model::mesh::getNodes(nodeTags1, coord1, parametric_coord1, 1, -1, true, false);
-
-	// Get 2d nodes (nodes on surfaces).
-	std::vector<size_t> nodeTags2;
-	std::vector<double> coord2;
-	std::vector<double> parametric_coord2;
-	gmsh::model::mesh::getNodes(nodeTags2, coord2, parametric_coord2, 2, -1, true, false);
-
-	// Get 3d nodes (nodes on volumes).
-	std::vector<size_t> nodeTags3;
-	std::vector<double> coord3;
-	std::vector<double> parametric_coord3;
-	gmsh::model::mesh::getNodes(nodeTags3, coord3, parametric_coord3, 3, -1, false, false);
-
-	// Insert 3d nodes.
 	int i = 0;
-	for (auto n : nodeTags3) {
-		node nn{ { coord3[3 * i], coord3[3 * i + 1], coord3[3 * i + 2] }, {}, FREE_NODE, FREE_NODE, {} };
+	for (auto n : nodeTags) {
+		node nn{ { coord[3 * i], coord[3 * i + 1], coord[3 * i + 2] }, {}, FREE_NODE, FREE_NODE, {} };
 		nodes_to_return[n - 1] = nn;
 		i++;
-	}
-
-	// Insert 2d nodes
-	i = 0;
-	for (auto n : nodeTags2) {
-		node nn{
-			{ coord2[3 * i], coord2[3 * i + 1], coord2[3 * i + 2] }, {},
-			FREE_NODE, BOUNDARY_NODE, {} };
-		nodes_to_return[n - 1] = nn;
-		i++;
-	}
-
-	// Insert 1d nodes
-	for (auto n : nodeTags1) {
-		nodes_to_return[n - 1].type_2d = BOUNDARY_NODE;
-	}
-
-	// Record which surfaces each node presides on
-	std::vector<std::pair<int, int>> surface_entities;
-	gmsh::model::getEntities(surface_entities, 2);
-
-	for (const auto& e : surface_entities)
-	{
-		std::vector<size_t> nodeTags4;
-		std::vector<double> coord4;
-		std::vector<double> parametric_coord4;
-		gmsh::model::mesh::getNodes(nodeTags4, coord4, parametric_coord4, 2, e.second, true, false);
-
-		for (auto n : nodeTags4)
-		{
-			nodes_to_return[n - 1].surface_entities.push_back(e.second);
-		}
 	}
 
 	return nodes_to_return;
@@ -157,6 +104,31 @@ std::vector<size_t> mesher_interface::get_node_ids_in_volume(int id)
 	std::vector<double> parametric_coord4;
 	gmsh::model::mesh::getNodes(nodeTags4, coord4, parametric_coord4, 3, id, true, false);
 	return nodeTags4;
+}
+
+void mesher_interface::label_boundary_nodes(std::vector<node>& nodes, std::vector<int> surface_ids)
+{
+	for (auto id : surface_ids)
+	{
+		std::vector<size_t> nodeTags;
+		std::vector<double> coord;
+		std::vector<double> parametric_coord;
+		gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, 2, id, true, false);
+
+		for (auto n : nodeTags)
+		{
+			nodes[n - 1].type_3d = BOUNDARY_NODE;
+			nodes[n - 1].type_2d = BOUNDARY_NODE;
+			nodes[n - 1].surface_entities.push_back(id);
+		}
+
+		std::vector<size_t> nodeTags_boundary;
+		std::vector<double> coord_boundary;
+		std::vector<double> parametric_coord_boundary;
+		gmsh::model::mesh::getNodes(nodeTags_boundary, coord_boundary, parametric_coord_boundary, 2, id, false, false);
+
+		for (auto n : nodeTags_boundary) nodes[n - 1].type_2d = FREE_NODE;
+	}
 }
 
 tet mesher_interface::assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4)
@@ -194,12 +166,12 @@ tet mesher_interface::assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4)
 			1 };
 }
 
-std::vector<tet> mesher_interface::get_all_volume_elems()
+std::vector<tet> mesher_interface::get_volume_elems(int id)
 {
 	std::vector<int> elementTypes;
 	std::vector<std::vector<std::size_t>> elementTags;
 	std::vector<std::vector<std::size_t>> nodeTags;
-	gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 3);
+	gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 3, id);
 
 	std::vector<tet> elems_to_return;
 	elems_to_return.reserve(elementTags[0].size());
@@ -415,4 +387,21 @@ std::optional<tet> mesher_interface::get_volume_element_by_coordinate(point_3d p
 	size_t n4 = node_tags[3];
 
 	return assemble_tet(n1, n2, n3, n4);
+}
+
+std::vector <int> mesher_interface::get_shared_surfaces()
+{
+	std::vector<std::pair<int, int> > all_3d_dim_tags;
+	gmsh::model::getEntities(all_3d_dim_tags, 3);
+
+	std::vector<std::pair<int, int> > shared_dim_tags;
+	gmsh::model::getBoundary(all_3d_dim_tags, shared_dim_tags, true, false, false);
+	
+	std::vector <int> shared_surfaces;
+	for (const auto& t : shared_dim_tags)
+	{
+		shared_surfaces.push_back(t.second);
+	}
+
+	return shared_surfaces;
 }

@@ -34,13 +34,4 @@ namespace helpers
 		for (B x : list1) for (B y : list2) for (B z : list3) if (x == y && x == z && z == y) return true;
 		return false;
 	}
-
-	template <typename T>
-	T common_elements(T t1, T t2) {
-		T t3;
-		std::sort(t1.begin(), t1.end());
-		std::sort(t2.begin(), t2.end());
-		std::set_intersection(t1.begin(), t1.end(), t2.begin(), t2.end(), std::inserter(t3, t3.begin()));
-		return t3;
-	}
 }
