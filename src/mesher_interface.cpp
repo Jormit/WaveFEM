@@ -163,7 +163,7 @@ tet mesher_interface::assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4)
 	return { nodes,
 			{edge_tags[0], edge_tags[1], edge_tags[2], edge_tags[3], edge_tags[4], edge_tags[5]},
 			{face_tags[0], face_tags[1], face_tags[2], face_tags[3], },
-			1 };
+			0 };
 }
 
 std::vector<tet> mesher_interface::get_volume_elems(int id)
@@ -240,7 +240,7 @@ tri mesher_interface::assemble_tri(size_t n1, size_t n2, size_t n3)
 		},
 		face_tags, face_orientations);
 
-	return { nodes, {edge_tags[0], edge_tags[1], edge_tags[2]}, face_tags[0], 1 };
+	return { nodes, {edge_tags[0], edge_tags[1], edge_tags[2]}, face_tags[0], 0 };
 }
 
 std::vector<tri> mesher_interface::get_surface_elems(int id)

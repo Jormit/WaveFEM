@@ -17,4 +17,4 @@ struct material
 material default_material();
 
 std::vector<material> generate_base_material_set();
-void label_pml_elements(std::vector<tet> elems, box non_pml_boundary, const std::vector<node>& nodes);
+void label_pml_elements(std::vector<tet>& elems, box non_pml_boundary, const std::vector<node>& nodes);

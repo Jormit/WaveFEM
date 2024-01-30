@@ -73,14 +73,14 @@ Eigen::Matrix<double, 20, 3> fem::_3d::mixed_order::basis_curl(const Eigen::Vect
 	return func;
 }
 
-std::pair<Eigen::Matrix<double, 20, 20>, Eigen::Matrix<double, 20, 20>>
-fem::_3d::mixed_order::S_T(const Eigen::Matrix<double, 4, 3>& coords)
+std::pair<Eigen::Matrix<std::complex<double>, 20, 20>, Eigen::Matrix<std::complex<double>, 20, 20>>
+fem::_3d::mixed_order::S_T(const Eigen::Matrix<double, 4, 3>& coords, material mat)
 {
 	Eigen::Matrix<double, 4, 4> simplex_coeff = fem::_3d::simplex_coefficients(coords);
 	Eigen::Matrix<double, 4, 3> nabla_lambda = fem::_3d::nabla_lambda(simplex_coeff);
 
-	Eigen::Matrix<double, 20, 20> S = Eigen::Matrix<double, 20, 20>::Zero();
-	Eigen::Matrix<double, 20, 20> T = Eigen::Matrix<double, 20, 20>::Zero();
+	Eigen::Matrix<std::complex<double>, 20, 20> S = Eigen::Matrix<std::complex<double>, 20, 20>::Zero();
+	Eigen::Matrix<std::complex<double>, 20, 20> T = Eigen::Matrix<std::complex<double>, 20, 20>::Zero();
 
 	for (size_t p = 0; p < 11; p++)
 	{
@@ -91,12 +91,17 @@ fem::_3d::mixed_order::S_T(const Eigen::Matrix<double, 4, 3>& coords)
 		auto curl_funcs = basis_curl(lambda, nabla_lambda);
 		auto basis_funcs = basis(lambda, nabla_lambda);
 
+		auto mu_inv = mat.permeability.inverse();
+		auto ep = mat.permittivity;
+
 		for (int i = 0; i < 20; i++)
 		{
 			for (int j = 0; j < 20; j++)
 			{
-				S(i, j) += w * curl_funcs.row(i).dot(curl_funcs.row(j));
-				T(i, j) += w * basis_funcs.row(i).dot(basis_funcs.row(j));
+				Eigen::Vector3cd s_sub{ (mu_inv * curl_funcs.row(i)).reshaped() };
+				Eigen::Vector3cd t_sub{ (ep * basis_funcs.row(i)).reshaped() };
+				S(i, j) += w * (s_sub).dot(curl_funcs.row(j));
+				T(i, j) += w * (t_sub).dot(basis_funcs.row(j));
 			}
 		}
 	}
@@ -234,7 +239,8 @@ std::pair<size_t, size_t> fem::_3d::mixed_order::global_dof_pair(const tet& elem
 }
 
 Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(const std::vector<node>& nodes, const std::vector<tet>& elems,
-	const std::vector<tri>& surface_elems, const std::map<std::pair<size_t, size_t>, size_t>& dof_map, std::complex<double> ki, std::complex<double> gamma)
+	std::vector<material> materials, const std::vector<tri>& surface_elems, const std::map<std::pair<size_t, size_t>,
+	size_t>& dof_map, std::complex<double> ki, std::complex<double> gamma)
 {
 	Eigen::SparseMatrix<std::complex<double>> A(dof_map.size(), dof_map.size());
 	A.reserve(Eigen::VectorXi::Constant(dof_map.size(), 100));
@@ -242,8 +248,8 @@ Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(cons
 	for (const auto& e : elems)
 	{
 		Eigen::Matrix<double, 4, 3> coords = e.coordinate_matrix(nodes);
-		Eigen::Matrix<double, 20, 20> S_local, T_local;
-		std::tie(S_local, T_local) = S_T(coords);
+		Eigen::Matrix<std::complex<double>, 20, 20> S_local, T_local;
+		std::tie(S_local, T_local) = S_T(coords, materials[e.material_id]);
 
 		for (size_t local_dof_i = 0; local_dof_i < 20; local_dof_i++)
 		{
