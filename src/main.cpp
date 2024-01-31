@@ -34,7 +34,7 @@ int main()
 	mesher_interface::view_model();	
 
 	auto nodes = mesher_interface::get_all_nodes();	
-	auto boundaries = mesher_interface::get_shared_surfaces();
+	auto boundaries = mesher_interface::get_boundary_surfaces();
 	mesher_interface::label_boundary_nodes(nodes, boundaries);
 
 	auto elements = mesher_interface::get_volume_elems(boundary_id);

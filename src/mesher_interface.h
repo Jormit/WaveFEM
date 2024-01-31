@@ -51,7 +51,7 @@ namespace mesher_interface {
 
 	std::optional<tet> get_volume_element_by_coordinate(point_3d points);
 
-	std::vector <int> get_shared_surfaces();
+	std::vector <int> get_boundary_surfaces();
 }
 
 
