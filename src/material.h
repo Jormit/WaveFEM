@@ -10,8 +10,8 @@ const size_t PML_Z = 3;
 
 struct material
 {
-	Eigen::MatrixXcd permeability;
-	Eigen::MatrixXcd permittivity;
+	Eigen::Matrix3cd permeability;
+	Eigen::Matrix3cd permittivity;
 };
 
 material default_material();

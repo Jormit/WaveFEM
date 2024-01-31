@@ -2,12 +2,8 @@
 
 material default_material()
 {
-	Eigen::MatrixXcd permeability(1,1);
-	Eigen::MatrixXcd permittivity(1,1);
-	permeability << 1;
-	permittivity << 1;
-
-	return { permeability , permittivity };
+	return { Eigen::Matrix3cd::Identity() , Eigen::Matrix3cd::Identity() };
+	return { Eigen::Matrix3cd::Identity() , Eigen::Matrix3cd::Identity() };
 }
 
 std::vector<material> generate_base_material_set()
@@ -15,7 +11,7 @@ std::vector<material> generate_base_material_set()
 	auto free_space = default_material();
 
 	double alpha = 1;
-	double beta = 1;
+	double beta = 2;
 
 	Eigen::Matrix3cd pml_x;
 	pml_x <<
