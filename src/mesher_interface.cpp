@@ -389,7 +389,7 @@ std::optional<tet> mesher_interface::get_volume_element_by_coordinate(point_3d p
 	return assemble_tet(n1, n2, n3, n4);
 }
 
-std::vector <int> mesher_interface::get_shared_surfaces()
+std::vector <int> mesher_interface::get_boundary_surfaces()
 {
 	std::vector<std::pair<int, int> > all_3d_dim_tags;
 	gmsh::model::getEntities(all_3d_dim_tags, 3);
