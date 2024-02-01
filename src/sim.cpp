@@ -2,6 +2,7 @@
 #include "fem.h"
 #include "mesher_interface.h"
 #include "helpers.h"
+#include "result_formatter.h"
 
 #include <complex>
 #include <iostream>
@@ -78,8 +79,7 @@ void sim::eval_port(size_t port_num, size_t num_x, size_t num_y)
 	{
 		auto e = mesher_interface::get_surface_element_by_parametric_coordinate(p, sim_ports.entity_ids[port_num]);
 		auto elem_field = fem::_2d::mixed_order::eval_elem(nodes, e, { p.u, p.v }, port_dof_maps[port_num], port_eigen_vectors[port_num].col(0));
-		ofs << p.u << " " << p.v << " ";
-		ofs << elem_field(0) << " " << elem_field(1) << std::endl;
+		ofs << result_formatter::field_2d_at_point(p, elem_field);
 	}
 }
 
@@ -107,22 +107,9 @@ void sim::eval_full(size_t port_num, size_t num_x, size_t num_y, size_t num_z)
 
 		auto elem_field = fem::_3d::mixed_order::eval_elem(nodes, e.value(), p, full_dof_map, full_solutions[port_num]);
 
-		ofs << p.x << " " << p.y << " " << p.z << " ";
-
-		ofs << elem_field(0).real();
-		if (elem_field(0).imag() > 0) ofs << "+";
-		ofs << elem_field(0).imag() << "i ";
-
-		ofs << elem_field(1).real();
-		if (elem_field(1).imag() > 0) ofs << "+";
-		ofs << elem_field(1).imag() << "i ";
-
-		ofs << elem_field(2).real();
-		if (elem_field(2).imag() > 0) ofs << "+";
-		ofs << elem_field(2).imag() << "i ";
-
-		ofs << std::endl;
+		ofs << result_formatter::field_3d_at_point(p, elem_field);
 	}
+	ofs.close();
 }
 
 void sim::eval_xslice(size_t port_num, size_t num_x, size_t num_y, double x)
@@ -143,20 +130,8 @@ void sim::eval_xslice(size_t port_num, size_t num_x, size_t num_y, double x)
 
 		auto elem_field = fem::_3d::mixed_order::eval_elem(nodes, e.value(), p3d, full_dof_map, full_solutions[port_num]);
 
-		ofs << p3d.x << " " << p3d.y << " " << p3d.z << " ";
-
-		ofs << elem_field(0).real();
-		if (elem_field(0).imag() > 0) ofs << "+";
-		ofs << elem_field(0).imag() << "i ";
-
-		ofs << elem_field(1).real();
-		if (elem_field(1).imag() > 0) ofs << "+";
-		ofs << elem_field(1).imag() << "i ";
-
-		ofs << elem_field(2).real();
-		if (elem_field(2).imag() > 0) ofs << "+";
-		ofs << elem_field(2).imag() << "i ";
-
-		ofs << std::endl;
+		ofs << result_formatter::field_3d_at_point(p3d, elem_field);
 	}
+
+	ofs.close();
 }
