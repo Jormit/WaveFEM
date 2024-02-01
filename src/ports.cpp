@@ -11,7 +11,7 @@ ports::ports(std::vector<point_3d> points)
 	bounds = mesher_interface::get_surface_bounds(entity_ids);
 }
 
-void ports::update_node_tags(std::vector<node>& nodes)
+void ports::setup_port_nodes(std::vector<node>& nodes)
 {
 	for (int p = 0; p < entity_ids.size(); p++)
 	{
@@ -23,4 +23,6 @@ void ports::update_node_tags(std::vector<node>& nodes)
 			}
 		}
 	}
+
+	mesher_interface::parameterize_surface_nodes(nodes, entity_ids, elements);
 }
