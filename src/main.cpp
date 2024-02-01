@@ -45,6 +45,7 @@ int main()
 	elements.insert(elements.end(), pml_elements.begin(), pml_elements.end());
 
 	ports ports(config.port_centres);
+	ports.setup_port_nodes(nodes);
 	sim sim(pml, base_materials, nodes, elements, ports);
 
 	sim.solve_ports();

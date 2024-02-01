@@ -8,7 +8,7 @@ class ports
 public:
 	ports(std::vector<point_3d> points);
 
-	void update_node_tags(std::vector<node>& nodes);
+	void setup_port_nodes(std::vector<node>& nodes);
 
 	friend class sim;
 
