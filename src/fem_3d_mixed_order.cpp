@@ -262,7 +262,8 @@ Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(cons
 				auto global_dof_pair_j = global_dof_pair(e, local_dof_j);
 				if (!dof_map.contains(global_dof_pair_j)) continue;
 				auto global_dof_j = dof_map.at(global_dof_pair_j);
-				A.coeffRef(global_dof_i, global_dof_j) = A.coeff(global_dof_i, global_dof_j) + S_local(local_dof_i, local_dof_j) - ki * ki * T_local(local_dof_i, local_dof_j);
+				A.coeffRef(global_dof_i, global_dof_j) +=
+					S_local(local_dof_i, local_dof_j) - ki * ki * T_local(local_dof_i, local_dof_j);
 			}
 		}
 	}
