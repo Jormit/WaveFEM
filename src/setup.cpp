@@ -2,6 +2,7 @@
 #include <json.hpp>
 
 #include "setup.h"
+#include "constants.h"
 
 using json = nlohmann::json;
 
@@ -21,6 +22,5 @@ setup::setup(std::string filename)
 
 	bounding_box_padding = { data["bounding_box_padding"][0], data["bounding_box_padding"][1], data["bounding_box_padding"][2] };
 	pml_thickness = { data["pml_thickness"][0], data["pml_thickness"][1], data["pml_thickness"][2] };
-	simulation_wavenumber = data["simulation_wavenumber"];
-	
+	simulation_wavenumber = static_cast<double>(data["frequency"]) * constants::freq2k;
 }
