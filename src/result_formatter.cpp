@@ -16,6 +16,11 @@ std::string result_formatter::field_2d_at_point(point_2d point, Eigen::Vector2d 
 	return std::format("{} {} {} {}\n", point.u, point.v, field(0), field(1));
 }
 
+std::string result_formatter::field_2d_at_point(point_2d point, Eigen::Vector2cd field)
+{
+	return std::format("{} {} {} {}\n", point.u, point.v, complex_number(field(0)), complex_number(field(1)));
+}
+
 std::string result_formatter::field_3d_at_point(point_3d point, Eigen::Vector3cd field)
 {
 	return std::format("{} {} {} {} {} {}\n", point.x, point.y, point.z,
