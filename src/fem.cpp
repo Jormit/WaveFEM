@@ -1,10 +1,10 @@
-#include "fem.h"
 #include <iostream>
-#include "constants.h"
-
 #include <Spectra/SymGEigsShiftSolver.h>
 #include <Spectra/MatOp/SymShiftInvert.h>
 #include <Spectra/MatOp/SparseSymMatProd.h>
+
+#include "fem.h"
+#include "constants.h"
 
 std::pair<Eigen::VectorXd, Eigen::MatrixXd> fem::solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T)
 {

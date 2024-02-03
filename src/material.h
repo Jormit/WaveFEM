@@ -1,6 +1,7 @@
 #pragma once
 #include <Eigen/dense>
 #include <vector>
+
 #include "geometry.h"
 
 const size_t FREE_SPACE = 0;
