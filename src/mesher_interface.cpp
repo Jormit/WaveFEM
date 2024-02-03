@@ -1,10 +1,11 @@
 #include <string>
-#include "mesher_interface.h"
 #include <algorithm>
 #include <unordered_map>
 #include <iostream>
-#include "helpers.h"
 #include <cmath>
+
+#include "mesher_interface.h"
+#include "helpers.h"
 
 void mesher_interface::initialize() {
 	gmsh::initialize();

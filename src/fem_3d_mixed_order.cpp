@@ -1,9 +1,9 @@
+#include <iostream>
+#include <list>
+
 #include "fem.h"
 #include "quad.h"
 #include "helpers.h"
-
-#include <iostream>
-#include <list>
 
 Eigen::Matrix<double, 20, 3> fem::_3d::mixed_order::basis(const Eigen::Vector4d& lambda, const Eigen::Matrix<double, 4, 3>& nabla_lambda)
 {

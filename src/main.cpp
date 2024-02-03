@@ -1,4 +1,7 @@
-﻿#include <iostream>
+﻿#include <Eigen/dense>
+#include <memory>
+#include <iostream>
+
 #include "mesher_interface.h"
 #include "sim.h"
 #include "geometry.h"
@@ -6,8 +9,7 @@
 #include "setup.h"
 #include "helpers.h"
 #include "material.h"
-
-#include <Eigen/dense>
+#include "post_processor.h"
 
 const std::string data_path = "../../../data/";
 
@@ -46,14 +48,17 @@ int main()
 
 	ports ports(config.port_centres);
 	ports.setup_port_nodes(nodes);
-	sim sim(pml, base_materials, nodes, elements, ports);
 
-	sim.solve_ports();
-	sim.solve_full(config.simulation_wavenumber);
+	auto current_sim = std::make_unique<sim>(pml, base_materials, nodes, elements, ports);
 
-	sim.eval_port(30, 30);
-	sim.eval_xslice(0, 100, 100, 0);
-	sim.eval_full(30, 30, 30);
+	current_sim->solve_ports();
+	current_sim->solve_full(config.simulation_wavenumber);
+
+	post_processor post(std::move(current_sim));
+
+	post.eval_port(30, 30);
+	post.eval_xslice(0, 100, 100, 0);
+	post.eval_full(30, 30, 30);
 
 	return 0;
 }

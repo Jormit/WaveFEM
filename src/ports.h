@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+
 #include "geometry.h"
 
 class ports
@@ -11,6 +12,7 @@ public:
 	void setup_port_nodes(std::vector<node>& nodes);
 
 	friend class sim;
+	friend class post_processor;
 
 private:
 	std::vector<point_3d> port_points;

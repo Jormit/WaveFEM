@@ -1,7 +1,8 @@
+#include <iostream>
+
 #include "fem.h"
 #include "quad.h"
 #include "mesher_interface.h"
-#include <iostream>
 
 Eigen::Matrix<double, 8, 2> fem::_2d::mixed_order::basis(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda)
 {

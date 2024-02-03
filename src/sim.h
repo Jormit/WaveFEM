@@ -15,14 +15,7 @@ public:
 	void solve_ports();
 	void solve_full(double k);
 
-	void eval_port(size_t num_x, size_t num_y);
-	void eval_port(size_t port_num, size_t num_x, size_t num_y);
-
-	void eval_full(size_t num_x, size_t num_y, size_t num_z);
-	void eval_full(size_t port_num, size_t num_x, size_t num_y, size_t num_z);
-
-	void eval_xslice(size_t port_num, size_t num_x, size_t num_y, double x);
-
+	friend class post_processor;
 
 private:
 	box bbox;
