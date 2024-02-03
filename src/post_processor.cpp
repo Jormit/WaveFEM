@@ -65,17 +65,45 @@ void post_processor::eval_full(size_t port_num, size_t num_x, size_t num_y, size
 	ofs.close();
 }
 
-void post_processor::eval_xslice(size_t port_num, size_t num_x, size_t num_y, double x)
+void post_processor::eval_slice(slice_plane slice, size_t port_num, size_t num_u, size_t num_v, double w)
 {
-	rectangle plane(sim_instance->bbox.ymin, sim_instance->bbox.zmin, 
-		sim_instance->bbox.ymax, sim_instance->bbox.zmax);
-	auto points = generate_grid_points(plane, num_x, num_y);
+	rectangle plane; 
+	if (slice == slice_plane::XY)
+	{
+		plane = rectangle(sim_instance->bbox.xmin, sim_instance->bbox.ymin,
+			sim_instance->bbox.xmax, sim_instance->bbox.ymax);
+	} 
+	else if (slice == slice_plane::XZ)
+	{
+		plane = rectangle(sim_instance->bbox.xmin, sim_instance->bbox.zmin,
+			sim_instance->bbox.xmax, sim_instance->bbox.zmax);
+	} 
+	else
+	{
+		plane = rectangle(sim_instance->bbox.ymin, sim_instance->bbox.zmin,
+			sim_instance->bbox.ymax, sim_instance->bbox.zmax);
+	}
 
+	auto points = generate_grid_points(plane, num_u, num_v);
 	std::ofstream ofs(std::format("slice_port_{}.txt", port_num));
 
 	for (const auto& p : points)
 	{
-		point_3d p3d = { x, p.u, p.v };
+
+		point_3d p3d;
+		if (slice == slice_plane::XY)
+		{
+			p3d = { p.u, p.v, w };
+		}
+		else if (slice == slice_plane::XZ)
+		{
+			p3d = { p.u, w, p.v };
+		}
+		else
+		{
+			p3d = { w, p.u, p.v };
+		}
+
 		auto e = mesher_interface::get_volume_element_by_coordinate(p3d);
 		if (!e.has_value())
 		{
@@ -85,8 +113,24 @@ void post_processor::eval_xslice(size_t port_num, size_t num_x, size_t num_y, do
 		auto elem_field = fem::_3d::mixed_order::eval_elem(sim_instance->nodes,
 			e.value(), p3d, sim_instance->full_dof_map, sim_instance->full_solutions[port_num]);
 
-		ofs << result_formatter::field_3d_at_point(p3d, elem_field);
+		if (slice == slice_plane::XY)
+		{
+			Eigen::Vector2cd surface_vec;
+			surface_vec << elem_field(0), elem_field(1);
+			ofs << result_formatter::field_2d_at_point(p, surface_vec);
+		}
+		else if (slice == slice_plane::XZ)
+		{
+			Eigen::Vector2cd surface_vec;
+			surface_vec << elem_field(0), elem_field(2);
+			ofs << result_formatter::field_2d_at_point(p, surface_vec);
+		}
+		else
+		{
+			Eigen::Vector2cd surface_vec;
+			surface_vec << elem_field(1), elem_field(2);
+			ofs << result_formatter::field_2d_at_point(p, surface_vec);
+		}
 	}
-
 	ofs.close();
 }
