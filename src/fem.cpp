@@ -13,10 +13,10 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> fem::solve_eigenproblem(const Eigen:
 	OpType op(S, T);
 	BOpType Bop(T);
 
-	Spectra::SymGEigsShiftSolver<OpType, BOpType, Spectra::GEigsMode::ShiftInvert> geigs(op, Bop, 1, 11, 0.0025);
+	Spectra::SymGEigsShiftSolver<OpType, BOpType, Spectra::GEigsMode::ShiftInvert> geigs(op, Bop, 5, 11, 0.0025);
 
 	geigs.init();
-	auto nconv = geigs.compute(Spectra::SortRule::LargestMagn);
+	auto nconv = geigs.compute(Spectra::SortRule::LargestAlge);
 
 	Eigen::VectorXd evalues;
 	Eigen::MatrixXd evecs;
@@ -26,6 +26,6 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> fem::solve_eigenproblem(const Eigen:
 		evecs = geigs.eigenvectors();
 	}
 
-	return { evalues, evecs };
+	return { evalues.reverse(), evecs.rowwise().reverse() };
 }
 
