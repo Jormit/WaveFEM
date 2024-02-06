@@ -14,23 +14,26 @@ void post_processor::eval_port(size_t num_x, size_t num_y)
 {
 	for (size_t p = 0; p < sim_instance->sim_ports.entity_ids.size(); p++)
 	{
-		eval_port(p, num_x, num_y);
+		for (size_t m = 0; m < sim_instance->port_eigen_vectors[0].cols(); m++)
+		{
+			eval_port(p, m, num_x, num_y);
+		}
 	}
 }
 
-void post_processor::eval_port(size_t port_num, size_t num_x, size_t num_y)
+void post_processor::eval_port(size_t port_num, size_t mode, size_t num_x, size_t num_y)
 {
 	auto bounds = sim_instance->sim_ports.bounds[port_num];
 	bounds.add_padding(-1, -1);
 	auto points = generate_grid_points(bounds, num_x, num_y);
 
-	std::ofstream ofs(std::format("port_{}_solution.txt", port_num));
+	std::ofstream ofs(std::format("port_{}_mode_{}.txt", port_num, mode));
 
 	for (const auto& p : points)
 	{
 		auto e = mesher_interface::get_surface_element_by_parametric_coordinate(p, sim_instance->sim_ports.entity_ids[port_num]);
 		auto elem_field = fem::_2d::mixed_order::eval_elem(sim_instance->nodes,
-			e, { p.u, p.v }, sim_instance->port_dof_maps[port_num], sim_instance->port_eigen_vectors[port_num].col(0));
+			e, { p.u, p.v }, sim_instance->port_dof_maps[port_num], sim_instance->port_eigen_vectors[port_num].col(mode));
 		ofs << result_formatter::field_2d_at_point(p, elem_field);
 	}
 }
