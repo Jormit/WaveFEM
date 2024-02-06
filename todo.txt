@@ -1,0 +1,5 @@
+Remove hardcoded eigenvalue
+Solve higher order modes
+S-Parameters
+3d Field Plots like HFSS
+Antenna pattern
