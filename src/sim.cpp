@@ -51,7 +51,7 @@ void sim::solve_full(double k)
 
 	for (int p = 0; p < sim_ports.elements.size(); p++)
 	{
-		auto b = fem::_3d::mixed_order::assemble_b(nodes, sim_ports.elements[p], full_dof_map, port_dof_maps[p], port_eigen_vectors[p], k);
+		auto b = fem::_3d::mixed_order::assemble_b(nodes, sim_ports.elements[p], full_dof_map, port_dof_maps[p], port_eigen_vectors[p].col(0), k);
 		full_solutions.push_back(solver.solve(b));
 	}
 }
