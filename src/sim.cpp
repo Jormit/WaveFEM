@@ -43,15 +43,17 @@ void sim::solve_full(double k)
 
 	full_dof_map = fem::_3d::mixed_order::dof_map(nodes, volume_elems);
 	auto surface_elems = helpers::flatten_vector<tri>(sim_ports.elements);
-	auto A = fem::_3d::mixed_order::assemble_A(nodes, volume_elems, materials, surface_elems, full_dof_map, { k, 0 }, { 0, k });
-
-	Eigen::SparseLU<Eigen::SparseMatrix<std::complex<double>>, Eigen::COLAMDOrdering<int>> solver;
-	solver.analyzePattern(A);
-	solver.factorize(A);
 
 	for (int p = 0; p < sim_ports.elements.size(); p++)
 	{
-		auto b = fem::_3d::mixed_order::assemble_b(nodes, sim_ports.elements[p], full_dof_map, port_dof_maps[p], port_eigen_vectors[p].col(0), k);
-		full_solutions.push_back(solver.solve(b));
+		std::complex<double> k_inc = std::sqrt(static_cast<std::complex<double>>(k * k) - port_eigen_wave_numbers[p](0) * port_eigen_wave_numbers[p](0));
+
+		auto A = fem::_3d::mixed_order::assemble_A(nodes, volume_elems, materials, surface_elems, full_dof_map, k, k_inc * std::complex<double>{0, 1});
+		Eigen::SparseLU<Eigen::SparseMatrix<std::complex<double>>, Eigen::COLAMDOrdering<int>> solver;
+		solver.analyzePattern(A);
+		solver.factorize(A);
+
+		auto b = fem::_3d::mixed_order::assemble_b(nodes, sim_ports.elements[p], full_dof_map, port_dof_maps[p], port_eigen_vectors[p].col(0), k_inc);
+		full_solutions.push_back(solver.solve(-b));
 	}
 }
