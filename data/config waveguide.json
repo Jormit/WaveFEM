@@ -1,0 +1,11 @@
+{
+  "model_file": "Waveguide.step",
+  "port_centres": [
+    [ 21.0, 0.0, 10.5 ],
+    [ 21.0, 99.0, 10.5 ]
+  ],
+  "bounding_box_padding": [ 10, 10, 10 ],
+  "pml_enable": false,
+  "pml_thickness": [ 20, 20, 20 ],
+  "frequency": 5000000000
+}
