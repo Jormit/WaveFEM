@@ -60,8 +60,8 @@ fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords)
 		{
 			for (size_t j = 0; j < 8; j++)
 			{
-				S(i, j) = S(i, j) + w * basis_curl(i) * basis_curl(j);
-				T(i, j) = T(i, j) + w * basis.row(i).dot(basis.row(j));
+				S(i, j) += w * basis_curl(i) * basis_curl(j);
+				T(i, j) += w * basis.row(i).dot(basis.row(j));
 			}
 		}
 	}
@@ -137,8 +137,8 @@ fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::v
 				if (!dof_map.contains(global_dof_pair_j)) continue;
 				auto global_dof_j = dof_map.at(global_dof_pair_j);
 
-				S_global.coeffRef(global_dof_i, global_dof_j) = S_global.coeff(global_dof_i, global_dof_j) + S_local(local_dof_i, local_dof_j);
-				T_global.coeffRef(global_dof_i, global_dof_j) = T_global.coeff(global_dof_i, global_dof_j) + T_local(local_dof_i, local_dof_j);;
+				S_global.coeffRef(global_dof_i, global_dof_j) += S_local(local_dof_i, local_dof_j);
+				T_global.coeffRef(global_dof_i, global_dof_j) += T_local(local_dof_i, local_dof_j);
 			}
 		}
 	}
