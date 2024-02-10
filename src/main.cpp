@@ -59,6 +59,7 @@ int main()
 	post.eval_port(30, 30);
 	post.eval_slice(slice_plane::YZ, 0, 100, 100, 0);
 	post.eval_full(30, 30, 30);
+	post.eval_s_parameters();
 
 	return 0;
 }

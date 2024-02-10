@@ -1,5 +1,6 @@
 #include <format>
 #include <fstream>
+#include <iostream>
 
 #include "post_processor.h"
 #include "mesher_interface.h"
@@ -136,4 +137,55 @@ void post_processor::eval_slice(slice_plane slice, size_t port_num, size_t num_u
 		}
 	}
 	ofs.close();
+}
+
+Eigen::VectorXcd post_processor::get_solution_port_coefficents(size_t inc_port_num, size_t exc_port_num)
+{
+	size_t num_dofs = sim_instance->port_dof_maps[inc_port_num].size();
+	Eigen::VectorXcd port_coefficients(num_dofs);
+	
+	size_t i = 0;
+	for (auto const& [key, val] : sim_instance->port_dof_maps[inc_port_num])
+	{
+		port_coefficients(i++) = sim_instance->full_solutions[exc_port_num](sim_instance->full_dof_map[key]);
+	}
+	return port_coefficients;
+}
+
+Eigen::VectorXcd post_processor::get_excitation_port_coefficents(size_t port_num)
+{
+	size_t num_dofs = sim_instance->port_dof_maps[port_num].size();
+	Eigen::VectorXcd port_coefficients(num_dofs);
+
+	size_t i = 0;
+	for (auto const& [key, val] : sim_instance->port_dof_maps[port_num])
+	{
+		port_coefficients(i++) = sim_instance->port_eigen_vectors[port_num](sim_instance->port_dof_maps[port_num][key]);
+	}
+	return port_coefficients;
+}
+
+void post_processor::eval_s_parameters()
+{
+	size_t num_ports = sim_instance->sim_ports.elements.size();
+
+	Eigen::MatrixXcd s_matrix(num_ports, num_ports);
+	for (size_t i = 0; i < num_ports; i++)
+	{
+		for (size_t j = 0; j < num_ports; j++)
+		{
+			auto sol_coeff = get_solution_port_coefficents(i, j);
+			auto exc_coeff = get_excitation_port_coefficents(i);
+
+			if (i == j)
+			{
+				s_matrix(i, j) = (sol_coeff - exc_coeff).dot(exc_coeff);
+			}
+			else
+			{
+				s_matrix(i, j) = sol_coeff.dot(exc_coeff);
+			}			
+		}
+	}
+	std::cout << s_matrix << std::endl;
 }
