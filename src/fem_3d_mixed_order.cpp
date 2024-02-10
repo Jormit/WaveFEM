@@ -180,7 +180,7 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const
 				auto edge_nodes = e.get_edge_nodes(edge);
 				if (!helpers::check_for_common_elements(nodes[edge_nodes[0] - 1].surface_entities, nodes[edge_nodes[1] - 1].surface_entities)
 					|| ((nodes[edge_nodes[0] - 1].type_3d > 0 && nodes[edge_nodes[1] - 1].type_3d > 0) &&
-						(nodes[edge_nodes[0] - 1].type_2d != BOUNDARY_NODE && nodes[edge_nodes[1] - 1].type_2d != BOUNDARY_NODE)))
+						(nodes[edge_nodes[0] - 1].type_2d != BOUNDARY_NODE || nodes[edge_nodes[1] - 1].type_2d != BOUNDARY_NODE)))
 				{
 					map[{e.edges[edge], 1}] = i++;
 					map[{e.edges[edge], 2}] = i++;
