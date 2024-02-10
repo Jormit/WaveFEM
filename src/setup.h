@@ -11,6 +11,7 @@ struct setup
 	std::string model_file;
 	std::vector<point_3d> port_centres;
 	point_3d bounding_box_padding;
+	bool pml_enable;
 	point_3d pml_thickness;
 	double simulation_wavenumber;
 };

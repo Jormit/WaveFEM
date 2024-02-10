@@ -2,6 +2,7 @@
   "model_file": "Horn.STEP",
   "port_centres": [ [ 0.0, 0.0, 1.6 ] ],
   "bounding_box_padding": [ 10, 10, 10 ],
+  "pml_enable": true,
   "pml_thickness": [ 20, 20, 20 ],
   "frequency": 5000000000
 }
