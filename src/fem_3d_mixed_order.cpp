@@ -312,11 +312,10 @@ Eigen::VectorXcd  fem::_3d::mixed_order::assemble_b(const std::vector<node>& nod
 			if (!dof_map.contains(global_dof_pair_i)) continue;
 			auto global_dof_i = dof_map.at(global_dof_pair_i);
 
-			b(global_dof_i) = b(global_dof_i) - 2.0 * std::complex<double>({ 0,1 }) * ki * b_local(local_dof_i);
+			b(global_dof_i) = b(global_dof_i) + b_local(local_dof_i);
 		}
 	}
-
-	return b;
+	return -2.0 * std::complex<double>({ 0,1 }) * ki * b;
 }
 
 Eigen::Vector3cd fem::_3d::mixed_order::eval_elem(const std::vector<node>& nodes, const tet& e,

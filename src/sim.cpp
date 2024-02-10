@@ -47,7 +47,6 @@ void sim::solve_full(double k)
 	for (int p = 0; p < sim_ports.elements.size(); p++)
 	{
 		std::complex<double> k_inc = std::sqrt(static_cast<std::complex<double>>(k * k) - port_eigen_wave_numbers[p](0) * port_eigen_wave_numbers[p](0));
-
 		auto A = fem::_3d::mixed_order::assemble_A(nodes, volume_elems, materials, surface_elems, full_dof_map, k, k_inc * std::complex<double>{0, 1});
 		Eigen::SparseLU<Eigen::SparseMatrix<std::complex<double>>, Eigen::COLAMDOrdering<int>> solver;
 		solver.analyzePattern(A);
