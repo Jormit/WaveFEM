@@ -3,7 +3,6 @@
 material default_material()
 {
 	return { Eigen::Matrix3cd::Identity() , Eigen::Matrix3cd::Identity() };
-	return { Eigen::Matrix3cd::Identity() , Eigen::Matrix3cd::Identity() };
 }
 
 std::vector<material> generate_base_material_set()
