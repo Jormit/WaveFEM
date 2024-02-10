@@ -18,6 +18,10 @@ public:
 
 	void eval_slice(slice_plane plane, size_t port_num, size_t num_u, size_t num_v, double w);
 
+	Eigen::VectorXcd get_solution_port_coefficents(size_t inc_port_num, size_t exc_port_num);
+	Eigen::VectorXcd get_excitation_port_coefficents(size_t port_num);
+	void eval_s_parameters();
+
 private:
 	std::unique_ptr<sim> sim_instance;
 };
