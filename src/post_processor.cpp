@@ -69,6 +69,14 @@ void post_processor::eval_full(size_t port_num, size_t num_x, size_t num_y, size
 	ofs.close();
 }
 
+void post_processor::eval_slice(slice_plane slice, size_t num_u, size_t num_v, double w)
+{
+	for (size_t p = 0; p < sim_instance->sim_ports.entity_ids.size(); p++)
+	{
+		eval_slice(slice, p, num_u, num_v, w);
+	}
+}
+
 void post_processor::eval_slice(slice_plane slice, size_t port_num, size_t num_u, size_t num_v, double w)
 {
 	rectangle plane; 
