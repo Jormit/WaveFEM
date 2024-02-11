@@ -16,7 +16,8 @@ public:
 	void eval_full(size_t num_x, size_t num_y, size_t num_z);
 	void eval_full(size_t port_num, size_t num_x, size_t num_y, size_t num_z);
 
-	void eval_slice(slice_plane plane, size_t port_num, size_t num_u, size_t num_v, double w);
+	void eval_slice(slice_plane slice, size_t num_u, size_t num_v, double w);
+	void eval_slice(slice_plane slice, size_t port_num, size_t num_u, size_t num_v, double w);
 
 	Eigen::VectorXcd get_solution_port_coefficents(size_t inc_port_num, size_t exc_port_num);
 	Eigen::VectorXcd get_excitation_port_coefficents(size_t port_num);
