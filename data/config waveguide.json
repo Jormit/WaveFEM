@@ -1,7 +1,8 @@
 {
   "model_file": "Waveguide.step",
   "port_centres": [
-    [ 0, 0, 0]
+    [ 0, 0, 0 ],
+    [ 0, 69.0, 0 ]
   ],
   "bounding_box_padding": [ 10, 10, 10 ],
   "pml_enable": false,
