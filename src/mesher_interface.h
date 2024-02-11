@@ -19,7 +19,7 @@ namespace mesher_interface {
 
 	int add_box(box b);
 
-	int subtract(int id1, int id2, bool remove_tool = true);
+	std::vector<int> subtract(int id1, int id2, bool remove_tool = true);
 
 	// Vector is indexed by node number - 1 !!!!!
 	std::vector<node> get_all_nodes();
@@ -28,6 +28,7 @@ namespace mesher_interface {
 
 	tet assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4);
 	std::vector<tet> get_volume_elems(int id);
+	std::vector<std::vector<tet>> get_volume_elems(std::vector<int> id);
 
 	int get_surface_from_com(point_3d);
 	std::vector<int> get_surface_from_com(std::vector<point_3d> coms);
