@@ -15,7 +15,7 @@ const std::string data_path = "../../../data/";
 
 int main()
 {
-	setup config(data_path + "config.json");
+	setup config(data_path + "config waveguide.json");
 
 	mesher_interface::initialize();
 
@@ -29,8 +29,8 @@ int main()
 	pml.add_padding(config.pml_thickness);
 	int pml_id = mesher_interface::add_box(pml);
 
-	pml_id = mesher_interface::subtract(pml_id, boundary_id, false);
-	boundary_id = mesher_interface::subtract(boundary_id, model_id);
+	pml_id = mesher_interface::subtract(pml_id, boundary_id, false)[0];
+	auto free_space_ids = mesher_interface::subtract(boundary_id, model_id);
 	
 	mesher_interface::mesh_model(20, 20);
 	mesher_interface::view_model();	
@@ -39,7 +39,7 @@ int main()
 	auto boundaries = mesher_interface::get_boundary_surfaces();
 	mesher_interface::label_boundary_nodes(nodes, boundaries);
 
-	auto elements = mesher_interface::get_volume_elems(boundary_id);
+	auto elements = helpers::flatten_vector(mesher_interface::get_volume_elems(free_space_ids));
 	auto pml_elements = mesher_interface::get_volume_elems(pml_id);
 	
 	auto base_materials = generate_base_material_set();

@@ -70,13 +70,19 @@ int mesher_interface::add_box(box b)
 	return id;
 }
 
-int mesher_interface::subtract(int id1, int id2, bool remove_tool)
+std::vector<int> mesher_interface::subtract(int id1, int id2, bool remove_tool)
 {
 	std::vector<std::pair<int, int> > ov;
 	std::vector<std::vector<std::pair<int, int> > > ovv;
 	gmsh::model::occ::cut({ {3, id1} }, { {3, id2} }, ov, ovv, -1, true, remove_tool);
 	gmsh::model::occ::synchronize();
-	return ov[0].second;
+	std::vector<int> new_ids;
+	for (const auto& o : ov)
+	{
+		new_ids.push_back(o.second);
+	}
+
+	return new_ids;
 }
 
 std::vector<node> mesher_interface::get_all_nodes()
@@ -185,6 +191,16 @@ std::vector<tet> mesher_interface::get_volume_elems(int id)
 		elems_to_return.push_back(assemble_tet(n1, n2, n3, n4));
 	}
 
+	return elems_to_return;
+}
+
+std::vector<std::vector<tet>> mesher_interface::get_volume_elems(std::vector<int> id)
+{
+	std::vector<std::vector<tet>> elems_to_return;
+	for (auto i : id)
+	{
+		elems_to_return.push_back(get_volume_elems(i));
+	}
 	return elems_to_return;
 }
 
