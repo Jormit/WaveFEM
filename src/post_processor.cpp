@@ -35,7 +35,6 @@ void post_processor::eval_port(size_t port_num, size_t mode, size_t num_x, size_
 		auto e = mesher_interface::get_surface_element_by_parametric_coordinate(p, sim_instance->sim_ports.entity_ids[port_num]);
 		auto elem_field = fem::_2d::mixed_order::eval_elem(sim_instance->nodes,
 			e, { p.u, p.v }, sim_instance->port_dof_maps[port_num], sim_instance->port_eigen_vectors[port_num].col(mode));
-		std::cout << elem_field << std::endl;
 		ofs << result_formatter::field_2d_at_point(p, elem_field);
 	}
 }
