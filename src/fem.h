@@ -4,6 +4,7 @@
 #include <Eigen/sparse>
 #include <array>
 #include <complex>
+#include <unordered_set>
 
 #include "geometry.h"
 #include "material.h"
@@ -62,7 +63,8 @@ namespace fem
 			Eigen::Matrix<double, 8, 1> b(const tri& e, const Eigen::Matrix<double, 3, 2>& coords,
 				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution);
 
-			std::map<std::pair<size_t, size_t>, size_t> dof_map(const std::vector<node>& nodes, const std::vector<tet>& elems);
+			std::map<std::pair<size_t, size_t>, size_t> dof_map(const std::vector<node>& nodes, const std::vector<tet>& elems,
+				std::unordered_set<size_t> boundary_edges, std::unordered_set<size_t> boundary_faces);
 			std::pair<size_t, size_t> global_dof_pair(const tet& elem, const size_t& dof_num);
 
 			Eigen::SparseMatrix<std::complex<double>> assemble_A(const std::vector<node>& nodes, const std::vector<tet>& elems,
