@@ -138,6 +138,25 @@ void mesher_interface::label_boundary_nodes(std::vector<node>& nodes, std::vecto
 	}
 }
 
+std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> mesher_interface::get_boundary_edges_and_faces(std::vector<int> surface_ids)
+{
+	std::unordered_set<size_t> edges;
+	std::unordered_set<size_t> faces;
+	for (auto id : surface_ids)
+	{
+		auto elems = get_surface_elems(id);
+		for (const auto & e : elems)
+		{
+			edges.insert(e.edges[0]);
+			edges.insert(e.edges[1]);
+			edges.insert(e.edges[2]);
+			faces.insert(e.face);
+		}
+	}
+
+	return { edges, faces };
+}
+
 tet mesher_interface::assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4)
 {
 	std::array<size_t, 4> nodes{ n1, n2, n3, n4 };

@@ -7,8 +7,10 @@
 #include "helpers.h"
 #include "result_formatter.h"
 
-sim::sim(box bbox, std::vector<material> materials, std::vector<node> nodes, std::vector<tet> volume_elems, ports ports) :
-	bbox(bbox), materials(materials), nodes(nodes), volume_elems(volume_elems), sim_ports(ports),
+sim::sim(box bbox, std::vector<material> materials, std::vector<node> nodes, std::vector<tet> volume_elems,
+	std::unordered_set<size_t> boundary_edges, std::unordered_set<size_t> boundary_faces, ports ports) :
+	bbox(bbox), materials(materials), nodes(nodes), volume_elems(volume_elems),
+	boundary_edges(boundary_edges), boundary_faces(boundary_faces), sim_ports(ports),
 	port_eigen_vectors(), port_eigen_wave_numbers(), port_dof_maps(),
 	full_solutions(), full_dof_map()
 {}
@@ -41,7 +43,7 @@ void sim::solve_full(double k)
 	full_solutions.clear();
 	full_dof_map.clear();
 
-	full_dof_map = fem::_3d::mixed_order::dof_map(nodes, volume_elems);
+	full_dof_map = fem::_3d::mixed_order::dof_map(nodes, volume_elems, boundary_edges, boundary_faces);
 	auto surface_elems = helpers::flatten_vector<tri>(sim_ports.elements);
 
 	for (int p = 0; p < sim_ports.elements.size(); p++)

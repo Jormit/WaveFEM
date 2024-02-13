@@ -15,7 +15,7 @@ const std::string data_path = "../../../data/";
 
 int main()
 {
-	setup config(data_path + "config waveguide open.json");
+	setup config(data_path + "config horn.json");
 
 	mesher_interface::initialize();
 
@@ -39,6 +39,10 @@ int main()
 	auto boundaries = mesher_interface::get_boundary_surfaces();
 	mesher_interface::label_boundary_nodes(nodes, boundaries);
 
+	std::unordered_set<size_t> boundary_edges;
+	std::unordered_set<size_t> boundary_faces;
+	std::tie(boundary_edges, boundary_faces) = mesher_interface::get_boundary_edges_and_faces(boundaries);
+
 	auto elements = helpers::flatten_vector(mesher_interface::get_volume_elems(free_space_ids));
 	auto pml_elements = mesher_interface::get_volume_elems(pml_id);
 	
@@ -49,7 +53,7 @@ int main()
 	ports ports(config.port_centres);
 	ports.setup_port_nodes(nodes);
 
-	auto current_sim = std::make_unique<sim>(pml, base_materials, nodes, elements, ports);
+	auto current_sim = std::make_unique<sim>(pml, base_materials, nodes, elements, boundary_edges, boundary_faces, ports);
 
 	current_sim->solve_ports();
 	current_sim->solve_full(config.simulation_wavenumber);

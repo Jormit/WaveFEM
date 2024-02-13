@@ -167,7 +167,8 @@ Eigen::Matrix<double, 8, 1> fem::_3d::mixed_order::b(
 	return b * area;
 }
 
-std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const std::vector<node>& nodes, const std::vector<tet>& elems)
+std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const std::vector<node>& nodes, const std::vector<tet>& elems,
+	std::unordered_set<size_t> boundary_edges, std::unordered_set<size_t> boundary_faces)
 {
 	int i = 0;
 	std::map<std::pair<size_t, size_t>, size_t> map;
@@ -178,9 +179,8 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const
 			if (!map.contains({ e.edges[edge], 1 }))
 			{
 				auto edge_nodes = e.get_edge_nodes(edge);
-				if (!helpers::check_for_common_elements(nodes[edge_nodes[0] - 1].surface_entities, nodes[edge_nodes[1] - 1].surface_entities)
-					|| ((nodes[edge_nodes[0] - 1].type_3d > 0 && nodes[edge_nodes[1] - 1].type_3d > 0) &&
-						(nodes[edge_nodes[0] - 1].type_2d != BOUNDARY_NODE || nodes[edge_nodes[1] - 1].type_2d != BOUNDARY_NODE)))
+				if (!boundary_edges.contains(e.edges[edge]) || ((nodes[edge_nodes[0] - 1].type_3d > 0 && nodes[edge_nodes[1] - 1].type_3d > 0) &&
+					(nodes[edge_nodes[0] - 1].type_2d != BOUNDARY_NODE || nodes[edge_nodes[1] - 1].type_2d != BOUNDARY_NODE)))
 				{
 					map[{e.edges[edge], 1}] = i++;
 					map[{e.edges[edge], 2}] = i++;
@@ -194,14 +194,10 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const
 			{
 				auto face_nodes = e.get_face_nodes(face);
 
-				if (!helpers::check_for_common_elements(
-					nodes[face_nodes[0] - 1].surface_entities,
-					nodes[face_nodes[1] - 1].surface_entities,
-					nodes[face_nodes[2] - 1].surface_entities)
-					|| (
-						nodes[face_nodes[0] - 1].type_3d > 0 &&
-						nodes[face_nodes[1] - 1].type_3d > 0 &&
-						nodes[face_nodes[2] - 1].type_3d > 0))
+				if (!boundary_faces.contains(e.faces[face]) || (
+					nodes[face_nodes[0] - 1].type_3d > 0 &&
+					nodes[face_nodes[1] - 1].type_3d > 0 &&
+					nodes[face_nodes[2] - 1].type_3d > 0))
 				{
 					map[{e.faces[face], 3}] = i++;
 					map[{e.faces[face], 4}] = i++;
