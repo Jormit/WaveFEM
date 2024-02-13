@@ -179,7 +179,8 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const
 			if (!map.contains({ e.edges[edge], 1 }))
 			{
 				auto edge_nodes = e.get_edge_nodes(edge);
-				if (!boundary_edges.contains(e.edges[edge]) || ((nodes[edge_nodes[0] - 1].type_3d > 0 && nodes[edge_nodes[1] - 1].type_3d > 0) &&
+				if (!boundary_edges.contains(e.edges[edge]) 
+					|| ((nodes[edge_nodes[0] - 1].type_3d > 0 && nodes[edge_nodes[1] - 1].type_3d > 0) &&
 					(nodes[edge_nodes[0] - 1].type_2d != BOUNDARY_NODE || nodes[edge_nodes[1] - 1].type_2d != BOUNDARY_NODE)))
 				{
 					map[{e.edges[edge], 1}] = i++;
