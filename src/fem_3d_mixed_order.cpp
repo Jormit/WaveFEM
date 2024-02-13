@@ -139,14 +139,14 @@ Eigen::Matrix<double, 8, 8>	fem::_3d::mixed_order::B(const Eigen::Matrix<double,
 	return B * area;
 }
 
-Eigen::Matrix<double, 8, 1> fem::_3d::mixed_order::b(
+Eigen::Matrix<std::complex<double>, 8, 1> fem::_3d::mixed_order::b(
 	const tri& e, const Eigen::Matrix<double, 3, 2>& coords,
 	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution)
 {
 	Eigen::Matrix<double, 3, 3> simplex_coeff = fem::_2d::simplex_coefficients(coords);
 	Eigen::Matrix<double, 3, 2> nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
 
-	Eigen::Matrix<double, 8, 1> b = Eigen::Matrix<double, 8, 1>::Zero();
+	Eigen::Matrix<std::complex<double>, 8, 1> b = Eigen::Matrix<double, 8, 1>::Zero();
 
 	for (size_t p = 0; p < 6; p++)
 	{

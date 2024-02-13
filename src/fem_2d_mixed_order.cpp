@@ -149,8 +149,8 @@ fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::v
 	return { S_global, T_global };
 }
 
-Eigen::Vector2d fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes, const tri& e, const point_2d& eval_point,
-	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution)
+Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes, const tri& e, const point_2d& eval_point,
+	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution)
 {
 	Eigen::Matrix<double, 3, 2> coords = e.coordinate_matrix(nodes);
 	Eigen::Vector2d modified_eval_point = eval_point.to_Eigen();
@@ -162,13 +162,13 @@ Eigen::Vector2d fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes,
 	return eval_elem(e, lambda, nabla_lambda, dof_map, solution);
 }
 
-Eigen::Vector2d fem::_2d::mixed_order::eval_elem(
+Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(
 	const tri& e, const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda,
-	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution)
+	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution)
 {
 	auto func = basis(lambda, nabla_lambda);
 
-	Eigen::Vector2d value = Eigen::Vector2d::Zero();
+	Eigen::Vector2cd value = Eigen::Vector2d::Zero();
 	for (size_t i = 0; i < 8; i++)
 	{
 		auto dof_pair = global_dof_pair(e, i);

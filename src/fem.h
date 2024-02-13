@@ -35,11 +35,11 @@ namespace fem
 				assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems,
 					const std::map<std::pair<size_t, size_t>, size_t>& dof_map);
 
-			Eigen::Vector2d eval_elem(const std::vector<node>& nodes, const tri& e, const point_2d& eval_point,
-				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution);
+			Eigen::Vector2cd eval_elem(const std::vector<node>& nodes, const tri& e, const point_2d& eval_point,
+				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution);
 
-			Eigen::Vector2d eval_elem(const tri& e, const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda,
-				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution);
+			Eigen::Vector2cd eval_elem(const tri& e, const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda,
+				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution);
 		}
 	}
 
@@ -60,7 +60,7 @@ namespace fem
 
 			Eigen::Matrix<double, 8, 8> B(const Eigen::Matrix<double, 3, 2>& coords);
 
-			Eigen::Matrix<double, 8, 1> b(const tri& e, const Eigen::Matrix<double, 3, 2>& coords,
+			Eigen::Matrix<std::complex<double>, 8, 1> b(const tri& e, const Eigen::Matrix<double, 3, 2>& coords,
 				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution);
 
 			std::map<std::pair<size_t, size_t>, size_t> dof_map(const std::vector<node>& nodes, const std::vector<tet>& elems,
