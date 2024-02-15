@@ -99,7 +99,7 @@ fem::_3d::mixed_order::S_T(const Eigen::Matrix<double, 4, 3>& coords, material m
 			for (int j = 0; j < 20; j++)
 			{
 				Eigen::Vector3cd curl_vec_i{ curl_funcs.row(i) };
-				Eigen::Vector3cd basis_vec_i { basis_funcs.row(i) };				
+				Eigen::Vector3cd basis_vec_i{ basis_funcs.row(i) };
 
 				S(i, j) += w * (mu_inv * curl_vec_i).dot(curl_funcs.row(j));
 				T(i, j) += w * (ep * basis_vec_i).dot(basis_funcs.row(j));

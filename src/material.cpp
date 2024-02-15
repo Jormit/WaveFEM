@@ -1,54 +1,43 @@
 #include "material.h"
 
-material default_material()
+material mat::vacuum()
 {
 	return { Eigen::Matrix3cd::Identity() , Eigen::Matrix3cd::Identity() };
 }
 
-std::vector<material> generate_base_material_set()
+std::vector<material> mat::generate_base_set()
 {
-	auto free_space = default_material();
+	auto free_space = vacuum();	
 
-	double alpha = 1;
-	double beta = 2;
+	std::complex<double> s_factor{ 0.1, 2 };
 
-	Eigen::Matrix3cd pml_x;
-	pml_x <<
-		std::complex{ alpha, -beta } / (alpha * alpha + beta * beta), 0, 0,
-		0, std::complex{ alpha, -beta }, 0,
-		0, 0, std::complex{ alpha, -beta };
+	auto pml_x = pml(s_factor, 1, 1);
+	auto pml_y = pml(1, s_factor, 1);
+	auto pml_z = pml(1, 1, s_factor);
 
-	Eigen::Matrix3cd pml_y;
-	pml_y <<
-		std::complex{ alpha, -beta } / (alpha * alpha + beta * beta), 0, 0,
-		0, std::complex{ alpha, -beta }, 0,
-		0, 0, std::complex{ alpha, -beta };
+	auto pml_xy = pml(s_factor, s_factor, 1);
+	auto pml_xz = pml(s_factor, 1, s_factor);
+	auto pml_yz = pml(1, s_factor, s_factor);
+	
+	auto pml_xyz = pml(s_factor, s_factor, s_factor);
 
-	Eigen::Matrix3cd pml_z;
-	pml_z <<
-		std::complex{ alpha, -beta }, 0, 0,
-		0, std::complex{ alpha, -beta }, 0,
-		0, 0, std::complex{ alpha, -beta } / (alpha * alpha + beta * beta);
-
-	return { free_space, {pml_x, pml_x}, {pml_y, pml_y}, {pml_z, pml_z} };
+	return { free_space, pml_x, pml_y, pml_z, pml_xy, pml_xz, pml_yz, pml_xyz };
 }
 
-void label_pml_elements(std::vector<tet>& elems, box non_pml_boundary, const std::vector<node>& nodes)
+void mat::label_elems(std::vector<tet>& elems, size_t material)
 {
-	for (size_t i = 0; i < elems.size(); i++)
+	for (int i = 0; i < elems.size(); i++)
 	{
-		auto center = elems[i].get_center(nodes);
-		if (center.x > non_pml_boundary.xmax || center.x < non_pml_boundary.xmin)
-		{
-			elems[i].material_id = PML_X;
-		}
-		else if (center.y > non_pml_boundary.ymax || center.y < non_pml_boundary.ymin)
-		{
-			elems[i].material_id = PML_Y;
-		}
-		else
-		{
-			elems[i].material_id = PML_Z;
-		}
+		elems[i].material_id = material;
 	}
+}
+
+material mat::pml(std::complex<double> sx, std::complex<double> sy, std::complex<double> sz)
+{
+	Eigen::Matrix3cd pml;
+	pml <<
+		sy * sz / sx, 0, 0,
+		0, sz * sx / sy, 0,
+		0, 0, sx * sy / sz;
+	return { pml , pml };
 }
