@@ -4,18 +4,25 @@
 
 #include "geometry.h"
 
-const size_t FREE_SPACE = 0;
-const size_t PML_X = 1;
-const size_t PML_Y = 2;
-const size_t PML_Z = 3;
-
 struct material
 {
 	Eigen::Matrix3cd permeability;
 	Eigen::Matrix3cd permittivity;
 };
 
-material default_material();
+namespace mat
+{
+	const size_t FREE_SPACE = 0;
+	const size_t PML_X = 1;
+	const size_t PML_Y = 2;
+	const size_t PML_Z = 3;
+	const size_t PML_XY = 4;
+	const size_t PML_XZ = 5;
+	const size_t PML_YZ = 6;
+	const size_t PML_XYZ = 7;
 
-std::vector<material> generate_base_material_set();
-void label_pml_elements(std::vector<tet>& elems, box non_pml_boundary, const std::vector<node>& nodes);
+	material vacuum();
+	std::vector<material> generate_base_set();
+	void label_elems(std::vector<tet>& elems, size_t material);
+	material pml(std::complex<double> sx, std::complex<double> sy, std::complex<double> sz);
+}
