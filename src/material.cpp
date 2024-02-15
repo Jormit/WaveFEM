@@ -9,7 +9,7 @@ std::vector<material> mat::generate_base_set()
 {
 	auto free_space = vacuum();	
 
-	std::complex<double> s_factor{ 0.1, 2 };
+	std::complex<double> s_factor{ 1, 5 };
 
 	auto pml_x = pml(s_factor, 1, 1);
 	auto pml_y = pml(1, s_factor, 1);
