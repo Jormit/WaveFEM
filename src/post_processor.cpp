@@ -58,6 +58,7 @@ void post_processor::eval_full(size_t port_num, size_t num_x, size_t num_y, size
 		auto e = mesher_interface::get_volume_element_by_coordinate(p);
 		if (!e.has_value())
 		{
+			ofs << result_formatter::field_3d_at_point(p, Eigen::Vector3cd::Zero());
 			continue;
 		}
 
