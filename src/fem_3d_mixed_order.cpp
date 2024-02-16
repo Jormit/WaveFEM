@@ -238,7 +238,7 @@ std::pair<size_t, size_t> fem::_3d::mixed_order::global_dof_pair(const tet& elem
 
 Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(const std::vector<node>& nodes, const std::vector<tet>& elems,
 	std::vector<material> materials, const std::vector<tri>& surface_elems, const std::map<std::pair<size_t, size_t>,
-	size_t>& dof_map, std::complex<double> ki, std::complex<double> gamma)
+	size_t>& dof_map, std::complex<double> k0, std::complex<double> gamma)
 {
 	Eigen::SparseMatrix<std::complex<double>> A(dof_map.size(), dof_map.size());
 	A.reserve(Eigen::VectorXi::Constant(dof_map.size(), 100));
@@ -260,7 +260,7 @@ Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(cons
 				if (!dof_map.contains(global_dof_pair_j)) continue;
 				auto global_dof_j = dof_map.at(global_dof_pair_j);
 				A.coeffRef(global_dof_i, global_dof_j) +=
-					S_local(local_dof_i, local_dof_j) - ki * ki * T_local(local_dof_i, local_dof_j);
+					S_local(local_dof_i, local_dof_j) - k0 * k0 * T_local(local_dof_i, local_dof_j);
 			}
 		}
 	}
