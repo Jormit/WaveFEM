@@ -1,9 +1,13 @@
-#include "boundary.h"
+#include "pml.h"
 #include "helpers.h"
 #include "material.h"
 
-pml_boundary boundary::create_pml(box pml_bounds, box free_space_bounds)
+pml_boundary pml::create(point_3d pml_box_padding)
 {
+	auto free_space_bounds = mesher_interface::get_bounding_box();
+	auto pml_bounds = free_space_bounds;
+	pml_bounds.add_padding(pml_box_padding);
+
 	box x_up(free_space_bounds.xmax, free_space_bounds.ymin, free_space_bounds.zmin,
 		pml_bounds.xmax, free_space_bounds.ymax, free_space_bounds.zmax);
 	box x_down(pml_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmin,
@@ -110,17 +114,7 @@ pml_boundary boundary::create_pml(box pml_bounds, box free_space_bounds)
 	return { x_ids, y_ids, z_ids, xy_ids, xz_ids, yz_ids, xyz_ids };
 }
 
-pml_boundary boundary::setup_pml_boundary(point_3d pml_box_padding)
-{
-	auto boundary = mesher_interface::get_bounding_box();
-	auto pml = boundary;
-	pml.add_padding(pml_box_padding);
-	auto pml_ids = create_pml(pml, boundary);
-
-	return pml_ids;
-}
-
-std::vector<tet> boundary::get_pml_elements(pml_boundary pml_volumes)
+std::vector<tet> pml::get_elements(pml_boundary pml_volumes)
 {
 	std::vector<tet> elements;
 

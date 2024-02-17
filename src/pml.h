@@ -17,10 +17,10 @@ struct pml_boundary
 	std::array<int, 8> xyz_ids;
 };
 
-namespace boundary
+namespace pml
 {
-	pml_boundary create_pml(box pml_bounds, box free_space_bounds);
+	pml_boundary create(point_3d pml_box_padding);
 	pml_boundary setup_pml_boundary(point_3d pml_box_padding);
-	std::vector<tet> get_pml_elements(pml_boundary pml_volumes);
+	std::vector<tet> get_elements(pml_boundary pml_volumes);
 }
 
