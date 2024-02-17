@@ -8,9 +8,9 @@
 #include "result_formatter.h"
 
 sim::sim(box bbox, std::vector<material> materials, std::vector<node> nodes, std::vector<tet> volume_elems,
-	std::unordered_set<size_t> boundary_edges, std::unordered_set<size_t> boundary_faces, ports ports) :
+	std::unordered_map<size_t, int> boundary_edge_map, std::unordered_map<size_t, int> boundary_face_map, ports ports) :
 	bbox(bbox), materials(materials), nodes(nodes), volume_elems(volume_elems),
-	boundary_edges(boundary_edges), boundary_faces(boundary_faces), sim_ports(ports),
+	boundary_edge_map(boundary_edge_map), boundary_face_map(boundary_face_map), sim_ports(ports),
 	port_eigen_vectors(), port_eigen_wave_numbers(), port_dof_maps(),
 	full_solutions(), full_dof_map()
 {}
@@ -22,7 +22,7 @@ void sim::solve_ports()
 	port_dof_maps.clear();
 	for (int p = 0; p < sim_ports.elements.size(); p++)
 	{
-		auto dof_map = fem::_2d::mixed_order::dof_map(nodes, sim_ports.elements[p]);
+		auto dof_map = fem::_2d::mixed_order::dof_map(sim_ports.elements[p], boundary_edge_map);
 		port_dof_maps.push_back(dof_map);
 
 		Eigen::SparseMatrix<double> S;
@@ -43,7 +43,7 @@ void sim::solve_full(double k)
 	full_solutions.clear();
 	full_dof_map.clear();
 
-	full_dof_map = fem::_3d::mixed_order::dof_map(nodes, volume_elems, boundary_edges, boundary_faces);
+	full_dof_map = fem::_3d::mixed_order::dof_map(volume_elems, boundary_edge_map, boundary_face_map);
 	auto surface_elems = helpers::flatten_vector<tri>(sim_ports.elements);
 
 	for (int p = 0; p < sim_ports.elements.size(); p++)

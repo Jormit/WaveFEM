@@ -96,7 +96,7 @@ std::vector<node> mesher_interface::get_all_nodes()
 
 	int i = 0;
 	for (auto n : nodeTags) {
-		node nn{ { coord[3 * i], coord[3 * i + 1], coord[3 * i + 2] }, {}, FREE_NODE, FREE_NODE, {} };
+		node nn{ { coord[3 * i], coord[3 * i + 1], coord[3 * i + 2] }, {}, {} };
 		nodes_to_return[n - 1] = nn;
 		i++;
 	}
@@ -113,32 +113,12 @@ std::vector<size_t> mesher_interface::get_node_ids_in_volume(int id)
 	return nodeTags4;
 }
 
-void mesher_interface::label_boundary_nodes(std::vector<node>& nodes, std::vector<int> surface_ids)
+std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> mesher_interface::get_surface_edges_and_faces(int surface_id)
 {
-	for (auto id : surface_ids)
-	{
-		std::vector<size_t> nodeTags;
-		std::vector<double> coord;
-		std::vector<double> parametric_coord;
-		gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, 2, id, true, false);
-
-		for (auto n : nodeTags)
-		{
-			nodes[n - 1].type_3d = BOUNDARY_NODE;
-			nodes[n - 1].type_2d = BOUNDARY_NODE;
-			nodes[n - 1].surface_entities.push_back(id);
-		}
-
-		std::vector<size_t> nodeTags_boundary;
-		std::vector<double> coord_boundary;
-		std::vector<double> parametric_coord_boundary;
-		gmsh::model::mesh::getNodes(nodeTags_boundary, coord_boundary, parametric_coord_boundary, 2, id, false, false);
-
-		for (auto n : nodeTags_boundary) nodes[n - 1].type_2d = FREE_NODE;
-	}
+	return get_surface_edges_and_faces(std::vector <int> {surface_id});
 }
 
-std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> mesher_interface::get_boundary_edges_and_faces(std::vector<int> surface_ids)
+std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> mesher_interface::get_surface_edges_and_faces(std::vector<int> surface_ids)
 {
 	std::unordered_set<size_t> edges;
 	std::unordered_set<size_t> faces;
@@ -155,6 +135,37 @@ std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> mesher_interfa
 	}
 
 	return { edges, faces };
+}
+
+std::unordered_set<size_t> mesher_interface::get_surface_boundary_edges(int surface_id)
+{
+	return get_surface_boundary_edges(std::vector <int> { surface_id });
+}
+
+std::unordered_set<size_t> mesher_interface::get_surface_boundary_edges(std::vector<int> surface_ids)
+{
+	std::unordered_set<size_t> edges;
+	for (auto id : surface_ids)
+	{
+		std::vector<std::pair<int, int>> boundary_entities;
+		gmsh::model::getBoundary({ {2, id} }, boundary_entities, false, false, false);
+
+		for (const auto& e : boundary_entities)
+		{
+			std::vector<int> elementTypes;
+			std::vector<std::vector<std::size_t>> elementTags;
+			std::vector<std::vector<std::size_t>> nodeTags;
+			gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 1, e.second);
+			std::vector<size_t> edge_tags;
+			std::vector<int> edge_orientations;
+			gmsh::model::mesh::getEdges(nodeTags[0], edge_tags, edge_orientations);
+			for (auto edge : edge_tags)
+			{
+				edges.insert(edge);
+			}
+		}		
+	}
+	return edges;
 }
 
 tet mesher_interface::assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4)
