@@ -32,3 +32,29 @@ def import_3d_field(filename, dim):
     vec = np.stack((u,v,w), axis=1).reshape(dim + (3,))
 
     return x,y,z,vec
+
+def import_2d_field(filename, dim):
+    f=open(filename,"r+")
+    x = []
+    y = []
+    u = []
+    v = []
+
+    for line in f:
+        line=line.split()
+        if line: 
+                x.append(float(line[0]))
+                y.append(float(line[1]))
+                u.append(complex(line[2]))
+                v.append(complex(line[3]))
+
+    x = np.array(x, dtype=float)
+    y = np.array(y, dtype=float)
+    u = np.array(u, dtype=complex)
+    v = np.array(v, dtype=complex)
+
+    x = x.reshape(dim)
+    y = y.reshape(dim)
+    vec = np.stack((u,v), axis=1).reshape(dim + (2,))
+
+    return x,y,vec

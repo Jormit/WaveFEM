@@ -3,7 +3,7 @@ from mayavi import mlab
 
 import data_loader as dl
 
-x,y,z,vec = dl.import_3d_field("full_port_0_solution.txt", (30, 30, 30))
+x,y,z,vec = dl.import_3d_field("Data/Ridged Waveguide 3d.txt", (30, 30, 30))
 vec_real = np.real(vec)
 vec_real_mag = np.linalg.norm(vec_real, axis=3)
 
