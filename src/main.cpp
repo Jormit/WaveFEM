@@ -16,7 +16,7 @@ const std::string data_path = "../../../data/";
 
 int main()
 {
-	setup config(data_path + "config horn.json");
+	setup config(data_path + "config ridged waveguide.json");
 
 	mesher_interface::initialize();
 

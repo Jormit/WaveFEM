@@ -1,0 +1,11 @@
+{
+  "model_file": "Ridged Waveguide.step",
+  "port_centres": [
+    [ 0, 1, 0 ],
+    [ 0, 99, 0 ]
+  ],
+  "bounding_box_padding": [ 10, 10, 10 ],
+  "pml_enable": false,
+  "pml_thickness": [ 20, 20, 20 ],
+  "frequency": 5000000000
+}
