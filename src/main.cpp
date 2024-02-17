@@ -29,7 +29,7 @@ int main()
 
 	auto pml_ids = boundary::setup_pml_boundary(config.pml_thickness);
 
-	mesher_interface::mesh_model(20, 20);
+	mesher_interface::mesh_model(15, 15);
 	mesher_interface::view_model();
 
 	auto nodes = mesher_interface::get_all_nodes();
