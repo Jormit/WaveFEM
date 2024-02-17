@@ -10,7 +10,7 @@
 #include "helpers.h"
 #include "material.h"
 #include "post_processor.h"
-#include "boundary.h"
+#include "pml.h"
 
 const std::string data_path = "../../../data/";
 
@@ -27,7 +27,7 @@ int main()
 	int boundary_id = mesher_interface::add_box(boundary);
 	auto free_space_volumes = mesher_interface::subtract(boundary_id, model_id);
 
-	auto pml_ids = boundary::setup_pml_boundary(config.pml_thickness);
+	auto pml_ids = pml::create(config.pml_thickness);
 
 	mesher_interface::mesh_model(15, 15);
 	mesher_interface::view_model();
@@ -43,7 +43,7 @@ int main()
 	auto boundary_face_map = helpers::set_to_map<size_t, int>(boundary_faces, BOUNDARY);
 
 	auto elements = helpers::flatten_vector(mesher_interface::get_volume_elems(free_space_volumes));
-	auto pml_elements = boundary::get_pml_elements(pml_ids);
+	auto pml_elements = pml::get_elements(pml_ids);
 	elements.insert(elements.end(), pml_elements.begin(), pml_elements.end());
 
 	auto base_materials = mat::generate_base_set();
