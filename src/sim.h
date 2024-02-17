@@ -12,7 +12,7 @@ class sim
 {
 public:
 	sim(box bbox, std::vector<material> materials, std::vector<node> nodes, std::vector<tet> volume_elems,
-		std::unordered_set<size_t> boundary_edges, std::unordered_set<size_t> boundary_faces, ports ports);
+		std::unordered_map<size_t, int> boundary_edge_map, std::unordered_map<size_t, int> boundary_face_map, ports ports);
 
 	void solve_ports();
 	void solve_full(double k);
@@ -25,8 +25,8 @@ private:
 	std::vector<material> materials;
 	std::vector<node> nodes;
 	std::vector<tet> volume_elems;
-	std::unordered_set<size_t> boundary_edges;
-	std::unordered_set<size_t> boundary_faces;
+	std::unordered_map<size_t, int> boundary_edge_map;
+	std::unordered_map<size_t, int> boundary_face_map;
 	ports sim_ports;
 
 	// Port Solution

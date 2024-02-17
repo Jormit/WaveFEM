@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <list>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace helpers
 {
@@ -20,4 +22,16 @@ namespace helpers
 		for (const auto& sub : v) result.insert(result.end(), sub.begin(), sub.end());
 		return result;
 	}
+
+	template <typename T, typename K>
+	std::unordered_map<T, K> set_to_map(std::unordered_set<T> set, K initial)
+	{
+		std::unordered_map<T, K> new_map;
+		for (auto elem : set)
+		{
+			new_map[elem] = initial;
+		}
+		return new_map;
+	}
+	
 }

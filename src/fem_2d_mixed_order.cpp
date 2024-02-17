@@ -70,7 +70,7 @@ fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords)
 	return { S * area, T * area };
 }
 
-std::map<std::pair<size_t, size_t>, size_t> fem::_2d::mixed_order::dof_map(const std::vector<node>& nodes, const std::vector<tri>& elems)
+std::map<std::pair<size_t, size_t>, size_t> fem::_2d::mixed_order::dof_map(const std::vector<tri>& elems, std::unordered_map<size_t, int> boundary_edge_map)
 {
 	int i = 0;
 	std::map<std::pair<size_t, size_t>, size_t> map;
@@ -78,10 +78,10 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_2d::mixed_order::dof_map(const
 	{
 		for (size_t edge = 0; edge < 3; edge++)
 		{
-			if (!map.contains({ e.edges[edge], 1 }))
+			auto global_edge = e.edges[edge];
+			if (!map.contains({ global_edge, 1 }))
 			{
-				auto edge_nodes = e.get_edge_nodes(edge);
-				if (nodes[edge_nodes[0] - 1].type_2d != BOUNDARY_NODE || nodes[edge_nodes[1] - 1].type_2d != BOUNDARY_NODE)
+				if (boundary_edge_map[global_edge] != PORT_OUTER_BOUNDARY)
 				{
 					map[{e.edges[edge], 1}] = i++;
 					map[{e.edges[edge], 2}] = i++;

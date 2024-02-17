@@ -14,16 +14,30 @@ ports::ports(std::vector<point_3d> points)
 
 void ports::setup_port_nodes(std::vector<node>& nodes)
 {
-	for (int p = 0; p < entity_ids.size(); p++)
+	mesher_interface::parameterize_surface_nodes(nodes, entity_ids, elements);
+}
+
+void ports::setup_port_faces_and_edges(std::unordered_map<size_t, int>& boundary_edge_map, std::unordered_map<size_t, int>& boundary_face_map)
+{
+	for (int i = 0; i < entity_ids.size(); i++)
 	{
-		for (const auto& e : elements[p])
+		std::unordered_set<size_t> port_edges;
+		std::unordered_set<size_t> port_faces;
+		std::tie(port_edges, port_faces) = mesher_interface::get_surface_edges_and_faces(entity_ids[i]);
+		for (auto edge : port_edges)
 		{
-			for (auto n : e.nodes)
-			{
-				nodes[n - 1].type_3d = p + 1;			
-			}
+			boundary_edge_map[edge] = i + 1;
+		}
+
+		for (auto face : port_faces)
+		{
+			boundary_face_map[face] = i + 1;
 		}
 	}
 
-	mesher_interface::parameterize_surface_nodes(nodes, entity_ids, elements);
+	auto port_outer_boundaries = mesher_interface::get_surface_boundary_edges(entity_ids);
+	for (auto edge : port_outer_boundaries)
+	{
+		boundary_edge_map[edge] = PORT_OUTER_BOUNDARY;
+	}
 }

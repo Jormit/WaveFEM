@@ -28,7 +28,8 @@ namespace fem
 			std::pair<Eigen::Matrix<double, 8, 8>, Eigen::Matrix<double, 8, 8>>
 				S_T(const Eigen::Matrix<double, 3, 2>& coords);
 
-			std::map<std::pair<size_t, size_t>, size_t> dof_map(const std::vector<node>& nodes, const std::vector<tri>& elems);
+			std::map<std::pair<size_t, size_t>, size_t> dof_map(
+				const std::vector<tri>& elems, std::unordered_map<size_t, int> boundary_edge_map);
 			std::pair<size_t, size_t> global_dof_pair(const tri& elem, const size_t& dof_num);
 
 			std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
@@ -63,8 +64,8 @@ namespace fem
 			Eigen::Matrix<std::complex<double>, 8, 1> b(const tri& e, const Eigen::Matrix<double, 3, 2>& coords,
 				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution);
 
-			std::map<std::pair<size_t, size_t>, size_t> dof_map(const std::vector<node>& nodes, const std::vector<tet>& elems,
-				std::unordered_set<size_t> boundary_edges, std::unordered_set<size_t> boundary_faces);
+			std::map<std::pair<size_t, size_t>, size_t> dof_map(const std::vector<tet>& elems,
+				std::unordered_map<size_t, int> boundary_edge_map, std::unordered_map<size_t, int> boundary_face_map);
 			std::pair<size_t, size_t> global_dof_pair(const tet& elem, const size_t& dof_num);
 
 			Eigen::SparseMatrix<std::complex<double>> assemble_A(const std::vector<node>& nodes, const std::vector<tet>& elems,

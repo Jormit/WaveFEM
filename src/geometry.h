@@ -6,8 +6,8 @@
 #include <list>
 #include <Eigen/dense>
 
-const int BOUNDARY_NODE = 0;
-const int FREE_NODE = -1;
+const int BOUNDARY = 0;
+const int PORT_OUTER_BOUNDARY = -1;
 
 struct point_2d
 {
@@ -44,8 +44,6 @@ struct node
 {
 	point_3d coords;
 	std::optional<point_2d> point_2d;
-	int type_2d;
-	int type_3d;
 	std::list<size_t> surface_entities;
 };
 

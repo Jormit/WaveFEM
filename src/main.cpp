@@ -34,11 +34,13 @@ int main()
 
 	auto nodes = mesher_interface::get_all_nodes();
 	auto boundaries = mesher_interface::get_boundary_surfaces();
-	mesher_interface::label_boundary_nodes(nodes, boundaries);
 
 	std::unordered_set<size_t> boundary_edges;
 	std::unordered_set<size_t> boundary_faces;
-	std::tie(boundary_edges, boundary_faces) = mesher_interface::get_boundary_edges_and_faces(boundaries);
+	std::tie(boundary_edges, boundary_faces) = mesher_interface::get_surface_edges_and_faces(boundaries);
+
+	auto boundary_edge_map = helpers::set_to_map<size_t, int>(boundary_edges, BOUNDARY);
+	auto boundary_face_map = helpers::set_to_map<size_t, int>(boundary_faces, BOUNDARY);
 
 	auto elements = helpers::flatten_vector(mesher_interface::get_volume_elems(free_space_volumes));
 	auto pml_elements = boundary::get_pml_elements(pml_ids);
@@ -48,9 +50,10 @@ int main()
 
 	ports ports(config.port_centres);
 	ports.setup_port_nodes(nodes);
+	ports.setup_port_faces_and_edges(boundary_edge_map, boundary_face_map);
 
 	auto current_sim = std::make_unique<sim>(mesher_interface::get_bounding_box(),
-		base_materials, nodes, elements, boundary_edges, boundary_faces, ports);
+		base_materials, nodes, elements, boundary_edge_map, boundary_face_map, ports);
 
 	current_sim->solve_ports();
 	current_sim->solve_full(config.simulation_wavenumber);

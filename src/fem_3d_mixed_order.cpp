@@ -167,8 +167,8 @@ Eigen::Matrix<std::complex<double>, 8, 1> fem::_3d::mixed_order::b(
 	return b * area;
 }
 
-std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const std::vector<node>& nodes, const std::vector<tet>& elems,
-	std::unordered_set<size_t> boundary_edges, std::unordered_set<size_t> boundary_faces)
+std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const std::vector<tet>& elems,
+	std::unordered_map<size_t, int> boundary_edge_map, std::unordered_map<size_t, int> boundary_face_map)
 {
 	int i = 0;
 	std::map<std::pair<size_t, size_t>, size_t> map;
@@ -176,12 +176,10 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const
 	{
 		for (size_t edge = 0; edge < 6; edge++)
 		{
-			if (!map.contains({ e.edges[edge], 1 }))
+			auto global_edge = e.edges[edge];
+			if (!map.contains({ global_edge, 1 }))
 			{
-				auto edge_nodes = e.get_edge_nodes(edge);
-				if (!boundary_edges.contains(e.edges[edge]) 
-					|| ((nodes[edge_nodes[0] - 1].type_3d > 0 && nodes[edge_nodes[1] - 1].type_3d > 0) &&
-					(nodes[edge_nodes[0] - 1].type_2d != BOUNDARY_NODE || nodes[edge_nodes[1] - 1].type_2d != BOUNDARY_NODE)))
+				if (!boundary_edge_map.contains(global_edge) || boundary_edge_map[global_edge] > BOUNDARY)
 				{
 					map[{e.edges[edge], 1}] = i++;
 					map[{e.edges[edge], 2}] = i++;
@@ -191,14 +189,10 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const
 
 		for (size_t face = 0; face < 4; face++)
 		{
-			if (!map.contains({ e.faces[face], 3 }))
+			auto global_face = e.faces[face];
+			if (!map.contains({ global_face, 3 }))
 			{
-				auto face_nodes = e.get_face_nodes(face);
-
-				if (!boundary_faces.contains(e.faces[face]) || (
-					nodes[face_nodes[0] - 1].type_3d > 0 &&
-					nodes[face_nodes[1] - 1].type_3d > 0 &&
-					nodes[face_nodes[2] - 1].type_3d > 0))
+				if (!boundary_face_map.contains(global_face) || boundary_face_map[global_face] > BOUNDARY)
 				{
 					map[{e.faces[face], 3}] = i++;
 					map[{e.faces[face], 4}] = i++;

@@ -27,9 +27,12 @@ namespace mesher_interface {
 	// Vector is indexed by node number - 1 !!!!!
 	std::vector<node> get_all_nodes();
 	std::vector<size_t> get_node_ids_in_volume(int id);
-	void label_boundary_nodes(std::vector<node>& nodes, std::vector <int> surface_ids);
 
-	std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> get_boundary_edges_and_faces(std::vector <int> surface_ids);
+	std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> get_surface_edges_and_faces(int surface_id);
+	std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> get_surface_edges_and_faces(std::vector <int> surface_ids);
+
+	std::unordered_set<size_t> get_surface_boundary_edges(int surface_id);
+	std::unordered_set<size_t> get_surface_boundary_edges(std::vector <int> surface_ids);
 
 	tet assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4);
 	std::vector<tet> get_volume_elems(int id);
