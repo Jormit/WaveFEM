@@ -9,7 +9,7 @@
 #include "setup.h"
 #include "helpers.h"
 #include "material.h"
-#include "post_processor.h"
+#include "post.h"
 #include "pml.h"
 
 const std::string data_path = "../../../data/";
@@ -61,18 +61,15 @@ int main()
 	ports.setup_port_nodes(nodes);
 	ports.setup_port_faces_and_edges(boundary_edge_map, boundary_face_map);
 
-	auto current_sim = std::make_unique<sim>(mesher_interface::get_bounding_box(),
-		base_materials, nodes, elements, boundary_edge_map, boundary_face_map, ports);
+	sim current_sim (mesher_interface::get_bounding_box(), base_materials, nodes,
+		elements, boundary_edge_map, boundary_face_map, ports);
 
-	current_sim->solve_ports();
-	current_sim->solve_full(config.simulation_wavenumber);
+	current_sim.solve_ports();
+	current_sim.solve_full(config.simulation_wavenumber);
 
-	post_processor post(std::move(current_sim));
-
-	post.eval_port(30, 30);
-	post.eval_slice(slice_plane::YZ, 100, 100, 0);
-	post.eval_full(30, 30, 30);
-	post.eval_s_parameters();
+	post::eval_port(current_sim, 30, 30);
+	post::eval_slice(current_sim, slice_plane::YZ, 100, 100, 0);
+	post::eval_full(current_sim, 30, 30, 30);
 
 	return 0;
 }
