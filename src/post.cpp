@@ -4,142 +4,78 @@
 
 #include "post.h"
 #include "mesher_interface.h"
-#include "result_formatter.h"
 #include "fem.h"
 
-void post::eval_port(const sim& sim_instance, size_t num_x, size_t num_y)
+std::vector<std::pair<Eigen::MatrixX2d, Eigen::MatrixX2cd>> post::eval_port(const sim& sim_instance, size_t num_x, size_t num_y)
 {
+	std::vector<std::pair<Eigen::MatrixX2d, Eigen::MatrixX2cd>> results;
 	for (size_t p = 0; p < sim_instance.sim_ports.entity_ids.size(); p++)
 	{
 		for (size_t m = 0; m < sim_instance.port_eigen_vectors[0].cols(); m++)
 		{
-			eval_port(sim_instance, p, m, num_x, num_y);
+			results.push_back(eval_port(sim_instance, p, m, num_x, num_y));
 		}
 	}
+	return results;
 }
 
-void post::eval_port(const sim& sim_instance, size_t port_num, size_t mode, size_t num_x, size_t num_y)
+std::pair<Eigen::MatrixX2d, Eigen::MatrixX2cd> post::eval_port(const sim& sim_instance, size_t port_num, size_t mode, size_t num_x, size_t num_y)
 {
 	auto bounds = sim_instance.sim_ports.bounds[port_num];
 	bounds.add_padding(-1, -1);
 	auto points = generate_grid_points(bounds, num_x, num_y);
 
-	std::ofstream ofs(std::format("port_{}_mode_{}.txt", port_num, mode));
+	Eigen::MatrixX2d point (points.size(), 2);
+	Eigen::MatrixX2cd field (points.size(), 2);
 
-	for (const auto& p : points)
+	for (int i = 0; i < points.size(); i++)
 	{
+		const auto p = points[i];
 		auto e = mesher_interface::get_surface_element_by_parametric_coordinate(p, sim_instance.sim_ports.entity_ids[port_num]);
 		auto elem_field = fem::_2d::mixed_order::eval_elem(sim_instance.nodes,
-			e, { p.u, p.v }, sim_instance.port_dof_maps[port_num], sim_instance.port_eigen_vectors[port_num].col(mode));
-		ofs << result_formatter::field_2d_at_point(p, elem_field);
+			e, {p.u, p.v}, sim_instance.port_dof_maps[port_num], sim_instance.port_eigen_vectors[port_num].col(mode));
+		point.row(i) << p.u, p.v;
+		field.row(i) << elem_field(0), elem_field(1);
 	}
+
+	return { point, field };
 }
 
-void post::eval_full(const sim& sim_instance, size_t num_x, size_t num_y, size_t num_z)
+std::vector<std::pair<Eigen::MatrixX3d, Eigen::MatrixX3cd>> post::eval_full(const sim& sim_instance, size_t num_x, size_t num_y, size_t num_z)
 {
+	std::vector<std::pair<Eigen::MatrixX3d, Eigen::MatrixX3cd>> results;
 	for (size_t p = 0; p < sim_instance.sim_ports.entity_ids.size(); p++)
 	{
-		eval_full(sim_instance, p, num_x, num_y, num_z);
+		results.push_back(eval_full(sim_instance, p, num_x, num_y, num_z));
 	}
+	return results;
 }
 
-void post::eval_full(const sim& sim_instance, size_t port_num, size_t num_x, size_t num_y, size_t num_z)
+std::pair<Eigen::MatrixX3d, Eigen::MatrixX3cd> post::eval_full(const sim& sim_instance, size_t port_num, size_t num_x, size_t num_y, size_t num_z)
 {
 	auto points = generate_grid_points(sim_instance.bbox, num_x, num_y, num_z);
 
-	std::ofstream ofs(std::format("full_port_{}_solution.txt", port_num));
+	Eigen::MatrixX3d point(points.size(), 3);
+	Eigen::MatrixX3cd field(points.size(), 3);
 
-	for (const auto& p : points)
+	for (int i = 0; i < points.size(); i++)
 	{
+		const auto p = points[i];
 		auto e = mesher_interface::get_volume_element_by_coordinate(p);
+
 		if (!e.has_value())
 		{
-			ofs << result_formatter::field_3d_at_point(p, Eigen::Vector3cd::Zero());
+			point.row(i) << p.x, p.y, p.z;
+			field.row(i) << 0, 0, 0;
 			continue;
 		}
 
 		auto elem_field = fem::_3d::mixed_order::eval_elem(sim_instance.nodes,
 			e.value(), p, sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
 
-		ofs << result_formatter::field_3d_at_point(p, elem_field);
-	}
-	ofs.close();
-}
-
-void post::eval_slice(const sim& sim_instance, slice_plane slice, size_t num_u, size_t num_v, double w)
-{
-	for (size_t p = 0; p < sim_instance.sim_ports.entity_ids.size(); p++)
-	{
-		eval_slice(sim_instance, slice, p, num_u, num_v, w);
-	}
-}
-
-void post::eval_slice(const sim& sim_instance, slice_plane slice, size_t port_num, size_t num_u, size_t num_v, double w)
-{
-	rectangle plane; 
-	if (slice == slice_plane::XY)
-	{
-		plane = rectangle(sim_instance.bbox.xmin, sim_instance.bbox.ymin,
-			sim_instance.bbox.xmax, sim_instance.bbox.ymax);
-	} 
-	else if (slice == slice_plane::XZ)
-	{
-		plane = rectangle(sim_instance.bbox.xmin, sim_instance.bbox.zmin,
-			sim_instance.bbox.xmax, sim_instance.bbox.zmax);
-	} 
-	else
-	{
-		plane = rectangle(sim_instance.bbox.ymin, sim_instance.bbox.zmin,
-			sim_instance.bbox.ymax, sim_instance.bbox.zmax);
+		point.row(i) << p.x, p.y, p.z;
+		field.row(i) << elem_field(0), elem_field(1), elem_field(2);
 	}
 
-	auto points = generate_grid_points(plane, num_u, num_v);
-	std::ofstream ofs(std::format("slice_port_{}.txt", port_num));
-
-	for (const auto& p : points)
-	{
-
-		point_3d p3d;
-		if (slice == slice_plane::XY)
-		{
-			p3d = { p.u, p.v, w };
-		}
-		else if (slice == slice_plane::XZ)
-		{
-			p3d = { p.u, w, p.v };
-		}
-		else
-		{
-			p3d = { w, p.u, p.v };
-		}
-
-		auto e = mesher_interface::get_volume_element_by_coordinate(p3d);
-		if (!e.has_value())
-		{
-			continue;
-		}
-
-		auto elem_field = fem::_3d::mixed_order::eval_elem(sim_instance.nodes,
-			e.value(), p3d, sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
-
-		if (slice == slice_plane::XY)
-		{
-			Eigen::Vector2cd surface_vec;
-			surface_vec << elem_field(0), elem_field(1);
-			ofs << result_formatter::field_2d_at_point(p, surface_vec);
-		}
-		else if (slice == slice_plane::XZ)
-		{
-			Eigen::Vector2cd surface_vec;
-			surface_vec << elem_field(0), elem_field(2);
-			ofs << result_formatter::field_2d_at_point(p, surface_vec);
-		}
-		else
-		{
-			Eigen::Vector2cd surface_vec;
-			surface_vec << elem_field(1), elem_field(2);
-			ofs << result_formatter::field_2d_at_point(p, surface_vec);
-		}
-	}
-	ofs.close();
+	return { point, field };
 }

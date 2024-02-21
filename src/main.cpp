@@ -11,6 +11,7 @@
 #include "material.h"
 #include "post.h"
 #include "pml.h"
+#include "result_writer.h"
 
 const std::string data_path = "../../../data/";
 
@@ -67,9 +68,11 @@ int main()
 	current_sim.solve_ports();
 	current_sim.solve_full(config.simulation_wavenumber);
 
-	post::eval_port(current_sim, 30, 30);
-	post::eval_slice(current_sim, slice_plane::YZ, 100, 100, 0);
-	post::eval_full(current_sim, 30, 30, 30);
+	auto port = post::eval_port(current_sim, 30, 30);
+	auto full = post::eval_full(current_sim, 30, 30, 30);
+
+	result_writer::write_2d_solution("Port Solution.txt", port[0].first, port[0].second);
+	result_writer::write_3d_solution("Full Solution.txt", full[0].first, full[0].second);
 
 	return 0;
 }

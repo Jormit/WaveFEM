@@ -13,7 +13,7 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> fem::solve_eigenproblem(const Eigen:
 	OpType op(S, T);
 	BOpType Bop(T);
 
-	Spectra::SymGEigsShiftSolver<OpType, BOpType, Spectra::GEigsMode::ShiftInvert> geigs(op, Bop, 5, 11, 1e-10);
+	Spectra::SymGEigsShiftSolver<OpType, BOpType, Spectra::GEigsMode::ShiftInvert> geigs(op, Bop, 1, 11, 1e-10);
 
 	geigs.init();
 	auto nconv = geigs.compute(Spectra::SortRule::LargestAlge);

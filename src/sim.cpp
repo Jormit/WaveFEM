@@ -5,7 +5,6 @@
 #include "fem.h"
 #include "mesher_interface.h"
 #include "helpers.h"
-#include "result_formatter.h"
 
 sim::sim(box bbox, std::vector<material> materials, std::vector<node> nodes, std::vector<tet> volume_elems,
 	std::unordered_map<size_t, int> boundary_edge_map, std::unordered_map<size_t, int> boundary_face_map, ports ports) :
