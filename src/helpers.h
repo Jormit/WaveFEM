@@ -3,6 +3,8 @@
 #include <list>
 #include <unordered_map>
 #include <unordered_set>
+#include <Eigen/dense>
+#include <complex>
 
 namespace helpers
 {
@@ -32,6 +34,16 @@ namespace helpers
 			new_map[elem] = initial;
 		}
 		return new_map;
+	}
+
+	inline std::complex<double> rowise_2d_dot_product(Eigen::MatrixX2cd A, Eigen::MatrixX2cd B)
+	{
+		std::complex<double> result = 0;
+		for (size_t i = 0; i < A.rows(); i++)
+		{
+			result += A.row(i).dot(B.row(i));
+		}
+		return result;
 	}
 	
 }
