@@ -17,7 +17,7 @@ const std::string data_path = "../../../data/";
 
 int main()
 {
-	setup config(data_path + "config ridged waveguide.json");
+	setup config(data_path + "config waveguide.json");
 
 	mesher_interface::initialize();
 
@@ -68,11 +68,14 @@ int main()
 	current_sim.solve_ports();
 	current_sim.solve_full(config.simulation_wavenumber);
 
-	auto port = post::eval_port(current_sim, 30, 30);
-	auto full = post::eval_full(current_sim, 30, 30, 30);
+	auto port_1_excitation = post::eval_port(current_sim, 0, 0, 30, 30);
+	auto full_sol = post::eval_full(current_sim, 0, 30, 30, 30);
 
-	result_writer::write_2d_solution("Port Solution.txt", port[0].first, port[0].second);
-	result_writer::write_3d_solution("Full Solution.txt", full[0].first, full[0].second);
+	result_writer::write_2d_solution("Port Solution 2d.txt", port_1_excitation.first, port_1_excitation.second);
+	result_writer::write_3d_solution("Full Solution.txt", full_sol.first, full_sol.second);
+
+	auto s_params = post::eval_s_parameters(current_sim, 30, 30);
+	std::cout << s_params << std::endl;
 
 	return 0;
 }
