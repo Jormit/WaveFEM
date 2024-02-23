@@ -1,5 +1,5 @@
-Remove hardcoded eigenvalue
-Solve higher order modes
-S-Parameters
-3d Field Plots like HFSS
-Antenna pattern
+Save grid dimensions to 2d/3d solution files.
+Export s-parameters as snp file
+Antenna Radiation Pattern
+Mesh Refinement
+Multi-material models
