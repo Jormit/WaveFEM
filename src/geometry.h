@@ -27,14 +27,12 @@ struct point_3d
 struct rectangle
 {
 	double xmin, ymin, xmax, ymax;
-
 	void add_padding(double x, double y);
 	void add_padding(point_2d padding);
 };
 
-class box
+struct box
 {
-public:
 	double xmin, ymin, zmin, xmax, ymax, zmax;
 	void add_padding(double x, double y, double z);
 	void add_padding(point_3d padding);
