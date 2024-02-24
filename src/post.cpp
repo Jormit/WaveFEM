@@ -6,13 +6,13 @@
 #include "fem.h"
 #include "helpers.h"
 
-std::pair<Eigen::MatrixX2d, Eigen::MatrixX2cd> post::eval_port(const sim& sim_instance, size_t port_num, size_t mode, size_t num_x, size_t num_y)
+std::pair<structured_grid_2d, Eigen::MatrixX2cd> post::eval_port(const sim& sim_instance, size_t port_num, size_t mode, size_t num_x, size_t num_y)
 {
 	auto bounds = sim_instance.sim_ports.bounds[port_num];
 	bounds.add_padding(-1, -1);
 	auto points = generate_grid_points(bounds, num_x, num_y);
 
-	Eigen::MatrixX2d point (points.size(), 2);
+	structured_grid_2d grid(bounds, num_x, num_y);
 	Eigen::MatrixX2cd field (points.size(), 2);
 
 	for (size_t i = 0; i < points.size(); i++)
@@ -22,20 +22,19 @@ std::pair<Eigen::MatrixX2d, Eigen::MatrixX2cd> post::eval_port(const sim& sim_in
 		auto elem_field = fem::_2d::mixed_order::eval_elem(sim_instance.nodes,
 				e, { p.u, p.v }, sim_instance.port_dof_maps[port_num], sim_instance.port_eigen_vectors[port_num].col(mode));
 		
-		point.row(i) << p.u, p.v;
 		field.row(i) << elem_field(0), elem_field(1);
 	}
 
-	return { point, field };
+	return { grid, field };
 }
 
-std::pair<Eigen::MatrixX2d, Eigen::MatrixX2cd> post::eval_port_from_3d(const sim& sim_instance, size_t eval_port_num, size_t driven_port_num, size_t num_x, size_t num_y)
+std::pair<structured_grid_2d, Eigen::MatrixX2cd> post::eval_port_from_3d(const sim& sim_instance, size_t eval_port_num, size_t driven_port_num, size_t num_x, size_t num_y)
 {
 	auto bounds = sim_instance.sim_ports.bounds[eval_port_num];
 	bounds.add_padding(-1, -1);
 	auto points = generate_grid_points(bounds, num_x, num_y);
 
-	Eigen::MatrixX2d point(points.size(), 2);
+	structured_grid_2d grid(bounds, num_x, num_y);
 	Eigen::MatrixX2cd field(points.size(), 2);
 
 	for (size_t i = 0; i < points.size(); i++)
@@ -45,18 +44,17 @@ std::pair<Eigen::MatrixX2d, Eigen::MatrixX2cd> post::eval_port_from_3d(const sim
 		auto elem_field = fem::_2d::mixed_order::eval_elem(sim_instance.nodes,
 			e, { p.u, p.v }, sim_instance.full_dof_map, sim_instance.full_solutions[driven_port_num]);
 
-		point.row(i) << p.u, p.v;
 		field.row(i) << elem_field(0), elem_field(1);
 	}
 
-	return { point, field };
+	return { grid, field };
 }
 
-std::pair<Eigen::MatrixX3d, Eigen::MatrixX3cd> post::eval_full(const sim& sim_instance, size_t port_num, size_t num_x, size_t num_y, size_t num_z)
+std::pair<structured_grid_3d, Eigen::MatrixX3cd> post::eval_full(const sim& sim_instance, size_t port_num, size_t num_x, size_t num_y, size_t num_z)
 {
 	auto points = generate_grid_points(sim_instance.bbox, num_x, num_y, num_z);
 
-	Eigen::MatrixX3d point(points.size(), 3);
+	structured_grid_3d grid(sim_instance.bbox, num_x, num_y, num_z);
 	Eigen::MatrixX3cd field(points.size(), 3);
 
 	for (size_t i = 0; i < points.size(); i++)
@@ -66,7 +64,6 @@ std::pair<Eigen::MatrixX3d, Eigen::MatrixX3cd> post::eval_full(const sim& sim_in
 
 		if (!e.has_value())
 		{
-			point.row(i) << p.x, p.y, p.z;
 			field.row(i) << 0, 0, 0;
 			continue;
 		}
@@ -74,11 +71,10 @@ std::pair<Eigen::MatrixX3d, Eigen::MatrixX3cd> post::eval_full(const sim& sim_in
 		auto elem_field = fem::_3d::mixed_order::eval_elem(sim_instance.nodes,
 			e.value(), p, sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
 
-		point.row(i) << p.x, p.y, p.z;
 		field.row(i) << elem_field(0), elem_field(1), elem_field(2);
 	}
 
-	return { point, field };
+	return { grid, field };
 }
 
 Eigen::MatrixXcd post::eval_s_parameters(const sim& sim_instance, size_t num_x, size_t num_y)

@@ -139,3 +139,24 @@ point_3d tet::get_center(const std::vector<node>& nodes) const
 
 	return { x_center/3, y_center/3, z_center/3 };
 }
+
+structured_grid_2d::structured_grid_2d(rectangle rect, size_t num_x, size_t num_y)
+{
+	this->start_point = { rect.xmin, rect.ymin };
+	this->num_steps = { num_x, num_y };
+	this->step_sizes = {
+		1 / static_cast<double>(num_x - 1) * (rect.xmax - rect.xmin),
+		1 / static_cast<double>(num_y - 1) * (rect.ymax - rect.ymin)
+	};	
+}
+
+structured_grid_3d::structured_grid_3d(box box, size_t num_x, size_t num_y, size_t num_z)
+{
+	this->start_point = { box.xmin, box.ymin, box.zmin };
+	this->num_steps = { num_x, num_y, num_z };
+	this->step_sizes = {
+		1 / static_cast<double>(num_x - 1) * (box.xmax - box.xmin),
+		1 / static_cast<double>(num_y - 1) * (box.ymax - box.ymin),
+		1 / static_cast<double>(num_z - 1) * (box.zmax - box.zmin)
+	};
+}

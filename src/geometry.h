@@ -71,6 +71,7 @@ struct structured_grid_2d
 	std::array <double, 2> start_point;
 	std::array <double, 2> step_sizes;
 	std::array <size_t, 2> num_steps;
+	structured_grid_2d(rectangle rect, size_t num_x, size_t num_y);
 };
 
 struct structured_grid_3d
@@ -78,7 +79,9 @@ struct structured_grid_3d
 	std::array <double, 3> start_point;
 	std::array <double, 3> step_sizes;
 	std::array <size_t, 3> num_steps;
+	structured_grid_3d(box box, size_t num_x, size_t num_y, size_t num_z);
 };
 
 std::vector<point_3d> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z);
 std::vector<point_2d> generate_grid_points(rectangle rect, size_t num_x, size_t num_y);
+
