@@ -71,8 +71,8 @@ int main()
 	auto port_1_excitation = post::eval_port(current_sim, 0, 0, 30, 30);
 	auto full_sol = post::eval_full(current_sim, 0, 30, 30, 30);
 
-	result_writer::write_2d_solution("Port Solution 2d.txt", port_1_excitation.first, port_1_excitation.second);
-	result_writer::write_3d_solution("Full Solution.txt", full_sol.first, full_sol.second);
+	result_writer::write_2d_field("Port Solution 2d.txt", port_1_excitation.first, port_1_excitation.second);
+	result_writer::write_3d_field("Full Solution.txt", full_sol.first, full_sol.second);
 
 	auto s_params = post::eval_s_parameters(current_sim, 30, 30);
 	std::cout << s_params << std::endl;
