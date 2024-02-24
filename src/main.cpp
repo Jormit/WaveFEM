@@ -17,7 +17,7 @@ const std::string data_path = "../../../data/";
 
 int main()
 {
-	setup config(data_path + "config waveguide.json");
+	setup config(data_path + "config ridged waveguide.json");
 
 	mesher_interface::initialize();
 
@@ -35,7 +35,7 @@ int main()
 		pml_ids = pml::create(config.pml_thickness);
 	}	
 
-	mesher_interface::mesh_model(15, 15);
+	mesher_interface::mesh_model(20, 20);
 	mesher_interface::view_model();
 
 	auto nodes = mesher_interface::get_all_nodes();

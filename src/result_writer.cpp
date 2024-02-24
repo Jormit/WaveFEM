@@ -12,24 +12,32 @@ std::string result_writer::complex_number(std::complex<double> num)
 	return std::format("{}{}j", num.real(), num.imag());
 }
 
-void result_writer::write_2d_field(std::string filename, Eigen::MatrixX2d points, Eigen::MatrixX2cd fields)
+void result_writer::write_2d_field(std::string filename, structured_grid_2d grid, Eigen::MatrixX2cd fields)
 {
 	std::ofstream ofs(filename);
-	for (int i = 0; i < points.rows(); i++)
+
+	ofs << std::format("{} {}\n", grid.start_point[0], grid.start_point[1]);
+	ofs << std::format("{} {}\n", grid.step_sizes[0], grid.step_sizes[1]);
+	ofs << std::format("{} {}\n", grid.num_steps[0], grid.num_steps[1]);
+
+	for (auto row : fields.rowwise())
 	{
-		ofs << std::format("{} {} {} {}\n", points.row(i)(0), points.row(i)(1),
-			complex_number(fields.row(i)(0)), complex_number(fields.row(i)(1)));
+		ofs << std::format("{} {}\n", complex_number(row(0)), complex_number(row(1)));
 	}
 	ofs.close();
 }
 
-void result_writer::write_3d_field(std::string filename, Eigen::MatrixX3d points, Eigen::MatrixX3cd fields)
+void result_writer::write_3d_field(std::string filename, structured_grid_3d grid, Eigen::MatrixX3cd fields)
 {
 	std::ofstream ofs(filename);
-	for (int i = 0; i < points.rows(); i++)
+
+	ofs << std::format("{} {} {}\n", grid.start_point[0], grid.start_point[1], grid.start_point[2]);
+	ofs << std::format("{} {} {}\n", grid.step_sizes[0], grid.step_sizes[1], grid.step_sizes[2]);
+	ofs << std::format("{} {} {}\n", grid.num_steps[0], grid.num_steps[1], grid.num_steps[2]);
+
+	for (auto row : fields.rowwise())
 	{
-		ofs << std::format("{} {} {} {} {} {}\n", points.row(i)(0), points.row(i)(1), points.row(i)(2),
-			complex_number(fields.row(i)(0)), complex_number(fields.row(i)(1)), complex_number(fields.row(i)(2)));
+		ofs << std::format("{} {} {}\n", complex_number(row(0)), complex_number(row(1)), complex_number(row(2)));
 	}
 	ofs.close();
 }
