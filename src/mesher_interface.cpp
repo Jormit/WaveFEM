@@ -96,7 +96,7 @@ std::vector<node> mesher_interface::get_all_nodes()
 
 	int i = 0;
 	for (auto n : nodeTags) {
-		node nn{ { coord[3 * i], coord[3 * i + 1], coord[3 * i + 2] }, {}, {} };
+		node nn{ { coord[3 * i], coord[3 * i + 1], coord[3 * i + 2] }, {} };
 		nodes_to_return[n - 1] = nn;
 		i++;
 	}

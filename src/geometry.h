@@ -44,7 +44,6 @@ struct node
 {
 	point_3d coords;
 	std::optional<point_2d> point_2d;
-	std::list<size_t> surface_entities;
 };
 
 struct tri
