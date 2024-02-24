@@ -12,7 +12,7 @@ std::string result_writer::complex_number(std::complex<double> num)
 	return std::format("{}{}j", num.real(), num.imag());
 }
 
-void result_writer::write_2d_solution(std::string filename, Eigen::MatrixX2d points, Eigen::MatrixX2cd fields)
+void result_writer::write_2d_field(std::string filename, Eigen::MatrixX2d points, Eigen::MatrixX2cd fields)
 {
 	std::ofstream ofs(filename);
 	for (int i = 0; i < points.rows(); i++)
@@ -23,7 +23,7 @@ void result_writer::write_2d_solution(std::string filename, Eigen::MatrixX2d poi
 	ofs.close();
 }
 
-void result_writer::write_3d_solution(std::string filename, Eigen::MatrixX3d points, Eigen::MatrixX3cd fields)
+void result_writer::write_3d_field(std::string filename, Eigen::MatrixX3d points, Eigen::MatrixX3cd fields)
 {
 	std::ofstream ofs(filename);
 	for (int i = 0; i < points.rows(); i++)
