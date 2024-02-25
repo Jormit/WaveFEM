@@ -17,7 +17,7 @@ const std::string data_path = "../../../data/";
 
 int main()
 {
-	setup config(data_path + "config ridged waveguide.json");
+	setup config(data_path + "config horn.json");
 
 	mesher_interface::initialize();
 
@@ -28,11 +28,11 @@ int main()
 	int boundary_id = mesher_interface::add_box(boundary);
 	auto free_space_volumes = mesher_interface::subtract(boundary_id, model_id);
 
-	pml_boundary pml_ids;
+	pml_boundary pml;
 
 	if (config.pml_enable)
 	{
-		pml_ids = pml::create(config.pml_thickness);
+		pml = pml::create(config.pml_thickness);
 	}	
 
 	mesher_interface::mesh_model(20, 20);
@@ -52,7 +52,7 @@ int main()
 
 	if (config.pml_enable)
 	{
-		auto pml_elements = pml::get_elements(pml_ids);
+		auto pml_elements = pml::get_elements(pml);
 		elements.insert(elements.end(), pml_elements.begin(), pml_elements.end());
 	}
 
@@ -62,16 +62,20 @@ int main()
 	ports.setup_port_nodes(nodes);
 	ports.setup_port_faces_and_edges(boundary_edge_map, boundary_face_map);
 
-	sim current_sim (mesher_interface::get_bounding_box(), base_materials, nodes,
+	sim current_sim (boundary, base_materials, nodes,
 		elements, boundary_edge_map, boundary_face_map, ports);
 
 	current_sim.solve_ports();
 	current_sim.solve_full(config.simulation_wavenumber);
 
+	// Output currently for debug
+
 	auto port_1_excitation = post::eval_port(current_sim, 0, 0, 30, 30);
-	auto full_sol = post::eval_full(current_sim, 0, 30, 30, 30);
+	auto face_sol = post::eval_slice(current_sim, slice_plane::XY, 0, 30, 30, boundary.zmax);
+	auto full_sol = post::eval_full(current_sim, 0, 30, 30, 30);	
 
 	result_writer::write_2d_field("Port Solution 2d.txt", port_1_excitation.first, port_1_excitation.second);
+	result_writer::write_2d_field("Slice Solution 2d.txt", face_sol.first, face_sol.second);
 	result_writer::write_3d_field("Full Solution.txt", full_sol.first, full_sol.second);
 
 	auto s_params = post::eval_s_parameters(current_sim, 30, 30);
