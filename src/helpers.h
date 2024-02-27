@@ -3,6 +3,7 @@
 #include <list>
 #include <unordered_map>
 #include <unordered_set>
+#include <Eigen/Core>
 #include <Eigen/dense>
 #include <complex>
 
@@ -36,7 +37,8 @@ namespace helpers
 		return new_map;
 	}
 
-	inline std::complex<double> rowise_2d_dot_product(Eigen::MatrixX2cd A, Eigen::MatrixX2cd B)
+	template <typename Derived>
+	std::complex<double> rowise_2d_dot_product(const Eigen::MatrixBase<Derived>& A, const Eigen::MatrixBase<Derived>& B)
 	{
 		std::complex<double> result = 0;
 		for (size_t i = 0; i < A.rows(); i++)
@@ -44,6 +46,5 @@ namespace helpers
 			result += A.row(i).dot(B.row(i));
 		}
 		return result;
-	}
-	
+	}	
 }

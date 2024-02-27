@@ -99,7 +99,7 @@ Eigen::MatrixXcd post::eval_s_parameters(const sim& sim_instance, size_t num_x, 
 
 			if (i == j)
 			{
-				s_params(i, j) = helpers::rowise_2d_dot_product(i_field_vec_3d - j_field_vec, j_field_vec) / (j_scaling * j_scaling);
+				s_params(i, j) = helpers::rowise_2d_dot_product((i_field_vec_3d - j_field_vec).eval(), j_field_vec) / (j_scaling * j_scaling);
 			} 
 			else
 			{
