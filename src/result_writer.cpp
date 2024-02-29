@@ -12,8 +12,11 @@ std::string result_writer::complex_number(std::complex<double> num)
 	return std::format("{}{}j", num.real(), num.imag());
 }
 
-void result_writer::write_2d_field(std::string filename, structured_grid_2d grid, Eigen::MatrixX2cd fields)
+void result_writer::write_2d_field(std::string filename, structured_2d_field_data data)
 {
+	auto grid = data.grid;
+	auto fields = data.field;
+
 	std::ofstream ofs(filename);
 
 	ofs << std::format("{} {}\n", grid.start_point[0], grid.start_point[1]);
@@ -27,9 +30,12 @@ void result_writer::write_2d_field(std::string filename, structured_grid_2d grid
 	ofs.close();
 }
 
-void result_writer::write_3d_field(std::string filename, structured_grid_3d grid, Eigen::MatrixX3cd fields)
+void result_writer::write_3d_field(std::string filename, structured_3d_field_data data)
 {
-	std::ofstream ofs(filename);
+	auto grid = data.grid;
+	auto fields = data.field;
+
+	std::ofstream ofs(filename);	
 
 	ofs << std::format("{} {} {}\n", grid.start_point[0], grid.start_point[1], grid.start_point[2]);
 	ofs << std::format("{} {} {}\n", grid.step_sizes[0], grid.step_sizes[1], grid.step_sizes[2]);

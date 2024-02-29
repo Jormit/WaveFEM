@@ -13,6 +13,10 @@
 #include "pml.h"
 #include "result_writer.h"
 
+
+#define DJ_FFT_IMPLEMENTATION // define this in exactly *one* .cpp file
+#include <dj_fft.h>
+
 const std::string data_path = "../../../data/";
 
 int main()
@@ -71,12 +75,17 @@ int main()
 	// Output currently for debug
 
 	auto port_1_excitation = post::eval_port(current_sim, 0, 0, 30, 30);
-	auto face_sol = post::eval_slice(current_sim, slice_plane::XY, 0, 30, 30, boundary.zmax);
+	auto face_sol = post::eval_slice(current_sim, slice_plane::XY, 0, 32, 32, boundary.zmax);
 	auto full_sol = post::eval_full(current_sim, 0, 30, 30, 30);	
 
-	result_writer::write_2d_field("Port Solution 2d.txt", port_1_excitation.first, port_1_excitation.second);
-	result_writer::write_2d_field("Slice Solution 2d.txt", face_sol.first, face_sol.second);
-	result_writer::write_3d_field("Full Solution.txt", full_sol.first, full_sol.second);
+	result_writer::write_2d_field("Port Solution 2d.txt", port_1_excitation);
+	result_writer::write_2d_field("Slice Solution 2d.txt", face_sol);
+	result_writer::write_3d_field("Full Solution.txt", full_sol);
+
+	auto a = helpers::flatten_eigen_object_to_vector(face_sol.field.col(1));
+
+
+	auto fftData = dj::fft2d(a, dj::fft_dir::DIR_FWD);
 
 	auto s_params = post::eval_s_parameters(current_sim, 30, 30);
 	std::cout << s_params << std::endl;
