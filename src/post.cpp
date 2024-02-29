@@ -6,7 +6,7 @@
 #include "fem.h"
 #include "helpers.h"
 
-std::pair<structured_grid_2d, Eigen::MatrixX2cd> post::eval_port(const sim& sim_instance, size_t port_num, size_t mode, size_t num_x, size_t num_y)
+structured_2d_field_data post::eval_port(const sim& sim_instance, size_t port_num, size_t mode, size_t num_x, size_t num_y)
 {
 	auto bounds = sim_instance.sim_ports.bounds[port_num];
 	bounds.add_padding(-1, -1);
@@ -28,7 +28,7 @@ std::pair<structured_grid_2d, Eigen::MatrixX2cd> post::eval_port(const sim& sim_
 	return { grid, field };
 }
 
-std::pair<structured_grid_2d, Eigen::MatrixX2cd> post::eval_port_from_3d(const sim& sim_instance, size_t eval_port_num, size_t driven_port_num, size_t num_x, size_t num_y)
+structured_2d_field_data post::eval_port_from_3d(const sim& sim_instance, size_t eval_port_num, size_t driven_port_num, size_t num_x, size_t num_y)
 {
 	auto bounds = sim_instance.sim_ports.bounds[eval_port_num];
 	bounds.add_padding(-1, -1);
@@ -50,7 +50,7 @@ std::pair<structured_grid_2d, Eigen::MatrixX2cd> post::eval_port_from_3d(const s
 	return { grid, field };
 }
 
-std::pair<structured_grid_3d, Eigen::MatrixX3cd> post::eval_full(const sim& sim_instance, size_t port_num, size_t num_x, size_t num_y, size_t num_z)
+structured_3d_field_data post::eval_full(const sim& sim_instance, size_t port_num, size_t num_x, size_t num_y, size_t num_z)
 {
 	auto points = generate_grid_points(sim_instance.bbox, num_x, num_y, num_z);
 
@@ -87,30 +87,27 @@ Eigen::MatrixXcd post::eval_s_parameters(const sim& sim_instance, size_t num_x, 
 		for (size_t i = 0; i < num_ports; i++)
 		{			
 			auto port_i_3d = post::eval_port_from_3d(sim_instance, i, j, num_x, num_y);
-			auto i_field_vec_3d = port_i_3d.second;
 
 			auto port_i_2d = post::eval_port(sim_instance, i, 0, num_x, num_y);
-			auto i_field_vec_2d = port_i_2d.second;
-			auto i_scaling = std::sqrt(helpers::rowise_2d_dot_product(i_field_vec_2d, i_field_vec_2d));
+			auto i_scaling = std::sqrt(helpers::rowise_2d_dot_product(port_i_2d.field, port_i_2d.field));
 
 			auto port_j = post::eval_port(sim_instance, j, 0, num_x, num_y);
-			auto j_field_vec = port_j.second;
-			auto j_scaling = std::sqrt(helpers::rowise_2d_dot_product(j_field_vec, j_field_vec));
+			auto j_scaling = std::sqrt(helpers::rowise_2d_dot_product(port_j.field, port_j.field));
 
 			if (i == j)
 			{
-				s_params(i, j) = helpers::rowise_2d_dot_product((i_field_vec_3d - j_field_vec).eval(), j_field_vec) / (j_scaling * j_scaling);
+				s_params(i, j) = helpers::rowise_2d_dot_product((port_i_3d.field - port_j.field).eval(), port_j.field) / (j_scaling * j_scaling);
 			} 
 			else
 			{
-				s_params(i, j) = helpers::rowise_2d_dot_product(i_field_vec_3d, i_field_vec_2d) / (j_scaling * i_scaling);
+				s_params(i, j) = helpers::rowise_2d_dot_product(port_i_3d.field, port_i_2d.field) / (j_scaling * i_scaling);
 			}
 		}		
 	}
 	return s_params;
 }
 
-std::pair<structured_grid_2d, Eigen::MatrixX2cd> post::eval_slice(const sim& sim_instance, slice_plane slice, size_t port_num, size_t num_u, size_t num_v, double w)
+structured_2d_field_data post::eval_slice(const sim& sim_instance, slice_plane slice, size_t port_num, size_t num_u, size_t num_v, double w)
 {
 	rectangle plane;
 	if (slice == slice_plane::XY)

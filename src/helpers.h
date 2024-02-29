@@ -46,5 +46,11 @@ namespace helpers
 			result += A.row(i).dot(B.row(i));
 		}
 		return result;
-	}	
+	}
+
+	template <typename Derived>
+	std::vector<std::complex<double>> flatten_eigen_object_to_vector(const Eigen::MatrixBase<Derived>& a)
+	{
+		return std::vector<std::complex<double>>(a.derived().data(), a.derived().data() + a.rows() * a.cols());
+	}
 }
