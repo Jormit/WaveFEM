@@ -82,6 +82,18 @@ struct structured_grid_3d
 	structured_grid_3d(box box, size_t num_x, size_t num_y, size_t num_z);
 };
 
+struct structured_2d_field_data
+{
+	structured_grid_2d grid;
+	Eigen::MatrixX2cd field;
+};
+
+struct structured_3d_field_data
+{
+	structured_grid_3d grid;
+	Eigen::MatrixX3cd field;
+};
+
 std::vector<point_3d> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z);
 std::vector<point_2d> generate_grid_points(rectangle rect, size_t num_x, size_t num_y);
 
