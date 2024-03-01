@@ -9,18 +9,6 @@
 
 enum slice_plane {XY, XZ, YZ};
 
-struct structured_2d_field_data
-{
-	structured_grid_2d grid;
-	Eigen::MatrixX2cd field;
-};
-
-struct structured_3d_field_data
-{
-	structured_grid_3d grid;
-	Eigen::MatrixX3cd field;
-};
-
 namespace post
 {
 	structured_2d_field_data eval_port(const sim& sim_instance, size_t port_num, size_t mode, size_t num_x, size_t num_y);
