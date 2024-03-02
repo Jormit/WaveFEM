@@ -11,6 +11,11 @@
   "material assignments": [ "conductor", "dielectric" ],
   "material definitions": {
     "conductor": { "PEC": true },
-    "dielectric": { "PEC": false, "ep": 3, "mu": 1, "tand": 0.001 }
+    "dielectric": {
+      "PEC": false,
+      "ep": 3,
+      "mu": 1,
+      "tand": 0.001
+    }
   }
 }
