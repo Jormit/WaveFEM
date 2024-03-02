@@ -1,0 +1,16 @@
+{
+  "model_file": "waveguide with obstacle.step",
+  "port_centres": [
+    [ 0, 0, 0 ],
+    [ 0, 69.0, 0 ]
+  ],
+  "bounding_box_padding": [ 10, 10, 10 ],
+  "pml_enable": false,
+  "pml_thickness": [ 20, 20, 20 ],
+  "frequency": 5000000000,
+  "material assignments": [ "conductor", "dielectric" ],
+  "material definitions": {
+    "conductor": { "PEC": true },
+    "dielectric": { "PEC": false, "ep": 3, "mu": 1, "tand": 0.001 }
+  }
+}

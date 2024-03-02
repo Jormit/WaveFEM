@@ -1,5 +1,5 @@
 {
-  "model_file": "Horn.STEP",
+  "model_file": "horn.step",
   "port_centres": [ [ 0.0, 0.0, 1.6 ] ],
   "bounding_box_padding": [ 10, 10, 10 ],
   "pml_enable": true,
