@@ -8,8 +8,8 @@
   "pml_enable": false,
   "pml_thickness": [ 20, 20, 20 ],
   "frequency": 5000000000,
-  "material assignments": [ "conductor", "dielectric" ],
-  "material definitions": {
+  "material_assignments": [ "conductor", "dielectric" ],
+  "material_definitions": {
     "conductor": { "PEC": true },
     "dielectric": {
       "PEC": false,

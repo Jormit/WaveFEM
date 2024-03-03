@@ -1,5 +1,6 @@
 #include <fstream>
 #include <json.hpp>
+#include <unordered_map>
 
 #include "setup.h"
 #include "constants.h"
@@ -24,4 +25,26 @@ setup::setup(std::string filename)
 	pml_thickness = { data["pml_thickness"][0], data["pml_thickness"][1], data["pml_thickness"][2] };
 	pml_enable = data["pml_enable"];
 	simulation_wavenumber = static_cast<double>(data["frequency"]) * constants::freq2k;
+
+	std::unordered_map<std::string, size_t> material_map;
+	size_t i = 0;
+	for (auto& [key, m] : data["material_definitions"].items())
+	{
+		material_map[key] = i++;
+		if (m["PEC"])
+		{
+			material_setup new_mat{ m["PEC"], 0, 0, 0 };
+			materials.push_back(new_mat);
+		}
+		else
+		{
+			material_setup new_mat{ m["PEC"], m["ep"], m["mu"], m["tand"] };
+			materials.push_back(new_mat);
+		}		
+	}
+
+	for (auto& m : data["material_assignments"])
+	{
+		material_assignments.push_back(material_map[m]);
+	}
 }
