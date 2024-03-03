@@ -7,5 +7,9 @@
   "bounding_box_padding": [ 10, 10, 10 ],
   "pml_enable": false,
   "pml_thickness": [ 20, 20, 20 ],
-  "frequency": 5000000000
+  "frequency": 5000000000,
+  "material_assignments": [ "conductor" ],
+  "material_definitions": {
+    "conductor": { "PEC": true }
+  }
 }

@@ -17,7 +17,7 @@ const std::string data_path = "../../../data/";
 
 int main()
 {
-	setup config(data_path + "config horn.json");
+	setup config(data_path + "horn.json");
 
 	mesher_interface::initialize();
 
