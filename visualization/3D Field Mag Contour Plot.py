@@ -3,7 +3,7 @@ import numpy as np
 
 import data_loader as dl
 
-x, y, z, vec = dl.import_3d_field("Data/Horn 3d.txt")
+x, y, z, vec = dl.import_3d_field("Data/Full Solution.txt")
 vec_real = np.real(vec)
 vec_real_mag = np.linalg.norm(vec_real, axis=3)
 

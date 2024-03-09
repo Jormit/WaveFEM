@@ -1,8 +1,8 @@
 {
   "model_file": "waveguide with obstacle.step",
   "port_centres": [
-    [ 0, 0, 0 ],
-    [ 0, 69.0, 0 ]
+    [ 21.0, 0.0, 10.5 ],
+    [ 21.0, 99.0, 10.5 ]
   ],
   "bounding_box_padding": [ 10, 10, 10 ],
   "pml_enable": false,

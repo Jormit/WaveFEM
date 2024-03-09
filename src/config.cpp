@@ -2,12 +2,12 @@
 #include <json.hpp>
 #include <unordered_map>
 
-#include "setup.h"
+#include "config.h"
 #include "constants.h"
 
 using json = nlohmann::json;
 
-setup::setup(std::string filename)
+sim_config::sim_config(std::string filename)
 {
 	std::ifstream f(filename);
 	json data = json::parse(f);
@@ -33,12 +33,12 @@ setup::setup(std::string filename)
 		material_map[key] = i++;
 		if (m["PEC"])
 		{
-			material_setup new_mat{ m["PEC"], 0, 0, 0 };
+			material_config new_mat{ m["PEC"], 0, 0, 0 };
 			materials.push_back(new_mat);
 		}
 		else
 		{
-			material_setup new_mat{ m["PEC"], m["ep"], m["mu"], m["tand"] };
+			material_config new_mat{ m["PEC"], m["ep"], m["mu"], m["tand"] };
 			materials.push_back(new_mat);
 		}		
 	}

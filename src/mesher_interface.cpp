@@ -11,12 +11,14 @@ void mesher_interface::initialize() {
 	gmsh::initialize();
 }
 
-int mesher_interface::import_model(const std::string& filename)
+std::vector<int> mesher_interface::import_model(const std::string& filename)
 {
 	std::vector<std::pair<int, int> > v;
 	gmsh::model::occ::importShapes(filename, v);
 	gmsh::model::occ::synchronize();
-	return v[0].second;
+	std::vector<int> ret;
+	std::transform(v.cbegin(), v.cend(), std::back_inserter(ret), [](std::pair<int, int> c) { return c.second; });
+	return ret;
 }
 
 void mesher_interface::mesh_model(int mesh_size_min, int mesh_size_max)
@@ -72,17 +74,7 @@ int mesher_interface::add_box(box b)
 
 std::vector<int> mesher_interface::subtract(int obj, int tool, bool remove_tool)
 {
-	std::vector<std::pair<int, int> > ov;
-	std::vector<std::vector<std::pair<int, int> > > ovv;
-	gmsh::model::occ::cut({ {3, obj} }, { {3, tool} }, ov, ovv, -1, true, remove_tool);
-	gmsh::model::occ::synchronize();
-	std::vector<int> new_ids;
-	for (const auto& o : ov)
-	{
-		new_ids.push_back(o.second);
-	}
-
-	return new_ids;
+	return subtract({obj}, tool, remove_tool);
 }
 
 std::vector<int> mesher_interface::subtract(std::vector<int> obj, int tool, bool remove_tool)
@@ -90,17 +82,13 @@ std::vector<int> mesher_interface::subtract(std::vector<int> obj, int tool, bool
 	std::vector<std::pair<int, int>> ov;
 	std::vector<std::vector<std::pair<int, int>>> ovv;
 	std::vector<std::pair<int, int>> objs;
-	for (auto o : obj)
-	{
-		objs.push_back({ o, 3 });
-	}
+	std::transform(obj.cbegin(), obj.cend(), std::back_inserter(objs), [](int o) { return std::pair<int, int>{ 3, o }; });
+
 	gmsh::model::occ::cut(objs, { {3, tool} }, ov, ovv, -1, true, remove_tool);
 	gmsh::model::occ::synchronize();
+
 	std::vector<int> new_ids;
-	for (const auto& o : ov)
-	{
-		new_ids.push_back(o.second);
-	}
+	std::transform(ov.cbegin(), ov.cend(), std::back_inserter(new_ids), [](std::pair<int, int> o) { return o.second; });
 
 	return new_ids;
 }

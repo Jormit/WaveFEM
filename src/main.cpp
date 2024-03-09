@@ -1,12 +1,12 @@
 ﻿#include <Eigen/dense>
-#include <memory>
 #include <iostream>
+#include <cassert>
 
 #include "mesher_interface.h"
 #include "sim.h"
 #include "geometry.h"
 #include "ports.h"
-#include "setup.h"
+#include "config.h"
 #include "helpers.h"
 #include "material.h"
 #include "post.h"
@@ -17,16 +17,28 @@ const std::string data_path = "../../../data/";
 
 int main()
 {
-	setup config(data_path + "horn.json");
-
 	mesher_interface::initialize();
-
-	int model_id = mesher_interface::import_model(data_path + config.model_file);
+	sim_config config(data_path + "waveguide with obstacle.json");
+	auto model_ids = mesher_interface::import_model(data_path + config.model_file);
 
 	auto boundary = mesher_interface::get_bounding_box();
 	boundary.add_padding(config.bounding_box_padding);
 	int boundary_id = mesher_interface::add_box(boundary);
-	auto free_space_volumes = mesher_interface::subtract(boundary_id, model_id);
+
+	std::vector<int> free_space_volumes{ boundary_id };
+
+	for (size_t i = 0; i < model_ids.size(); i++)
+	{
+		auto material_id = config.material_assignments[i];
+		if (config.materials[material_id].PEC)
+		{
+			free_space_volumes = mesher_interface::subtract(free_space_volumes, model_ids[i], true);
+		}
+		else
+		{
+			free_space_volumes = mesher_interface::subtract(free_space_volumes, model_ids[i], false);
+		}
+	}
 
 	pml_boundary pml;
 
@@ -37,6 +49,8 @@ int main()
 
 	mesher_interface::mesh_model(20, 20);
 	mesher_interface::view_model();
+
+	auto base_materials = mat::generate_base_set();
 
 	auto nodes = mesher_interface::get_all_nodes();
 	auto boundaries = mesher_interface::get_boundary_surfaces();
@@ -56,7 +70,15 @@ int main()
 		elements.insert(elements.end(), pml_elements.begin(), pml_elements.end());
 	}
 
-	auto base_materials = mat::generate_base_set();
+	for (size_t i = 0; i < model_ids.size(); i++)
+	{
+		auto material_id = config.material_assignments[i];
+		if (!config.materials[material_id].PEC)
+		{
+			auto mat_elements = mesher_interface::get_volume_elems(i + 1);
+			elements.insert(elements.end(), mat_elements.begin(), mat_elements.end());
+		}
+	}
 
 	ports ports(config.port_centres);
 	ports.setup_port_nodes(nodes);
