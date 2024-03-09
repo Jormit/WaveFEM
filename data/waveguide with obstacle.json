@@ -13,7 +13,7 @@
     "conductor": { "PEC": true },
     "dielectric": {
       "PEC": false,
-      "ep": 4,
+      "ep": 5,
       "mu": 1,
       "tand": 0.001
     }
