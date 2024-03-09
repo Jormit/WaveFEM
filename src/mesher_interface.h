@@ -10,7 +10,7 @@ namespace mesher_interface {
 	void initialize();
 
 	// Supports STEP file
-	int import_model(const std::string& filename);
+	std::vector<int> import_model(const std::string& filename);
 
 	void mesh_model(int mesh_size_min, int mesh_size_max);
 
