@@ -24,6 +24,16 @@ std::vector<material> mat::generate_base_set()
 	return { free_space, pml_x, pml_y, pml_z, pml_xy, pml_xz, pml_yz, pml_xyz };
 }
 
+std::vector<material> mat::load_user_materials(std::vector<material_config> materials)
+{
+	std::vector<material> user_materials;
+	for (const auto & mat : materials)
+	{
+		user_materials.push_back(material(mat.ep, mat.mu));
+	}
+	return user_materials;
+}
+
 void mat::label_elems(std::vector<tet>& elems, size_t material)
 {
 	for (int i = 0; i < elems.size(); i++)

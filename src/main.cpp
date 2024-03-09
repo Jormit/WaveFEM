@@ -51,6 +51,7 @@ int main()
 	mesher_interface::view_model();
 
 	auto base_materials = mat::generate_base_set();
+	auto user_materials = mat::load_user_materials(config.materials);
 
 	auto nodes = mesher_interface::get_all_nodes();
 	auto boundaries = mesher_interface::get_boundary_surfaces();
@@ -76,9 +77,12 @@ int main()
 		if (!config.materials[material_id].PEC)
 		{
 			auto mat_elements = mesher_interface::get_volume_elems(i + 1);
+			mat::label_elems(mat_elements, base_materials.size() + i);
 			elements.insert(elements.end(), mat_elements.begin(), mat_elements.end());
 		}
 	}
+
+	base_materials.insert(base_materials.end(), user_materials.begin(), user_materials.end());
 
 	ports ports(config.port_centres);
 	ports.setup_port_nodes(nodes);

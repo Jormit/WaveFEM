@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "geometry.h"
+#include "config.h"
 
 struct material
 {
@@ -25,6 +26,7 @@ namespace mat
 
 	material vacuum();
 	std::vector<material> generate_base_set();
+	std::vector<material> load_user_materials(std::vector<material_config> materials);
 	void label_elems(std::vector<tet>& elems, size_t material);
 	material pml(std::complex<double> sx, std::complex<double> sy, std::complex<double> sz);
 }
