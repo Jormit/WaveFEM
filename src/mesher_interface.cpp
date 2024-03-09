@@ -70,11 +70,31 @@ int mesher_interface::add_box(box b)
 	return id;
 }
 
-std::vector<int> mesher_interface::subtract(int id1, int id2, bool remove_tool)
+std::vector<int> mesher_interface::subtract(int obj, int tool, bool remove_tool)
 {
 	std::vector<std::pair<int, int> > ov;
 	std::vector<std::vector<std::pair<int, int> > > ovv;
-	gmsh::model::occ::cut({ {3, id1} }, { {3, id2} }, ov, ovv, -1, true, remove_tool);
+	gmsh::model::occ::cut({ {3, obj} }, { {3, tool} }, ov, ovv, -1, true, remove_tool);
+	gmsh::model::occ::synchronize();
+	std::vector<int> new_ids;
+	for (const auto& o : ov)
+	{
+		new_ids.push_back(o.second);
+	}
+
+	return new_ids;
+}
+
+std::vector<int> mesher_interface::subtract(std::vector<int> obj, int tool, bool remove_tool)
+{
+	std::vector<std::pair<int, int>> ov;
+	std::vector<std::vector<std::pair<int, int>>> ovv;
+	std::vector<std::pair<int, int>> objs;
+	for (auto o : obj)
+	{
+		objs.push_back({ o, 3 });
+	}
+	gmsh::model::occ::cut(objs, { {3, tool} }, ov, ovv, -1, true, remove_tool);
 	gmsh::model::occ::synchronize();
 	std::vector<int> new_ids;
 	for (const auto& o : ov)
