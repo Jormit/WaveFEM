@@ -41,3 +41,13 @@ material mat::pml(std::complex<double> sx, std::complex<double> sy, std::complex
 		0, 0, sx * sy / sz;
 	return { pml , pml };
 }
+
+material::material(std::complex<double> permittivity, std::complex<double> permeability)
+{
+	this->permittivity = permittivity * Eigen::Matrix3cd::Identity();
+	this->permeability = permeability * Eigen::Matrix3cd::Identity();
+}
+
+material::material(Eigen::Matrix3cd permittivity, Eigen::Matrix3cd permeability) :
+	permittivity(permittivity), permeability(permeability) 
+{}
