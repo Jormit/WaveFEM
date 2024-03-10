@@ -25,6 +25,7 @@ sim_config::sim_config(std::string filename)
 	pml_thickness = { data["pml_thickness"][0], data["pml_thickness"][1], data["pml_thickness"][2] };
 	pml_enable = data["pml_enable"];
 	simulation_wavenumber = static_cast<double>(data["frequency"]) * constants::freq2k;
+	target_mesh_size = constants::c / static_cast<double>(data["frequency"]) / static_cast<double>(data["target_elements_per_wavelength"]) * 1000;
 
 	std::unordered_map<std::string, size_t> material_map;
 	size_t i = 0;

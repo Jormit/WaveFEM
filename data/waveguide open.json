@@ -7,6 +7,7 @@
   "pml_enable": true,
   "pml_thickness": [ 20, 20, 20 ],
   "frequency": 5000000000,
+  "target_elements_per_wavelength": 3,
   "material_assignments": [ "conductor" ],
   "material_definitions": {
     "conductor": { "PEC": true }

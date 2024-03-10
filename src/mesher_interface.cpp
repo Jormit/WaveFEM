@@ -9,6 +9,7 @@
 
 void mesher_interface::initialize() {
 	gmsh::initialize();
+	gmsh::option::setNumber("General.Terminal", 0);
 }
 
 std::vector<int> mesher_interface::import_model(const std::string& filename)

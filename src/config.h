@@ -22,6 +22,7 @@ struct sim_config
 	bool pml_enable;
 	point_3d pml_thickness;
 	double simulation_wavenumber;
+	double target_mesh_size;
 	std::vector<size_t> material_assignments;
 	std::vector<material_config> materials;
 };

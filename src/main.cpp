@@ -47,7 +47,7 @@ int main()
 		pml = pml::create(config.pml_thickness);
 	}	
 
-	mesher_interface::mesh_model(20, 20);
+	mesher_interface::mesh_model(config.target_mesh_size * 0.9, config.target_mesh_size * 1.1);
 	mesher_interface::view_model();
 
 	auto base_materials = mat::generate_base_set();
