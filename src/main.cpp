@@ -19,7 +19,6 @@ int main(int argc, char* argv[])
 	current_sim.solve_ports();
 	current_sim.solve_full(config.simulation_wavenumber);
 
-	// Output currently for debug
 	auto port_1_excitation = post::eval_port(current_sim, 0, 0, 30, 30);
 	auto face_sol = post::eval_slice(current_sim, slice_plane::XY, 0, 32, 32, current_sim.bbox.zmax);
 	auto full_sol = post::eval_full(current_sim, 0, 30, 30, 30);	
