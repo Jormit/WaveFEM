@@ -12,14 +12,15 @@
 #include "post.h"
 #include "pml.h"
 #include "result_writer.h"
+#include "argument_parser.h"
 
-const std::string data_path = "../../../data/";
-
-int main()
+int main(int argc, char* argv[])
 {
+	arg_parser args(argc, argv);
+	sim_config config(args.data_path + args.config_filename);
+
 	mesher_interface::initialize();
-	sim_config config(data_path + "waveguide with obstacle.json");
-	auto model_ids = mesher_interface::import_model(data_path + config.model_file);
+	auto model_ids = mesher_interface::import_model(args.data_path + config.model_file);
 
 	auto boundary = mesher_interface::get_bounding_box();
 	boundary.add_padding(config.bounding_box_padding);
