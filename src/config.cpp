@@ -1,6 +1,8 @@
 #include <fstream>
 #include <json.hpp>
 #include <unordered_map>
+#include <iostream>
+#include <format>
 
 #include "config.h"
 #include "constants.h"
@@ -9,43 +11,87 @@ using json = nlohmann::json;
 
 sim_config::sim_config(std::string filename)
 {
-	std::ifstream f(filename);
-	json data = json::parse(f);
+	std::ifstream f;
+	f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-	model_file = data["model_file"];
-	for (auto& p : data["port_centres"])
+	try 
 	{
-		double x = p[0];
-		double y = p[1];
-		double z = p[2];
-		port_centres.push_back({ x,y,z });
+		f.open(filename);
+	}
+	catch (std::system_error& e) 
+	{
+		std::cerr << std::format("Could not open \"{}\"", filename) << std::endl;
+		exit(1);
 	}
 
-	bounding_box_padding = { data["bounding_box_padding"][0], data["bounding_box_padding"][1], data["bounding_box_padding"][2] };
-	pml_thickness = { data["pml_thickness"][0], data["pml_thickness"][1], data["pml_thickness"][2] };
-	pml_enable = data["pml_enable"];
-	simulation_wavenumber = static_cast<double>(data["frequency"]) * constants::freq2k;
-	target_mesh_size = constants::c / static_cast<double>(data["frequency"]) / static_cast<double>(data["target_elements_per_wavelength"]) * 1000;
-
-	std::unordered_map<std::string, size_t> material_map;
-	size_t i = 0;
-	for (auto& [key, m] : data["material_definitions"].items())
+	try
 	{
-		material_map[key] = i++;
-		if (m["PEC"])
+		json data = json::parse(f);
+
+		model_file = data["model_file"];
+		for (auto& p : data["port_centres"])
 		{
-			material_config new_mat{ m["PEC"], 0, 0, 0 };
-			materials.push_back(new_mat);
+			double x = static_cast<double>(p[0]);
+			double y = static_cast<double>(p[1]);
+			double z = static_cast<double>(p[2]);
+			port_centres.push_back({ x,y,z });
 		}
-		else
+
+		bounding_box_padding = { 
+			static_cast<double>(data["bounding_box_padding"][0]),
+			static_cast<double>(data["bounding_box_padding"][1]),
+			static_cast<double>(data["bounding_box_padding"][2]) 
+		};
+
+		pml_thickness = { 
+			static_cast<double>(data["pml_thickness"][0]),
+			static_cast<double>(data["pml_thickness"][1]),
+			static_cast<double>(data["pml_thickness"][2])
+		};
+
+		pml_enable = static_cast<bool>(data["pml_enable"]);
+
+		simulation_wavenumber = static_cast<double>(data["frequency"]) * constants::freq2k;
+
+		target_mesh_size =
+			constants::c / static_cast<double>(data["frequency"]) / 
+			static_cast<double>(data["target_elements_per_wavelength"]) * 1000;
+
+		std::unordered_map<std::string, size_t> material_map;
+		size_t i = 0;
+		for (auto& [key, m] : data["material_definitions"].items())
 		{
-			material_config new_mat{ m["PEC"], m["ep"], m["mu"], m["tand"] };
-			materials.push_back(new_mat);
-		}		
+			material_map[key] = i++;
+			if (m["PEC"])
+			{
+				material_config new_mat{ m["PEC"], 0, 0, 0 };
+				materials.push_back(new_mat);
+			}
+			else
+			{
+				material_config new_mat{ m["PEC"], m["ep"], m["mu"], m["tand"] };
+				materials.push_back(new_mat);
+			}
+		}
+
+		for (const std::string& m : data["material_assignments"])
+		{
+			if (material_map.contains(m))
+			{
+				material_assignments.push_back(material_map[m]);
+			}
+			else
+			{
+				std::cerr << std::format("Material \"{}\" is undefined!", m) << std::endl;
+				exit(1);
+			}
+			
+		}
 	}
 
-	for (auto& m : data["material_assignments"])
+	catch (const json::exception& e)
 	{
-		material_assignments.push_back(material_map[m]);
+		std::cerr << e.what() << '\n';
+		exit(1);
 	}
 }
