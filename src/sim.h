@@ -3,15 +3,19 @@
 #include <Eigen/Dense>
 #include <map>
 #include <unordered_set>
+#include <string>
 
 #include "ports.h"
 #include "geometry.h"
 #include "material.h"
+#include "config.h"
 
 struct sim
 {
 	sim(box bbox, std::vector<material> materials, std::vector<node> nodes, std::vector<tet> volume_elems,
 		std::unordered_map<size_t, int> boundary_edge_map, std::unordered_map<size_t, int> boundary_face_map, ports ports);
+
+	static sim create(sim_config config, std::string data_path);
 
 	void solve_ports();
 	void solve_full(double k);
