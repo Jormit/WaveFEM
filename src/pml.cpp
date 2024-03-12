@@ -106,8 +106,6 @@ pml_boundary pml::create(point_3d pml_box_padding)
 	xyz_ids[5] = mesher_interface::add_box(xyz_6);
 	xyz_ids[6] = mesher_interface::add_box(xyz_7);
 	xyz_ids[7] = mesher_interface::add_box(xyz_8);
-	
-	gmsh::model::occ::removeAllDuplicates();
 
 	gmsh::model::occ::synchronize();
 

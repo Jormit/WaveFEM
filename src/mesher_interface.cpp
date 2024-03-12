@@ -75,7 +75,7 @@ int mesher_interface::add_box(box b)
 
 std::vector<int> mesher_interface::subtract(int obj, int tool, bool remove_tool)
 {
-	return subtract({obj}, tool, remove_tool);
+	return subtract(std::vector<int>{obj}, tool, remove_tool);
 }
 
 std::vector<int> mesher_interface::subtract(std::vector<int> obj, int tool, bool remove_tool)
@@ -92,6 +92,12 @@ std::vector<int> mesher_interface::subtract(std::vector<int> obj, int tool, bool
 	std::transform(ov.cbegin(), ov.cend(), std::back_inserter(new_ids), [](std::pair<int, int> o) { return o.second; });
 
 	return new_ids;
+}
+
+void mesher_interface::remove_duplicates()
+{
+	gmsh::model::occ::removeAllDuplicates();
+	gmsh::model::occ::synchronize();
 }
 
 std::vector<node> mesher_interface::get_all_nodes()
