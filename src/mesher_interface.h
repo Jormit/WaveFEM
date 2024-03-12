@@ -25,6 +25,8 @@ namespace mesher_interface {
 	std::vector<int> subtract(int obj, int tool, bool remove_tool = true);
 	std::vector<int> subtract(std::vector<int> obj, int tool, bool remove_tool = true);
 
+	void remove_duplicates();
+
 	// Vector is indexed by node number - 1 !!!!!
 	std::vector<node> get_all_nodes();
 	std::vector<size_t> get_node_ids_in_volume(int id);

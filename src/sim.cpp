@@ -47,6 +47,8 @@ sim sim::create(sim_config config, std::string data_path)
 		pml = pml::create(config.pml_thickness);
 	}
 
+	mesher_interface::remove_duplicates();
+
 	mesher_interface::mesh_model(
 		config.target_mesh_size * 0.9,
 		config.target_mesh_size * 1.1
