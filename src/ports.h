@@ -15,4 +15,5 @@ struct ports
 	std::vector<int> entity_ids;
 	std::vector<std::vector<tri>> elements;
 	std::vector<rectangle> parametric_bounds;
+	std::vector<box> bounding_boxes;
 };
