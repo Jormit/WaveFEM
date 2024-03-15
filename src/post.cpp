@@ -8,7 +8,7 @@
 
 structured_2d_field_data post::eval_port(const sim& sim_instance, size_t port_num, size_t mode, size_t num_x, size_t num_y)
 {
-	auto bounds = sim_instance.sim_ports.bounds[port_num];
+	auto bounds = sim_instance.sim_ports.parametric_bounds[port_num];
 	bounds.add_padding(-1, -1);
 	auto points = generate_grid_points(bounds, num_x, num_y);
 
@@ -30,7 +30,7 @@ structured_2d_field_data post::eval_port(const sim& sim_instance, size_t port_nu
 
 structured_2d_field_data post::eval_port_from_3d(const sim& sim_instance, size_t eval_port_num, size_t driven_port_num, size_t num_x, size_t num_y)
 {
-	auto bounds = sim_instance.sim_ports.bounds[eval_port_num];
+	auto bounds = sim_instance.sim_ports.parametric_bounds[eval_port_num];
 	bounds.add_padding(-1, -1);
 	auto points = generate_grid_points(bounds, num_x, num_y);
 
