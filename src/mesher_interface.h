@@ -52,8 +52,8 @@ namespace mesher_interface {
 	std::vector<tri> get_surface_element_by_coordinate(std::vector<point_3d> points);
 	tri get_surface_element_by_parametric_coordinate(point_2d point, int id);
 
-	rectangle get_surface_bounds(int id);
-	std::vector <rectangle> get_surface_bounds(std::vector<int> id);
+	rectangle get_surface_parametric_bounds(int id);
+	std::vector <rectangle> get_surface_parametric_bounds(std::vector<int> id);
 
 	point_2d parameterize_on_surface(point_3d coord, int id);
 	std::vector<point_2d> parameterize_on_surface(std::vector <point_3d> coord, int id);

@@ -369,7 +369,7 @@ tri mesher_interface::get_surface_element_by_parametric_coordinate(point_2d poin
 	return get_surface_element_by_coordinate({ coord[0], coord[1], coord[2] });
 }
 
-rectangle mesher_interface::get_surface_bounds(int id)
+rectangle mesher_interface::get_surface_parametric_bounds(int id)
 {
 	std::vector<double> min;
 	std::vector<double> max;
@@ -377,12 +377,12 @@ rectangle mesher_interface::get_surface_bounds(int id)
 	return { min[0], min[1], max[0], max[1] };
 }
 
-std::vector<rectangle> mesher_interface::get_surface_bounds(std::vector<int> id)
+std::vector<rectangle> mesher_interface::get_surface_parametric_bounds(std::vector<int> id)
 {
 	std::vector<rectangle> dim;
 	for (auto i : id)
 	{
-		dim.push_back(get_surface_bounds(i));
+		dim.push_back(get_surface_parametric_bounds(i));
 	}
 	return dim;
 }
