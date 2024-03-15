@@ -14,5 +14,5 @@ struct ports
 	std::vector<point_3d> port_points;
 	std::vector<int> entity_ids;
 	std::vector<std::vector<tri>> elements;
-	std::vector<rectangle> bounds;
+	std::vector<rectangle> parametric_bounds;
 };
