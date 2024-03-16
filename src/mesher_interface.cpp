@@ -48,7 +48,9 @@ box mesher_interface::get_bounding_box(int dim, int tag)
 	catch (...)
 	{
 	}
-	return box(xmin, ymin, zmin, xmax, ymax, zmax);
+	box new_box(xmin, ymin, zmin, xmax, ymax, zmax);
+	new_box.add_padding(0.00001, 0.00001, 0.00001);
+	return new_box;
 }
 
 std::vector<box> mesher_interface::get_bounding_box(int dim, std::vector<int> tags)
@@ -59,6 +61,43 @@ std::vector<box> mesher_interface::get_bounding_box(int dim, std::vector<int> ta
 		boxes.push_back(get_bounding_box(dim, t));
 	}
 	return boxes;
+}
+
+std::vector<int> mesher_interface::get_entities_in_bounding_box(int dim, box box)
+{
+	std::vector<std::pair<int, int>> entities;
+	gmsh::model::getEntitiesInBoundingBox(box.xmin, box.ymin, box.zmin, box.xmax, box.ymax, box.zmax, entities, dim);
+	std::vector<int> ids;
+	std::transform(entities.cbegin(), entities.cend(), std::back_inserter(ids), [](std::pair<int, int> o) { return o.second; });
+	return ids;
+}
+
+std::vector<std::vector<int>> mesher_interface::get_entities_in_bounding_box(int dim, std::vector<box> box)
+{
+	std::vector<std::vector<int>> ids;
+	for (const auto& b : box)
+	{
+		ids.push_back(get_entities_in_bounding_box(dim, b));
+	}
+	return ids;
+}
+
+int mesher_interface::get_surface_parent(int id)
+{
+	std::vector<int> up_adj;
+	std::vector<int> down_adj;
+	gmsh::model::getAdjacencies(2, id, up_adj, down_adj);
+	return up_adj[0];
+}
+
+std::vector<int> mesher_interface::get_surface_parent(std::vector<int> id)
+{
+	std::vector<int> ids;
+	for (auto i : id)
+	{
+		ids.push_back(get_surface_parent(i));
+	}
+	return ids;
 }
 
 box mesher_interface::get_bounding_box()
@@ -92,6 +131,35 @@ std::vector<int> mesher_interface::subtract(std::vector<int> obj, int tool, bool
 	std::transform(ov.cbegin(), ov.cend(), std::back_inserter(new_ids), [](std::pair<int, int> o) { return o.second; });
 
 	return new_ids;
+}
+
+int mesher_interface::fuse_surfaces(std::vector<int> obj, bool remove_obj)
+{
+	std::vector<std::pair<int, int>> objs;
+	std::transform(obj.cbegin(), obj.cend(), std::back_inserter(objs), [](int o) { return std::pair<int, int>{ 2, o }; });
+
+	std::vector<std::pair<int, int>> objs_out;
+	std::vector<std::vector<std::pair<int, int>>> objs_out_map;
+	gmsh::model::occ::fuse(objs, objs, objs_out, objs_out_map, -1, false, false);
+	gmsh::model::occ::synchronize();
+
+	if (objs_out.size() > 1)
+	{
+		std::cerr << "Requested fuse operation failed because objects were not touching!" << std::endl;
+		exit(1);
+	}
+
+	return objs_out[0].second;
+}
+
+std::vector<int> mesher_interface::fuse_surfaces(std::vector <std::vector<int>> obj, bool remove_obj)
+{
+	std::vector<int> ids;
+	for (const auto& o : obj)
+	{
+		ids.push_back(fuse_surfaces(o, remove_obj));
+	}
+	return ids;
 }
 
 void mesher_interface::remove_duplicates()
@@ -152,33 +220,28 @@ std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> mesher_interfa
 	return { edges, faces };
 }
 
-std::unordered_set<size_t> mesher_interface::get_surface_boundary_edges(int surface_id)
-{
-	return get_surface_boundary_edges(std::vector <int> { surface_id });
-}
-
 std::unordered_set<size_t> mesher_interface::get_surface_boundary_edges(std::vector<int> surface_ids)
 {
 	std::unordered_set<size_t> edges;
-	for (auto id : surface_ids)
-	{
-		std::vector<std::pair<int, int>> boundary_entities;
-		gmsh::model::getBoundary({ {2, id} }, boundary_entities, false, false, false);
+	std::vector<std::pair<int, int>> objs;
+	std::transform(surface_ids.cbegin(), surface_ids.cend(), std::back_inserter(objs), [](int o) { return std::pair<int, int>{ 2, o }; });
 
-		for (const auto& e : boundary_entities)
+	std::vector<std::pair<int, int>> boundary_entities;
+	gmsh::model::getBoundary(objs, boundary_entities, true, false, false);
+
+	for (const auto& e : boundary_entities)
+	{
+		std::vector<int> elementTypes;
+		std::vector<std::vector<std::size_t>> elementTags;
+		std::vector<std::vector<std::size_t>> nodeTags;
+		gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 1, e.second);
+		std::vector<size_t> edge_tags;
+		std::vector<int> edge_orientations;
+		gmsh::model::mesh::getEdges(nodeTags[0], edge_tags, edge_orientations);
+		for (auto edge : edge_tags)
 		{
-			std::vector<int> elementTypes;
-			std::vector<std::vector<std::size_t>> elementTags;
-			std::vector<std::vector<std::size_t>> nodeTags;
-			gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 1, e.second);
-			std::vector<size_t> edge_tags;
-			std::vector<int> edge_orientations;
-			gmsh::model::mesh::getEdges(nodeTags[0], edge_tags, edge_orientations);
-			for (auto edge : edge_tags)
-			{
-				edges.insert(edge);
-			}
-		}		
+			edges.insert(edge);
+		}
 	}
 	return edges;
 }

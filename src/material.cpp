@@ -42,6 +42,14 @@ void mat::label_elems(std::vector<tet>& elems, size_t material)
 	}
 }
 
+void mat::label_elems(std::vector<tri>& elems, size_t material)
+{
+	for (int i = 0; i < elems.size(); i++)
+	{
+		elems[i].material_id = material;
+	}
+}
+
 material mat::pml(std::complex<double> sx, std::complex<double> sy, std::complex<double> sz)
 {
 	Eigen::Matrix3cd pml;

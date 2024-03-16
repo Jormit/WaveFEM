@@ -18,7 +18,7 @@ structured_2d_field_data post::eval_port(const sim& sim_instance, size_t port_nu
 	for (size_t i = 0; i < points.size(); i++)
 	{
 		const auto p = points[i];
-		auto e = mesher_interface::get_surface_element_by_parametric_coordinate(p, sim_instance.sim_ports.entity_ids[port_num]);
+		auto e = mesher_interface::get_surface_element_by_parametric_coordinate(p, sim_instance.sim_ports.dummy_ids[port_num]);
 		auto elem_field = fem::_2d::mixed_order::eval_elem(sim_instance.nodes,
 				e, { p.u, p.v }, sim_instance.port_dof_maps[port_num], sim_instance.port_eigen_vectors[port_num].col(mode));
 		
@@ -40,7 +40,7 @@ structured_2d_field_data post::eval_port_from_3d(const sim& sim_instance, size_t
 	for (size_t i = 0; i < points.size(); i++)
 	{
 		const auto p = points[i];
-		auto e = mesher_interface::get_surface_element_by_parametric_coordinate(p, sim_instance.sim_ports.entity_ids[eval_port_num]);
+		auto e = mesher_interface::get_surface_element_by_parametric_coordinate(p, sim_instance.sim_ports.dummy_ids[eval_port_num]);
 		auto elem_field = fem::_2d::mixed_order::eval_elem(sim_instance.nodes,
 			e, { p.u, p.v }, sim_instance.full_dof_map, sim_instance.full_solutions[driven_port_num]);
 
@@ -79,7 +79,7 @@ structured_3d_field_data post::eval_full(const sim& sim_instance, size_t port_nu
 
 Eigen::MatrixXcd post::eval_s_parameters(const sim& sim_instance, size_t num_x, size_t num_y)
 {
-	size_t num_ports = sim_instance.sim_ports.entity_ids.size();
+	size_t num_ports = sim_instance.sim_ports.dummy_ids.size();
 	Eigen::MatrixXcd s_params (num_ports, num_ports);
 	
 	for (size_t j = 0; j < num_ports; j++)
@@ -102,7 +102,7 @@ Eigen::MatrixXcd post::eval_s_parameters(const sim& sim_instance, size_t num_x, 
 			{
 				s_params(i, j) = helpers::rowise_2d_dot_product(port_i_3d.field, port_i_2d.field) / (j_scaling * i_scaling);
 			}
-		}		
+		}
 	}
 	return s_params;
 }
