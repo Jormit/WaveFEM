@@ -10,7 +10,8 @@ struct material
 	material(std::complex<double> permittivity, std::complex<double> permeability);
 	material(Eigen::Matrix3cd permittivity, Eigen::Matrix3cd permeability);
 	Eigen::Matrix3cd permittivity;
-	Eigen::Matrix3cd permeability;	
+	Eigen::Matrix3cd permeability;
+	bool isotropic;
 };
 
 namespace mat

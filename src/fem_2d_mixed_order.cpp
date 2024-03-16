@@ -50,7 +50,10 @@ fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords)
 	for (size_t p = 0; p < 6; p++)
 	{
 		Eigen::Vector3d lambda;
-		lambda << quad::surface::gauss_6_point[p][1], quad::surface::gauss_6_point[p][2], quad::surface::gauss_6_point[p][3];
+		lambda << 
+			quad::surface::gauss_6_point[p][1],
+			quad::surface::gauss_6_point[p][2],
+			quad::surface::gauss_6_point[p][3];
 		auto w = quad::surface::gauss_6_point[p][0];
 
 		auto basis_curl = fem::_2d::mixed_order::basis_curl(lambda, nabla_lambda);

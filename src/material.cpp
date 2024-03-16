@@ -64,8 +64,9 @@ material::material(std::complex<double> permittivity, std::complex<double> perme
 {
 	this->permittivity = permittivity * Eigen::Matrix3cd::Identity();
 	this->permeability = permeability * Eigen::Matrix3cd::Identity();
+	isotropic = true;
 }
 
 material::material(Eigen::Matrix3cd permittivity, Eigen::Matrix3cd permeability) :
-	permittivity(permittivity), permeability(permeability) 
+	permittivity(permittivity), permeability(permeability), isotropic(false)
 {}
