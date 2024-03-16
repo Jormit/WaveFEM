@@ -1,5 +1,6 @@
 #include <complex>
 #include <iostream>
+#include <unordered_map>
 
 #include "sim.h"
 #include "fem.h"
@@ -20,6 +21,7 @@ sim sim::create(sim_config config, std::string data_path)
 	mesher_interface::initialize();
 	auto model_ids = mesher_interface::import_model(data_path + config.model_file);
 
+	auto port_bounding_boxes = ports::get_port_bounding_boxes(config.port_centres);
 	auto boundary = mesher_interface::get_bounding_box();
 	boundary.add_padding(config.bounding_box_padding);
 	int boundary_id = mesher_interface::add_box(boundary);
@@ -75,20 +77,24 @@ sim sim::create(sim_config config, std::string data_path)
 		elements.insert(elements.end(), pml_elements.begin(), pml_elements.end());
 	}
 
+	std::unordered_map<size_t, size_t> volume_material_map;
 	for (size_t i = 0; i < model_ids.size(); i++)
 	{
 		auto material_id = config.material_assignments[i];
 		if (!config.materials[material_id].PEC)
 		{
-			auto mat_elements = mesher_interface::get_volume_elems(i + 1);
-			mat::label_elems(mat_elements, base_materials.size() + i);
+			size_t volume_id = i + 1;
+			size_t material_id = base_materials.size() + i;
+			auto mat_elements = mesher_interface::get_volume_elems(volume_id);
+			mat::label_elems(mat_elements, material_id);
+			volume_material_map[volume_id] = material_id;
 			elements.insert(elements.end(), mat_elements.begin(), mat_elements.end());
 		}
 	}
 
 	base_materials.insert(base_materials.end(), user_materials.begin(), user_materials.end());
 
-	ports ports(config.port_centres);
+	ports ports(port_bounding_boxes, volume_material_map);
 	ports.setup_port_nodes(nodes);
 	ports.setup_port_faces_and_edges(boundary_edge_map, boundary_face_map);
 

@@ -20,10 +20,19 @@ namespace mesher_interface {
 	box get_bounding_box(int dim, int tag);
 	std::vector<box> get_bounding_box(int dim, std::vector<int> tags);
 
+	std::vector<int> get_entities_in_bounding_box(int dim, box box);
+	std::vector<std::vector<int>> get_entities_in_bounding_box(int dim, std::vector<box> box);
+
+	int get_surface_parent(int id);
+	std::vector<int> get_surface_parent(std::vector<int> id);
+
 	int add_box(box b);
 
 	std::vector<int> subtract(int obj, int tool, bool remove_tool = true);
 	std::vector<int> subtract(std::vector<int> obj, int tool, bool remove_tool = true);
+
+	int fuse_surfaces(std::vector<int> obj, bool remove_obj);
+	std::vector<int> fuse_surfaces(std::vector <std::vector<int>> obj, bool remove_obj);
 
 	void remove_duplicates();
 
