@@ -40,8 +40,14 @@ Eigen::Matrix<double, 8, 1> fem::_2d::mixed_order::basis_curl(const Eigen::Vecto
 }
 
 std::pair<Eigen::Matrix<double, 8, 8>, Eigen::Matrix<double, 8, 8>>
-fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords)
+fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords, material mat)
 {
+	if (!mat.isotropic)
+	{
+		std::cerr << "Only isotropic materials are supported for port solution!" << std::endl;
+		exit(1);
+	}
+
 	Eigen::Matrix<double, 3, 3> simplex_coeff = fem::_2d::simplex_coefficients(coords);
 	Eigen::Matrix<double, 3, 2> nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
 
@@ -70,7 +76,7 @@ fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords)
 	}
 
 	auto area = fem::_2d::area(coords);
-	return { S * area, T * area };
+	return { S * area / mat.permeability(0,0).real(), T * area * mat.permittivity(0,0).real() };
 }
 
 std::map<std::pair<size_t, size_t>, size_t> fem::_2d::mixed_order::dof_map(const std::vector<tri>& elems, std::unordered_map<size_t, int> boundary_edge_map)
@@ -118,7 +124,7 @@ std::pair<size_t, size_t> fem::_2d::mixed_order::global_dof_pair(const tri& elem
 
 std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
 fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems,
-	const std::map<std::pair<size_t, size_t>, size_t>& dof_map)
+	std::vector<material> materials, const std::map<std::pair<size_t, size_t>, size_t>& dof_map)
 {
 	Eigen::SparseMatrix<double> S_global(dof_map.size(), dof_map.size());
 	Eigen::SparseMatrix<double> T_global(dof_map.size(), dof_map.size());
@@ -127,7 +133,7 @@ fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::v
 	{
 		Eigen::Matrix<double, 3, 2> coords = e.coordinate_matrix(nodes);
 		Eigen::Matrix<double, 8, 8> S_local, T_local;
-		std::tie(S_local, T_local) = S_T(coords);
+		std::tie(S_local, T_local) = S_T(coords, materials[e.material_id]);
 
 		for (size_t local_dof_i = 0; local_dof_i < 8; local_dof_i++)
 		{
