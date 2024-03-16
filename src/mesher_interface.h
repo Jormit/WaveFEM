@@ -46,6 +46,9 @@ namespace mesher_interface {
 	std::unordered_set<size_t> get_surface_boundary_edges(int surface_id);
 	std::unordered_set<size_t> get_surface_boundary_edges(std::vector <int> surface_ids);
 
+	std::unordered_set<size_t> get_edges_on_line(int line_id);
+	std::unordered_set<size_t> get_edges_on_line(std::vector <int> line_id);
+
 	tet assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4);
 	std::vector<tet> get_volume_elems(int id);
 	std::vector<std::vector<tet>> get_volume_elems(std::vector<int> id);
