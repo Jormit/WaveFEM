@@ -85,7 +85,11 @@ fem::_3d::mixed_order::S_T(const Eigen::Matrix<double, 4, 3>& coords, material m
 	for (size_t p = 0; p < 11; p++)
 	{
 		Eigen::Vector4d lambda;
-		lambda << quad::volume::gauss_11_point[p][1], quad::volume::gauss_11_point[p][2], quad::volume::gauss_11_point[p][3], quad::volume::gauss_11_point[p][4];
+		lambda << 
+			quad::volume::gauss_11_point[p][1],
+			quad::volume::gauss_11_point[p][2],
+			quad::volume::gauss_11_point[p][3],
+			quad::volume::gauss_11_point[p][4];
 		auto w = quad::volume::gauss_11_point[p][0];
 
 		auto curl_funcs = basis_curl(lambda, nabla_lambda);
@@ -121,7 +125,10 @@ Eigen::Matrix<double, 8, 8>	fem::_3d::mixed_order::B(const Eigen::Matrix<double,
 	for (size_t p = 0; p < 6; p++)
 	{
 		Eigen::Vector3d lambda;
-		lambda << quad::surface::gauss_6_point[p][1], quad::surface::gauss_6_point[p][2], quad::surface::gauss_6_point[p][3];
+		lambda << 
+			quad::surface::gauss_6_point[p][1],
+			quad::surface::gauss_6_point[p][2],
+			quad::surface::gauss_6_point[p][3];
 		auto w = quad::surface::gauss_6_point[p][0];
 
 		auto basis_funcs = fem::_2d::mixed_order::basis(lambda, nabla_lambda);
