@@ -220,6 +220,11 @@ std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> mesher_interfa
 	return { edges, faces };
 }
 
+std::unordered_set<size_t> mesher_interface::get_surface_boundary_edges(int surface_id)
+{
+	return get_surface_boundary_edges(std::vector<int>{ surface_id });
+}
+
 std::unordered_set<size_t> mesher_interface::get_surface_boundary_edges(std::vector<int> surface_ids)
 {
 	std::unordered_set<size_t> edges;
