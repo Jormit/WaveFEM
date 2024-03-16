@@ -228,20 +228,35 @@ std::unordered_set<size_t> mesher_interface::get_surface_boundary_edges(std::vec
 
 	std::vector<std::pair<int, int>> boundary_entities;
 	gmsh::model::getBoundary(objs, boundary_entities, true, false, false);
+	std::vector<int> line_ids;
+	std::transform(boundary_entities.cbegin(), boundary_entities.cend(), std::back_inserter(line_ids), [](std::pair<int, int> c) { return c.second; });
 
-	for (const auto& e : boundary_entities)
+	return get_edges_on_line(line_ids);
+}
+
+std::unordered_set<size_t> mesher_interface::get_edges_on_line(int line_id)
+{
+	std::unordered_set<size_t> edges;
+	std::vector<int> elementTypes;
+	std::vector<std::vector<std::size_t>> elementTags;
+	std::vector<std::vector<std::size_t>> nodeTags;
+	gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 1, line_id);
+	std::vector<size_t> edge_tags;
+	std::vector<int> edge_orientations;
+	gmsh::model::mesh::getEdges(nodeTags[0], edge_tags, edge_orientations);
+	for (auto edge : edge_tags)
 	{
-		std::vector<int> elementTypes;
-		std::vector<std::vector<std::size_t>> elementTags;
-		std::vector<std::vector<std::size_t>> nodeTags;
-		gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 1, e.second);
-		std::vector<size_t> edge_tags;
-		std::vector<int> edge_orientations;
-		gmsh::model::mesh::getEdges(nodeTags[0], edge_tags, edge_orientations);
-		for (auto edge : edge_tags)
-		{
-			edges.insert(edge);
-		}
+		edges.insert(edge);
+	}
+	return edges;
+}
+
+std::unordered_set<size_t> mesher_interface::get_edges_on_line(std::vector<int> line_id)
+{
+	std::unordered_set<size_t> edges;
+	for (auto id : line_id)
+	{
+		edges.merge(get_edges_on_line(id));
 	}
 	return edges;
 }

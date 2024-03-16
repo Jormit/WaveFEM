@@ -41,7 +41,7 @@ namespace helpers
 	std::complex<double> rowise_2d_dot_product(const Eigen::MatrixBase<Derived>& A, const Eigen::MatrixBase<Derived>& B)
 	{
 		std::complex<double> result = 0;
-		for (size_t i = 0; i < A.rows(); i++)
+		for (int i = 0; i < A.rows(); i++)
 		{
 			result += A.row(i).dot(B.row(i));
 		}

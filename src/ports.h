@@ -16,4 +16,5 @@ struct ports
 	std::vector<int> dummy_ids;
 	std::vector<std::vector<tri>> elements;
 	std::vector<rectangle> parametric_bounds;
+	bool is_TEM;
 };
