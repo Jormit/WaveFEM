@@ -26,7 +26,7 @@ namespace fem
 			Eigen::Matrix<double, 8, 1> basis_curl(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda);
 
 			std::pair<Eigen::Matrix<double, 8, 8>, Eigen::Matrix<double, 8, 8>>
-				S_T(const Eigen::Matrix<double, 3, 2>& coords);
+				S_T(const Eigen::Matrix<double, 3, 2>& coords, material mat);
 
 			std::map<std::pair<size_t, size_t>, size_t> dof_map(
 				const std::vector<tri>& elems, std::unordered_map<size_t, int> boundary_edge_map);
@@ -34,7 +34,7 @@ namespace fem
 
 			std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
 				assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems,
-					const std::map<std::pair<size_t, size_t>, size_t>& dof_map);
+					std::vector<material> materials, const std::map<std::pair<size_t, size_t>, size_t>& dof_map);
 
 			Eigen::Vector2cd eval_elem(const std::vector<node>& nodes, const tri& e, const point_2d& eval_point,
 				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution);

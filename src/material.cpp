@@ -2,7 +2,7 @@
 
 material mat::vacuum()
 {
-	return { Eigen::Matrix3cd::Identity() , Eigen::Matrix3cd::Identity() };
+	return { 1, 1 };
 }
 
 std::vector<material> mat::generate_base_set()
