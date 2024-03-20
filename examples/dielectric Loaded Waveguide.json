@@ -1,0 +1,22 @@
+{
+  "model_file": "dielectric Loaded Waveguide.step",
+  "port_centres": [
+    [ 21.0, 0.0, 10.5 ],
+    [ 21.0, 99.0, 10.5 ]
+  ],
+  "bounding_box_padding": [ 1, 1, 1 ],
+  "pml_enable": false,
+  "pml_thickness": [ 20, 20, 20 ],
+  "frequency": 5000000000,
+  "target_elements_per_wavelength": 10,
+  "material_assignments": [ "conductor", "dielectric" ],
+  "material_definitions": {
+    "conductor": { "PEC": true },
+    "dielectric": {
+      "PEC": false,
+      "ep": 5,
+      "mu": 1,
+      "tand": 0.001
+    }
+  }
+}

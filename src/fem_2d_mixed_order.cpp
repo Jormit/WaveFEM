@@ -40,14 +40,8 @@ Eigen::Matrix<double, 8, 1> fem::_2d::mixed_order::basis_curl(const Eigen::Vecto
 }
 
 std::pair<Eigen::Matrix<double, 8, 8>, Eigen::Matrix<double, 8, 8>>
-fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords, material mat)
+fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords)
 {
-	if (!mat.isotropic)
-	{
-		std::cerr << "Only isotropic materials are supported for port solution!" << std::endl;
-		exit(1);
-	}
-
 	Eigen::Matrix<double, 3, 3> simplex_coeff = fem::_2d::simplex_coefficients(coords);
 	Eigen::Matrix<double, 3, 2> nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
 
@@ -76,7 +70,7 @@ fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords, material m
 	}
 
 	auto area = fem::_2d::area(coords);
-	return { S * area / mat.permeability(0,0).real(), T * area * mat.permittivity(0,0).real() };
+	return { S * area, T * area };
 }
 
 std::map<std::pair<size_t, size_t>, size_t> fem::_2d::mixed_order::dof_map(const std::vector<tri>& elems, std::unordered_map<size_t, int> boundary_edge_map)
@@ -123,17 +117,27 @@ std::pair<size_t, size_t> fem::_2d::mixed_order::global_dof_pair(const tri& elem
 }
 
 std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
-fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems,
-	std::vector<material> materials, const std::map<std::pair<size_t, size_t>, size_t>& dof_map)
+fem::_2d::mixed_order::assemble_A_B(const std::vector<node>& nodes, const std::vector<tri>& elems,
+	std::vector<material> materials, const std::map<std::pair<size_t, size_t>, size_t>& dof_map, double k0)
 {
-	Eigen::SparseMatrix<double> S_global(dof_map.size(), dof_map.size());
-	Eigen::SparseMatrix<double> T_global(dof_map.size(), dof_map.size());
+	Eigen::SparseMatrix<double> A_global(dof_map.size(), dof_map.size());
+	Eigen::SparseMatrix<double> B_global(dof_map.size(), dof_map.size());
 
 	for (const auto& e : elems)
 	{
 		Eigen::Matrix<double, 3, 2> coords = e.coordinate_matrix(nodes);
 		Eigen::Matrix<double, 8, 8> S_local, T_local;
-		std::tie(S_local, T_local) = S_T(coords, materials[e.material_id]);
+		auto mat = materials[e.material_id];
+		if (!mat.isotropic)
+		{
+			std::cerr << "Isotropic material on ports is not supported!" << std::endl;
+			exit(1);
+		}
+		
+		auto ep = mat.permittivity(0, 0).real();
+		auto mu = mat.permeability(0, 0).real();
+
+		std::tie(S_local, T_local) = S_T(coords);
 
 		for (size_t local_dof_i = 0; local_dof_i < 8; local_dof_i++)
 		{
@@ -146,16 +150,16 @@ fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::v
 				if (!dof_map.contains(global_dof_pair_j)) continue;
 				auto global_dof_j = dof_map.at(global_dof_pair_j);
 
-				S_global.coeffRef(global_dof_i, global_dof_j) += S_local(local_dof_i, local_dof_j);
-				T_global.coeffRef(global_dof_i, global_dof_j) += T_local(local_dof_i, local_dof_j);
+				A_global.coeffRef(global_dof_i, global_dof_j) += S_local(local_dof_i, local_dof_j) / mu - k0 * k0 * ep * T_local(local_dof_i, local_dof_j);
+				B_global.coeffRef(global_dof_i, global_dof_j) += T_local(local_dof_i, local_dof_j) / mu;
 			}
 		}
 	}
 
-	S_global.makeCompressed();
-	T_global.makeCompressed();
+	A_global.makeCompressed();
+	B_global.makeCompressed();
 
-	return { S_global, T_global };
+	return { A_global, B_global };
 }
 
 Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes, const tri& e, const point_2d& eval_point,
