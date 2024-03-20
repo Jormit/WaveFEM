@@ -11,7 +11,7 @@
 
 namespace fem
 {
-	std::pair<Eigen::VectorXd, Eigen::MatrixXd> solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T);
+	std::pair<Eigen::VectorXd, Eigen::MatrixXd> solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T, double guess);
 
 	namespace _2d
 	{
@@ -26,15 +26,16 @@ namespace fem
 			Eigen::Matrix<double, 8, 1> basis_curl(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda);
 
 			std::pair<Eigen::Matrix<double, 8, 8>, Eigen::Matrix<double, 8, 8>>
-				S_T(const Eigen::Matrix<double, 3, 2>& coords, material mat);
+				S_T(const Eigen::Matrix<double, 3, 2>& coords);
 
 			std::map<std::pair<size_t, size_t>, size_t> dof_map(
 				const std::vector<tri>& elems, std::unordered_map<size_t, int> boundary_edge_map);
 			std::pair<size_t, size_t> global_dof_pair(const tri& elem, const size_t& dof_num);
 
 			std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
-				assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems,
-					std::vector<material> materials, const std::map<std::pair<size_t, size_t>, size_t>& dof_map);
+				assemble_A_B(const std::vector<node>& nodes, const std::vector<tri>& elems,
+					std::vector<material> materials, const std::map<std::pair<size_t, size_t>, size_t>& dof_map,
+					double k0);
 
 			Eigen::Vector2cd eval_elem(const std::vector<node>& nodes, const tri& e, const point_2d& eval_point,
 				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution);

@@ -17,7 +17,7 @@ struct sim
 
 	static sim create(sim_config config, std::string data_path);
 
-	void solve_ports();
+	void solve_ports(double k);
 	void solve_full(double k);
 
 	// Input
