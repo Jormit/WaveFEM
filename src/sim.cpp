@@ -125,8 +125,7 @@ void sim::solve_ports(double k)
 
 		Eigen::VectorXd values;
 		Eigen::MatrixXd vecs;
-		double theta_squared = k * k * 3.5;
-		std::cout << theta_squared << std::endl;
+		double theta_squared = k * k;
 		std::tie(values, vecs) = fem::solve_eigenproblem(B, B+A/theta_squared, 1);
 
 		auto n = values.size();
