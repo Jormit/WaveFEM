@@ -3,7 +3,7 @@ import numpy as np
 
 import data_loader as dl
 
-x, y, z, vec = dl.import_3d_field("../examples/outputs/Full Solution.txt")
+x, y, z, vec = dl.import_3d_field("../examples/outputs/Waveguide With Obstacle 3d.txt")
 vec_real = np.real(vec)
 vec_real_mag = np.linalg.norm(vec_real, axis=3)
 

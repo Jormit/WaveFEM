@@ -119,22 +119,16 @@ void sim::solve_ports(double k)
 		auto dof_map = fem::_2d::mixed_order::dof_map(sim_ports.elements[p], boundary_edge_map);
 		port_dof_maps.push_back(dof_map);
 
-		Eigen::SparseMatrix<double> A;
-		Eigen::SparseMatrix<double> B;
-		std::tie(A, B) = fem::_2d::mixed_order::assemble_A_B(nodes, sim_ports.elements[p], materials, dof_map, k);
+		Eigen::SparseMatrix<double> S;
+		Eigen::SparseMatrix<double> T;
+		std::tie(S, T) = fem::_2d::mixed_order::assemble_S_T(nodes, sim_ports.elements[p], materials, dof_map, k);
 
 		Eigen::VectorXd values;
 		Eigen::MatrixXd vecs;
-		double theta_squared = k * k;
-		std::tie(values, vecs) = fem::solve_eigenproblem(B, B+A/theta_squared, 1);
-
-		auto n = values.size();
-		values = theta_squared * (Eigen::VectorXd::Ones(n) - values.cwiseInverse());
+		std::tie(values, vecs) = fem::solve_eigenproblem(S, T, 1e-4, 5);
 
 		port_eigen_wave_numbers.push_back(values.cwiseSqrt());
 		port_eigen_vectors.push_back(vecs);
-
-		std::cout << port_eigen_wave_numbers.back() << std::endl;
 	}
 }
 
@@ -148,7 +142,10 @@ void sim::solve_full(double k)
 
 	for (int p = 0; p < sim_ports.elements.size(); p++)
 	{
-		std::complex<double> k_inc = port_eigen_wave_numbers[p](0);
+		std::complex<double> k_inc = std::sqrt(
+			static_cast<std::complex<double>>(k * k) -
+			port_eigen_wave_numbers[p](0) * port_eigen_wave_numbers[p](0)
+		);
 		auto A = fem::_3d::mixed_order::assemble_A(
 			nodes,
 			volume_elems,

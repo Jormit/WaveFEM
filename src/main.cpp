@@ -19,9 +19,9 @@ int main(int argc, char* argv[])
 	current_sim.solve_ports(config.simulation_wavenumber);
 	current_sim.solve_full(config.simulation_wavenumber);
 
-	auto port_1_excitation = post::eval_port(current_sim, 0, 3, 30, 30);
+	auto port_1_excitation = post::eval_port(current_sim, 0, 1, 30, 30);
 	auto face_sol = post::eval_slice(current_sim, slice_plane::XY, 0, 32, 32, current_sim.bbox.zmax);
-	auto full_sol = post::eval_full(current_sim, 0, 30, 30, 30);	
+	auto full_sol = post::eval_full(current_sim, 0, 30, 30, 30);
 
 	result_writer::write_2d_field("Port Solution 2d.txt", port_1_excitation);
 	result_writer::write_2d_field("Slice Solution 2d.txt", face_sol);

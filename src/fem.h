@@ -11,7 +11,7 @@
 
 namespace fem
 {
-	std::pair<Eigen::VectorXd, Eigen::MatrixXd> solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T, double guess);
+	std::pair<Eigen::VectorXd, Eigen::MatrixXd> solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T, double guess, int num);
 
 	namespace _2d
 	{
@@ -33,7 +33,7 @@ namespace fem
 			std::pair<size_t, size_t> global_dof_pair(const tri& elem, const size_t& dof_num);
 
 			std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
-				assemble_A_B(const std::vector<node>& nodes, const std::vector<tri>& elems,
+				assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems,
 					std::vector<material> materials, const std::map<std::pair<size_t, size_t>, size_t>& dof_map,
 					double k0);
 
@@ -82,7 +82,4 @@ namespace fem
 
 		}
 	}
-
-
-
 }
