@@ -117,11 +117,11 @@ std::pair<size_t, size_t> fem::_2d::mixed_order::global_dof_pair(const tri& elem
 }
 
 std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
-fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::vector<tri>& elems,
+fem::_2d::mixed_order::assemble_A_B(const std::vector<node>& nodes, const std::vector<tri>& elems,
 	std::vector<material> materials, const std::map<std::pair<size_t, size_t>, size_t>& dof_map, double k0)
 {
-	Eigen::SparseMatrix<double> S_global(dof_map.size(), dof_map.size());
-	Eigen::SparseMatrix<double> T_global(dof_map.size(), dof_map.size());
+	Eigen::SparseMatrix<double> A_global(dof_map.size(), dof_map.size());
+	Eigen::SparseMatrix<double> B_global(dof_map.size(), dof_map.size());
 
 	for (const auto& e : elems)
 	{
@@ -133,7 +133,7 @@ fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::v
 			std::cerr << "Isotropic material on ports is not supported!" << std::endl;
 			exit(1);
 		}
-		
+
 		auto ep = mat.permittivity(0, 0).real();
 		auto mu = mat.permeability(0, 0).real();
 
@@ -150,16 +150,16 @@ fem::_2d::mixed_order::assemble_S_T(const std::vector<node>& nodes, const std::v
 				if (!dof_map.contains(global_dof_pair_j)) continue;
 				auto global_dof_j = dof_map.at(global_dof_pair_j);
 
-				S_global.coeffRef(global_dof_i, global_dof_j) += S_local(local_dof_i, local_dof_j) / mu;
-				T_global.coeffRef(global_dof_i, global_dof_j) += T_local(local_dof_i, local_dof_j) * ep;
+				A_global.coeffRef(global_dof_i, global_dof_j) += S_local(local_dof_i, local_dof_j) / mu - k0 * k0 * ep * T_local(local_dof_i, local_dof_j);
+				B_global.coeffRef(global_dof_i, global_dof_j) += T_local(local_dof_i, local_dof_j) / mu;
 			}
 		}
 	}
 
-	S_global.makeCompressed();
-	T_global.makeCompressed();
+	A_global.makeCompressed();
+	B_global.makeCompressed();
 
-	return { S_global, T_global };
+	return { A_global, B_global };
 }
 
 Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes, const tri& e, const point_2d& eval_point,
