@@ -164,7 +164,6 @@ fem::dof_map fem::_2d::mixed_order::generate_dof_map(const std::vector<node>& no
 				{
 					map[{global_node, fem::dof_type::NODE_1}] = i++;
 				}
-				
 			}
 		}
 	}
