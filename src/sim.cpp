@@ -115,7 +115,7 @@ void sim::solve_ports(double k)
 	port_dof_maps.clear();
 	for (int p = 0; p < sim_ports.elements.size(); p++)
 	{
-		auto dof_map = fem::_2d::mixed_order::generate_dof_map(sim_ports.elements[p], boundary_edge_map);
+		auto dof_map = fem::_2d::mixed_order::generate_dof_map(nodes, sim_ports.elements[p], boundary_edge_map);
 		port_dof_maps.push_back(dof_map);
 
 		Eigen::SparseMatrix<double> A;

@@ -4,7 +4,7 @@
 #include "quad.h"
 #include "mesher_interface.h"
 
-Eigen::Matrix<double, 8, 2> fem::_2d::mixed_order::basis(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda)
+Eigen::Matrix<double, 8, 2> fem::_2d::mixed_order::vector_basis(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda)
 {
 	Eigen::Matrix<double, 8, 2> func;
 
@@ -20,7 +20,7 @@ Eigen::Matrix<double, 8, 2> fem::_2d::mixed_order::basis(const Eigen::Vector3d& 
 	return func;
 }
 
-Eigen::Matrix<double, 8, 1> fem::_2d::mixed_order::basis_curl(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda) {
+Eigen::Matrix<double, 8, 1> fem::_2d::mixed_order::vector_basis_curl(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda) {
 	Eigen::Matrix<double, 8, 1> func;
 	Eigen::Matrix<double, 3, 3> nabla_matrix;
 	nabla_matrix.col(0) = nabla_lambda.col(0);
@@ -65,14 +65,18 @@ Eigen::Matrix<double, 6, 2> fem::_2d::mixed_order::scalar_basis_grad(const Eigen
 	return func;
 }
 
-std::pair<Eigen::Matrix<double, 8, 8>, Eigen::Matrix<double, 8, 8>>
-fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords)
+std::pair<Eigen::Matrix<double, 14, 14>, Eigen::Matrix<double, 14, 14>>
+fem::_2d::mixed_order::A_B(const Eigen::Matrix<double, 3, 2>& coords, material mat, double k0)
 {
 	Eigen::Matrix<double, 3, 3> simplex_coeff = fem::_2d::simplex_coefficients(coords);
 	Eigen::Matrix<double, 3, 2> nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
 
-	Eigen::Matrix<double, 8, 8> S = Eigen::Matrix<double, 8, 8>::Zero();
-	Eigen::Matrix<double, 8, 8> T = Eigen::Matrix<double, 8, 8>::Zero();
+	Eigen::Matrix<double, 14, 14> A = Eigen::Matrix<double, 14, 14>::Zero();
+	Eigen::Matrix<double, 14, 14> B = Eigen::Matrix<double, 14, 14>::Zero();
+
+	auto ep = mat.permittivity(0, 0).real();
+	auto mu = mat.permeability(0, 0).real();
+
 	for (size_t p = 0; p < 6; p++)
 	{
 		Eigen::Vector3d lambda;
@@ -82,24 +86,48 @@ fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords)
 			quad::surface::gauss_6_point[p][3];
 		auto w = quad::surface::gauss_6_point[p][0];
 
-		auto basis_curl = fem::_2d::mixed_order::basis_curl(lambda, nabla_lambda);
-		auto basis = fem::_2d::mixed_order::basis(lambda, nabla_lambda);
+		auto vector_basis = fem::_2d::mixed_order::vector_basis(lambda, nabla_lambda);
+		auto vector_basis_curl = fem::_2d::mixed_order::vector_basis_curl(lambda, nabla_lambda);
+
+		auto scalar_basis = fem::_2d::mixed_order::scalar_basis(lambda);
+		auto scalar_basis_grad = fem::_2d::mixed_order::scalar_basis_grad(lambda, nabla_lambda);
+
 
 		for (size_t i = 0; i < 8; i++)
 		{
 			for (size_t j = 0; j < 8; j++)
 			{
-				S(i, j) += w * basis_curl(i) * basis_curl(j);
-				T(i, j) += w * basis.row(i).dot(basis.row(j));
+				A(i, j) += 
+					w * (vector_basis_curl(i) * vector_basis_curl(j) / mu 
+					- k0 * k0 * ep * vector_basis.row(i).dot(vector_basis.row(j)));
+				B(i, j) += w * vector_basis.row(i).dot(vector_basis.row(j)) / mu;
+			}
+			for (size_t j = 8; j < 14; j++)
+			{
+				B(i, j) += w * vector_basis.row(i).dot(scalar_basis_grad.row(j - 8)) / mu;
+			}
+		}
+
+		for (size_t i = 8; i < 14; i++)
+		{
+			for (size_t j = 0; j < 8; j++)
+			{
+				B(i, j) += w * scalar_basis_grad.row(i - 8).dot(vector_basis.row(j)) / mu;
+			}
+			for (size_t j = 8; j < 14; j++)
+			{
+				B(i, j) += 
+					w * (scalar_basis_grad.row(i - 8).dot(scalar_basis_grad.row(j - 8)) / mu 
+					- k0 * k0 * ep * scalar_basis.row(i - 8).dot(scalar_basis.row(j - 8)));
 			}
 		}
 	}
 
 	auto area = fem::_2d::area(coords);
-	return { S * area, T * area };
+	return { A * area, B * area };
 }
 
-fem::dof_map fem::_2d::mixed_order::generate_dof_map(
+fem::dof_map fem::_2d::mixed_order::generate_dof_map(const std::vector<node>& nodes,
 	const std::vector<tri>& elems, std::unordered_map<size_t, int> boundary_edge_map)
 {
 	int i = 0;
@@ -113,8 +141,10 @@ fem::dof_map fem::_2d::mixed_order::generate_dof_map(
 			{
 				if (boundary_edge_map[global_edge] != PORT_OUTER_BOUNDARY)
 				{
-					map[{e.edges[edge], fem::dof_type::EDGE_1}] = i++;
-					map[{e.edges[edge], fem::dof_type::EDGE_2}] = i++;
+					map[{global_edge, fem::dof_type::EDGE_1}] = i++;
+					map[{global_edge, fem::dof_type::EDGE_2}] = i++;
+
+					map[{global_edge, fem::dof_type::NODE_2}] = i++;
 				}
 			}
 		}
@@ -124,6 +154,19 @@ fem::dof_map fem::_2d::mixed_order::generate_dof_map(
 			map[{e.face, fem::dof_type::FACE_1}] = i++;
 			map[{e.face, fem::dof_type::FACE_2}] = i++;
 		}
+
+		for (size_t node = 0; node < 3; node++)
+		{
+			auto global_node = e.edges[node];
+			if (!map.contains({ global_node, fem::dof_type::NODE_1 }))
+			{
+				if (!nodes[global_node - 1].boundary_2d)
+				{
+					map[{global_node, fem::dof_type::NODE_1}] = i++;
+				}
+				
+			}
+		}
 	}
 	return map;
 }
@@ -131,14 +174,20 @@ fem::dof_map fem::_2d::mixed_order::generate_dof_map(
 fem::dof_pair fem::_2d::mixed_order::global_dof_pair(const tri& elem, const size_t& dof_num)
 {
 	switch (dof_num) {
-	case 0: return { elem.edges[0], fem::dof_type::EDGE_1 };
-	case 1: return { elem.edges[1], fem::dof_type::EDGE_1 };
-	case 2: return { elem.edges[2], fem::dof_type::EDGE_1 };
-	case 3: return { elem.edges[0], fem::dof_type::EDGE_2 };
-	case 4: return { elem.edges[1], fem::dof_type::EDGE_2 };
-	case 5: return { elem.edges[2], fem::dof_type::EDGE_2 };
-	case 6: return { elem.face    , fem::dof_type::FACE_1 };
-	case 7: return { elem.face    , fem::dof_type::FACE_2 };
+	case 0: return  { elem.edges[0], fem::dof_type::EDGE_1 };
+	case 1: return  { elem.edges[1], fem::dof_type::EDGE_1 };
+	case 2: return  { elem.edges[2], fem::dof_type::EDGE_1 };
+	case 3: return  { elem.edges[0], fem::dof_type::EDGE_2 };
+	case 4: return  { elem.edges[1], fem::dof_type::EDGE_2 };
+	case 5: return  { elem.edges[2], fem::dof_type::EDGE_2 };
+	case 6: return  { elem.face    , fem::dof_type::FACE_1 };
+	case 7: return  { elem.face    , fem::dof_type::FACE_2 };
+	case 8: return  { elem.nodes[0], fem::dof_type::NODE_1 };
+	case 9: return  { elem.nodes[1], fem::dof_type::NODE_1 };
+	case 10: return { elem.nodes[2], fem::dof_type::NODE_1 };
+	case 11: return { elem.edges[0], fem::dof_type::NODE_2 };
+	case 12: return { elem.edges[1], fem::dof_type::NODE_2 };
+	case 13: return { elem.edges[2], fem::dof_type::NODE_2 };
 	}
 	exit(1);
 }
@@ -153,32 +202,30 @@ fem::_2d::mixed_order::assemble_A_B(const std::vector<node>& nodes, const std::v
 	for (const auto& e : elems)
 	{
 		Eigen::Matrix<double, 3, 2> coords = e.coordinate_matrix(nodes);
-		Eigen::Matrix<double, 8, 8> S_local, T_local;
+		
 		auto mat = materials[e.material_id];
 		if (!mat.isotropic)
 		{
-			std::cerr << "Isotropic material on ports is not supported!" << std::endl;
+			std::cerr << "Anisotropic material on ports is not supported!" << std::endl;
 			exit(1);
 		}
 
-		auto ep = mat.permittivity(0, 0).real();
-		auto mu = mat.permeability(0, 0).real();
+		Eigen::Matrix<double, 14, 14> A_local, B_local;
+		std::tie(A_local, B_local) = A_B(coords, mat, k0);
 
-		std::tie(S_local, T_local) = S_T(coords);
-
-		for (size_t local_dof_i = 0; local_dof_i < 8; local_dof_i++)
+		for (size_t local_dof_i = 0; local_dof_i < 14; local_dof_i++)
 		{
 			auto global_dof_pair_i = global_dof_pair(e, local_dof_i);
 			if (!dof_map.contains(global_dof_pair_i)) continue;
 			auto global_dof_i = dof_map.at(global_dof_pair_i);
-			for (size_t local_dof_j = 0; local_dof_j < 8; local_dof_j++)
+			for (size_t local_dof_j = 0; local_dof_j < 14; local_dof_j++)
 			{
 				auto global_dof_pair_j = global_dof_pair(e, local_dof_j);
 				if (!dof_map.contains(global_dof_pair_j)) continue;
 				auto global_dof_j = dof_map.at(global_dof_pair_j);
 
-				A_global.coeffRef(global_dof_i, global_dof_j) += S_local(local_dof_i, local_dof_j) / mu - k0 * k0 * ep * T_local(local_dof_i, local_dof_j);
-				B_global.coeffRef(global_dof_i, global_dof_j) += T_local(local_dof_i, local_dof_j) / mu;
+				A_global.coeffRef(global_dof_i, global_dof_j) += A_local(local_dof_i, local_dof_j);
+				B_global.coeffRef(global_dof_i, global_dof_j) += B_local(local_dof_i, local_dof_j);
 			}
 		}
 	}
@@ -205,7 +252,7 @@ Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes
 Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(const tri& e, const Eigen::Vector3d& lambda,
 	const Eigen::Matrix<double, 3, 2>& nabla_lambda, const fem::dof_map& dof_map, const Eigen::VectorXcd& solution)
 {
-	auto func = basis(lambda, nabla_lambda);
+	auto func = vector_basis(lambda, nabla_lambda);
 
 	Eigen::Vector2cd value = Eigen::Vector2d::Zero();
 	for (size_t i = 0; i < 8; i++)

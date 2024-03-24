@@ -32,16 +32,17 @@ namespace fem
 
 		namespace mixed_order
 		{
-			Eigen::Matrix<double, 8, 2> basis(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda);
-			Eigen::Matrix<double, 8, 1> basis_curl(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda);
+			Eigen::Matrix<double, 8, 2> vector_basis(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda);
+			Eigen::Matrix<double, 8, 1> vector_basis_curl(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda);
 
 			Eigen::Matrix<double, 6, 1> scalar_basis(const Eigen::Vector3d& lambda);
 			Eigen::Matrix<double, 6, 2> scalar_basis_grad(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda);
 
-			std::pair<Eigen::Matrix<double, 8, 8>, Eigen::Matrix<double, 8, 8>>
-				S_T(const Eigen::Matrix<double, 3, 2>& coords);
+			std::pair<Eigen::Matrix<double, 14, 14>, Eigen::Matrix<double, 14, 14>>
+				A_B(const Eigen::Matrix<double, 3, 2>& coords, material mat, double k0);
 
-			dof_map generate_dof_map(const std::vector<tri>& elems, std::unordered_map<size_t, int> boundary_edge_map);
+			dof_map generate_dof_map(const std::vector<node>& nodes, 
+				const std::vector<tri>& elems, std::unordered_map<size_t, int> boundary_edge_map);
 			dof_pair global_dof_pair(const tri& elem, const size_t& dof_num);
 
 			std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>

@@ -131,7 +131,7 @@ Eigen::Matrix<double, 8, 8>	fem::_3d::mixed_order::B(const Eigen::Matrix<double,
 			quad::surface::gauss_6_point[p][3];
 		auto w = quad::surface::gauss_6_point[p][0];
 
-		auto basis_funcs = fem::_2d::mixed_order::basis(lambda, nabla_lambda);
+		auto basis_funcs = fem::_2d::mixed_order::vector_basis(lambda, nabla_lambda);
 
 		for (int i = 0; i < 8; i++)
 		{
@@ -162,7 +162,7 @@ Eigen::Matrix<std::complex<double>, 8, 1> fem::_3d::mixed_order::b(
 		auto w = quad::surface::gauss_6_point[p][0];
 
 		auto E_inc = fem::_2d::mixed_order::eval_elem(e, lambda, nabla_lambda, dof_map, solution);
-		auto basis = fem::_2d::mixed_order::basis(lambda, nabla_lambda);
+		auto basis = fem::_2d::mixed_order::vector_basis(lambda, nabla_lambda);
 
 		for (int i = 0; i < 8; i++)
 		{

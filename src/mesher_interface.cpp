@@ -173,7 +173,7 @@ std::vector<node> mesher_interface::get_all_nodes()
 	std::vector<size_t> nodeTags;
 	std::vector<double> coord;
 	std::vector<double> parametric_coord;
-	gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, -1, -1, false, false);
+	gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, -1, -1, true, false);
 
 	std::vector<node> nodes_to_return(nodeTags.size());
 
@@ -187,7 +187,7 @@ std::vector<node> mesher_interface::get_all_nodes()
 	std::vector<size_t> nodeTags_boundary_2d;
 	std::vector<double> coord_boundary_2d;
 	std::vector<double> parametric_coord_boundary_2d;
-	gmsh::model::mesh::getNodes(nodeTags_boundary_2d, coord_boundary_2d, parametric_coord_boundary_2d, 1, -1, false, false);
+	gmsh::model::mesh::getNodes(nodeTags_boundary_2d, coord_boundary_2d, parametric_coord_boundary_2d, 1, -1, true, false);
 	for (auto n : nodeTags) {
 		nodes_to_return[n - 1].boundary_2d = true;
 	}
