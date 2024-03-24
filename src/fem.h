@@ -13,6 +13,16 @@ namespace fem
 {
 	std::pair<Eigen::VectorXd, Eigen::MatrixXd> solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T, double guess, int num);
 
+	enum dof_type
+	{
+		NODE_1, NODE_2,
+		EDGE_1, EDGE_2,
+		FACE_1, FACE_2
+	};
+
+	typedef std::pair<size_t, dof_type> dof_pair;
+	typedef std::map<dof_pair, size_t> dof_map;
+
 	namespace _2d
 	{
 		Eigen::Matrix<double, 3, 3> simplex_coefficients(const Eigen::Matrix<double, 3, 2>& coords);
@@ -31,19 +41,18 @@ namespace fem
 			std::pair<Eigen::Matrix<double, 8, 8>, Eigen::Matrix<double, 8, 8>>
 				S_T(const Eigen::Matrix<double, 3, 2>& coords);
 
-			std::map<std::pair<size_t, size_t>, size_t> dof_map(
-				const std::vector<tri>& elems, std::unordered_map<size_t, int> boundary_edge_map);
-			std::pair<size_t, size_t> global_dof_pair(const tri& elem, const size_t& dof_num);
+			dof_map generate_dof_map(const std::vector<tri>& elems, std::unordered_map<size_t, int> boundary_edge_map);
+			dof_pair global_dof_pair(const tri& elem, const size_t& dof_num);
 
 			std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
 				assemble_A_B(const std::vector<node>& nodes, const std::vector<tri>& elems,
-					std::vector<material> materials, const std::map<std::pair<size_t, size_t>, size_t>& dof_map, double k0);
+					std::vector<material> materials, const dof_map& dof_map, double k0);
 
-			Eigen::Vector2cd eval_elem(const std::vector<node>& nodes, const tri& e, const point_2d& eval_point,
-				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution);
+			Eigen::Vector2cd eval_elem(const std::vector<node>& nodes, const tri& e, 
+				const point_2d& eval_point, const dof_map& dof_map, const Eigen::VectorXcd& solution);
 
-			Eigen::Vector2cd eval_elem(const tri& e, const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda,
-				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution);
+			Eigen::Vector2cd eval_elem(const tri& e, const Eigen::Vector3d& lambda,
+				const Eigen::Matrix<double, 3, 2>& nabla_lambda, const dof_map& dof_map, const Eigen::VectorXcd& solution);
 		}
 	}
 
@@ -65,22 +74,22 @@ namespace fem
 			Eigen::Matrix<double, 8, 8> B(const Eigen::Matrix<double, 3, 2>& coords);
 
 			Eigen::Matrix<std::complex<double>, 8, 1> b(const tri& e, const Eigen::Matrix<double, 3, 2>& coords,
-				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution);
+				const dof_map& dof_map, const Eigen::VectorXd& solution);
 
-			std::map<std::pair<size_t, size_t>, size_t> dof_map(const std::vector<tet>& elems,
+			dof_map generate_dof_map(const std::vector<tet>& elems,
 				std::unordered_map<size_t, int> boundary_edge_map, std::unordered_map<size_t, int> boundary_face_map);
-			std::pair<size_t, size_t> global_dof_pair(const tet& elem, const size_t& dof_num);
+			dof_pair global_dof_pair(const tet& elem, const size_t& dof_num);
 
 			Eigen::SparseMatrix<std::complex<double>> assemble_A(const std::vector<node>& nodes, const std::vector<tet>& elems,
-				std::vector<material> materials, const std::vector<tri>& surface_elems, const std::map<std::pair<size_t, size_t>,
-				size_t>& dof_map, std::complex<double> ki, std::complex<double> gamma);
+				std::vector<material> materials, const std::vector<tri>& surface_elems, const dof_map& dof_map,
+				std::complex<double> ki, std::complex<double> gamma);
 
 			Eigen::VectorXcd assemble_b(const std::vector<node>& nodes, const std::vector<tri>& surface_elems,
-				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const std::map<std::pair<size_t, size_t>,
-				size_t>& excitation_dof_map, const Eigen::VectorXd& excitation, std::complex<double> ki);
+				const dof_map& solution_dof_map, const dof_map& excitation_dof_map,
+				const Eigen::VectorXd& excitation, std::complex<double> ki);
 
 			Eigen::Vector3cd eval_elem(const std::vector<node>& nodes, const tet& e, const point_3d& eval_point,
-				const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution);
+				const dof_map& dof_map, const Eigen::VectorXcd& solution);
 
 		}
 	}

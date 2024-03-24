@@ -99,52 +99,53 @@ fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords)
 	return { S * area, T * area };
 }
 
-std::map<std::pair<size_t, size_t>, size_t> fem::_2d::mixed_order::dof_map(const std::vector<tri>& elems, std::unordered_map<size_t, int> boundary_edge_map)
+fem::dof_map fem::_2d::mixed_order::generate_dof_map(
+	const std::vector<tri>& elems, std::unordered_map<size_t, int> boundary_edge_map)
 {
 	int i = 0;
-	std::map<std::pair<size_t, size_t>, size_t> map;
+	fem::dof_map map;
 	for (const auto& e : elems)
 	{
 		for (size_t edge = 0; edge < 3; edge++)
 		{
 			auto global_edge = e.edges[edge];
-			if (!map.contains({ global_edge, 1 }))
+			if (!map.contains({ global_edge, fem::dof_type::EDGE_1 }))
 			{
 				if (boundary_edge_map[global_edge] != PORT_OUTER_BOUNDARY)
 				{
-					map[{e.edges[edge], 1}] = i++;
-					map[{e.edges[edge], 2}] = i++;
+					map[{e.edges[edge], fem::dof_type::EDGE_1}] = i++;
+					map[{e.edges[edge], fem::dof_type::EDGE_2}] = i++;
 				}
 			}
 		}
 
-		if (!map.contains({ e.face, 3 }))
+		if (!map.contains({ e.face, fem::dof_type::FACE_1 }))
 		{
-			map[{e.face, 3}] = i++;
-			map[{e.face, 4}] = i++;
+			map[{e.face, fem::dof_type::FACE_1}] = i++;
+			map[{e.face, fem::dof_type::FACE_2}] = i++;
 		}
 	}
 	return map;
 }
 
-std::pair<size_t, size_t> fem::_2d::mixed_order::global_dof_pair(const tri& elem, const size_t& dof_num)
+fem::dof_pair fem::_2d::mixed_order::global_dof_pair(const tri& elem, const size_t& dof_num)
 {
 	switch (dof_num) {
-	case 0: return { elem.edges[0], 1 };
-	case 1: return { elem.edges[1], 1 };
-	case 2: return { elem.edges[2], 1 };
-	case 3: return { elem.edges[0], 2 };
-	case 4: return { elem.edges[1], 2 };
-	case 5: return { elem.edges[2], 2 };
-	case 6: return { elem.face    , 3 };
-	case 7: return { elem.face    , 4 };
+	case 0: return { elem.edges[0], fem::dof_type::EDGE_1 };
+	case 1: return { elem.edges[1], fem::dof_type::EDGE_1 };
+	case 2: return { elem.edges[2], fem::dof_type::EDGE_1 };
+	case 3: return { elem.edges[0], fem::dof_type::EDGE_2 };
+	case 4: return { elem.edges[1], fem::dof_type::EDGE_2 };
+	case 5: return { elem.edges[2], fem::dof_type::EDGE_2 };
+	case 6: return { elem.face    , fem::dof_type::FACE_1 };
+	case 7: return { elem.face    , fem::dof_type::FACE_2 };
 	}
-	return { 0, 0 };
+	exit(1);
 }
 
 std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
 fem::_2d::mixed_order::assemble_A_B(const std::vector<node>& nodes, const std::vector<tri>& elems,
-	std::vector<material> materials, const std::map<std::pair<size_t, size_t>, size_t>& dof_map, double k0)
+	std::vector<material> materials, const fem::dof_map& dof_map, double k0)
 {
 	Eigen::SparseMatrix<double> A_global(dof_map.size(), dof_map.size());
 	Eigen::SparseMatrix<double> B_global(dof_map.size(), dof_map.size());
@@ -188,8 +189,8 @@ fem::_2d::mixed_order::assemble_A_B(const std::vector<node>& nodes, const std::v
 	return { A_global, B_global };
 }
 
-Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes, const tri& e, const point_2d& eval_point,
-	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution)
+Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes, const tri& e,
+	const point_2d& eval_point, const fem::dof_map& dof_map, const Eigen::VectorXcd& solution)
 {
 	Eigen::Matrix<double, 3, 2> coords = e.coordinate_matrix(nodes);
 	Eigen::Vector2d modified_eval_point = eval_point.to_Eigen();
@@ -201,9 +202,8 @@ Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes
 	return eval_elem(e, lambda, nabla_lambda, dof_map, solution);
 }
 
-Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(
-	const tri& e, const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda,
-	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution)
+Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(const tri& e, const Eigen::Vector3d& lambda,
+	const Eigen::Matrix<double, 3, 2>& nabla_lambda, const fem::dof_map& dof_map, const Eigen::VectorXcd& solution)
 {
 	auto func = basis(lambda, nabla_lambda);
 

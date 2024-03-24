@@ -9,6 +9,7 @@
 #include "geometry.h"
 #include "material.h"
 #include "config.h"
+#include "fem.h"
 
 struct sim
 {
@@ -32,9 +33,9 @@ struct sim
 	// Port Solution
 	std::vector<Eigen::VectorXd> port_eigen_wave_numbers;
 	std::vector<Eigen::MatrixXd> port_eigen_vectors;
-	std::vector<std::map<std::pair<size_t, size_t>, size_t>> port_dof_maps;
+	std::vector<fem::dof_map> port_dof_maps;
 
 	// Full Solution
 	std::vector<Eigen::VectorXcd> full_solutions;
-	std::map<std::pair<size_t, size_t>, size_t> full_dof_map;
+	fem::dof_map full_dof_map;
 };

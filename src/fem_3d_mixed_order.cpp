@@ -148,7 +148,7 @@ Eigen::Matrix<double, 8, 8>	fem::_3d::mixed_order::B(const Eigen::Matrix<double,
 
 Eigen::Matrix<std::complex<double>, 8, 1> fem::_3d::mixed_order::b(
 	const tri& e, const Eigen::Matrix<double, 3, 2>& coords,
-	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXd& solution)
+	const dof_map& dof_map, const Eigen::VectorXd& solution)
 {
 	Eigen::Matrix<double, 3, 3> simplex_coeff = fem::_2d::simplex_coefficients(coords);
 	Eigen::Matrix<double, 3, 2> nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
@@ -174,22 +174,22 @@ Eigen::Matrix<std::complex<double>, 8, 1> fem::_3d::mixed_order::b(
 	return b * area;
 }
 
-std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const std::vector<tet>& elems,
+fem::dof_map fem::_3d::mixed_order::generate_dof_map(const std::vector<tet>& elems,
 	std::unordered_map<size_t, int> boundary_edge_map, std::unordered_map<size_t, int> boundary_face_map)
 {
 	int i = 0;
-	std::map<std::pair<size_t, size_t>, size_t> map;
+	fem::dof_map map;
 	for (const auto& e : elems)
 	{
 		for (size_t edge = 0; edge < 6; edge++)
 		{
 			auto global_edge = e.edges[edge];
-			if (!map.contains({ global_edge, 1 }))
+			if (!map.contains({ global_edge, fem::dof_type::EDGE_1 }))
 			{
 				if (!boundary_edge_map.contains(global_edge) || boundary_edge_map[global_edge] > BOUNDARY)
 				{
-					map[{e.edges[edge], 1}] = i++;
-					map[{e.edges[edge], 2}] = i++;
+					map[{e.edges[edge], fem::dof_type::EDGE_1}] = i++;
+					map[{e.edges[edge], fem::dof_type::EDGE_2}] = i++;
 				}
 			}
 		}
@@ -197,12 +197,12 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const
 		for (size_t face = 0; face < 4; face++)
 		{
 			auto global_face = e.faces[face];
-			if (!map.contains({ global_face, 3 }))
+			if (!map.contains({ global_face, fem::dof_type::FACE_1 }))
 			{
 				if (!boundary_face_map.contains(global_face) || boundary_face_map[global_face] > BOUNDARY)
 				{
-					map[{e.faces[face], 3}] = i++;
-					map[{e.faces[face], 4}] = i++;
+					map[{e.faces[face], fem::dof_type::FACE_1}] = i++;
+					map[{e.faces[face], fem::dof_type::FACE_2}] = i++;
 				}
 			}
 		}
@@ -210,36 +210,36 @@ std::map<std::pair<size_t, size_t>, size_t> fem::_3d::mixed_order::dof_map(const
 	return map;
 }
 
-std::pair<size_t, size_t> fem::_3d::mixed_order::global_dof_pair(const tet& elem, const size_t& dof_num)
+fem::dof_pair fem::_3d::mixed_order::global_dof_pair(const tet& elem, const size_t& dof_num)
 {
 	switch (dof_num) {
-	case 0:  return { elem.edges[0], 1 };
-	case 1:  return { elem.edges[1], 1 };
-	case 2:  return { elem.edges[2], 1 };
-	case 3:  return { elem.edges[3], 1 };
-	case 4:  return { elem.edges[4], 1 };
-	case 5:  return { elem.edges[5], 1 };
-	case 6:  return { elem.edges[0], 2 };
-	case 7:  return { elem.edges[1], 2 };
-	case 8:  return { elem.edges[2], 2 };
-	case 9:  return { elem.edges[3], 2 };
-	case 10: return { elem.edges[4], 2 };
-	case 11: return { elem.edges[5], 2 };
-	case 12: return { elem.faces[0], 3 };
-	case 13: return { elem.faces[1], 3 };
-	case 14: return { elem.faces[2], 3 };
-	case 15: return { elem.faces[3], 3 };
-	case 16: return { elem.faces[0], 4 };
-	case 17: return { elem.faces[1], 4 };
-	case 18: return { elem.faces[2], 4 };
-	case 19: return { elem.faces[3], 4 };
+	case 0:  return { elem.edges[0], fem::dof_type::EDGE_1 };
+	case 1:  return { elem.edges[1], fem::dof_type::EDGE_1 };
+	case 2:  return { elem.edges[2], fem::dof_type::EDGE_1 };
+	case 3:  return { elem.edges[3], fem::dof_type::EDGE_1 };
+	case 4:  return { elem.edges[4], fem::dof_type::EDGE_1 };
+	case 5:  return { elem.edges[5], fem::dof_type::EDGE_1 };
+	case 6:  return { elem.edges[0], fem::dof_type::EDGE_2 };
+	case 7:  return { elem.edges[1], fem::dof_type::EDGE_2 };
+	case 8:  return { elem.edges[2], fem::dof_type::EDGE_2 };
+	case 9:  return { elem.edges[3], fem::dof_type::EDGE_2 };
+	case 10: return { elem.edges[4], fem::dof_type::EDGE_2 };
+	case 11: return { elem.edges[5], fem::dof_type::EDGE_2 };
+	case 12: return { elem.faces[0], fem::dof_type::FACE_1 };
+	case 13: return { elem.faces[1], fem::dof_type::FACE_1 };
+	case 14: return { elem.faces[2], fem::dof_type::FACE_1 };
+	case 15: return { elem.faces[3], fem::dof_type::FACE_1 };
+	case 16: return { elem.faces[0], fem::dof_type::FACE_2 };
+	case 17: return { elem.faces[1], fem::dof_type::FACE_2 };
+	case 18: return { elem.faces[2], fem::dof_type::FACE_2 };
+	case 19: return { elem.faces[3], fem::dof_type::FACE_2 };
 	}
-	return { 0, 0 };
+	exit(1);
 }
 
-Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(const std::vector<node>& nodes, const std::vector<tet>& elems,
-	std::vector<material> materials, const std::vector<tri>& surface_elems, const std::map<std::pair<size_t, size_t>,
-	size_t>& dof_map, std::complex<double> k0, std::complex<double> gamma)
+Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(const std::vector<node>& nodes,
+	const std::vector<tet>& elems, std::vector<material> materials, const std::vector<tri>& surface_elems,
+	const dof_map& dof_map, std::complex<double> k0, std::complex<double> gamma)
 {
 	Eigen::SparseMatrix<std::complex<double>> A(dof_map.size(), dof_map.size());
 	A.reserve(Eigen::VectorXi::Constant(dof_map.size(), 100));
@@ -293,10 +293,9 @@ Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(cons
 }
 
 Eigen::VectorXcd  fem::_3d::mixed_order::assemble_b(const std::vector<node>& nodes, const std::vector<tri>& surface_elems,
-	const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const std::map<std::pair<size_t, size_t>,
-	size_t>& excitation_dof_map, const Eigen::VectorXd& excitation, std::complex<double> ki)
+	const dof_map& solution_dof_map, const dof_map& excitation_dof_map, const Eigen::VectorXd& excitation, std::complex<double> ki)
 {
-	Eigen::VectorXcd b(dof_map.size());
+	Eigen::VectorXcd b(solution_dof_map.size());
 	b.setZero();
 
 	for (const auto& e : surface_elems)
@@ -307,8 +306,8 @@ Eigen::VectorXcd  fem::_3d::mixed_order::assemble_b(const std::vector<node>& nod
 		for (size_t local_dof_i = 0; local_dof_i < 8; local_dof_i++)
 		{
 			auto global_dof_pair_i = fem::_2d::mixed_order::global_dof_pair(e, local_dof_i);
-			if (!dof_map.contains(global_dof_pair_i)) continue;
-			auto global_dof_i = dof_map.at(global_dof_pair_i);
+			if (!solution_dof_map.contains(global_dof_pair_i)) continue;
+			auto global_dof_i = solution_dof_map.at(global_dof_pair_i);
 
 			b(global_dof_i) += b_local(local_dof_i);
 		}
@@ -317,7 +316,7 @@ Eigen::VectorXcd  fem::_3d::mixed_order::assemble_b(const std::vector<node>& nod
 }
 
 Eigen::Vector3cd fem::_3d::mixed_order::eval_elem(const std::vector<node>& nodes, const tet& e,
-	const point_3d& eval_point, const std::map<std::pair<size_t, size_t>, size_t>& dof_map, const Eigen::VectorXcd& solution)
+	const point_3d& eval_point, const dof_map& dof_map, const Eigen::VectorXcd& solution)
 {
 	Eigen::Matrix<double, 4, 3> coords = e.coordinate_matrix(nodes);
 	Eigen::Vector3d modified_eval_point = eval_point.to_Eigen();

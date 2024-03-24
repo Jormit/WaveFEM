@@ -3,7 +3,6 @@
 #include <unordered_map>
 
 #include "sim.h"
-#include "fem.h"
 #include "mesher_interface.h"
 #include "helpers.h"
 #include "pml.h"
@@ -116,7 +115,7 @@ void sim::solve_ports(double k)
 	port_dof_maps.clear();
 	for (int p = 0; p < sim_ports.elements.size(); p++)
 	{
-		auto dof_map = fem::_2d::mixed_order::dof_map(sim_ports.elements[p], boundary_edge_map);
+		auto dof_map = fem::_2d::mixed_order::generate_dof_map(sim_ports.elements[p], boundary_edge_map);
 		port_dof_maps.push_back(dof_map);
 
 		Eigen::SparseMatrix<double> A;
@@ -143,7 +142,7 @@ void sim::solve_full(double k)
 	full_solutions.clear();
 	full_dof_map.clear();
 
-	full_dof_map = fem::_3d::mixed_order::dof_map(volume_elems, boundary_edge_map, boundary_face_map);
+	full_dof_map = fem::_3d::mixed_order::generate_dof_map(volume_elems, boundary_edge_map, boundary_face_map);
 	auto surface_elems = helpers::flatten_vector<tri>(sim_ports.elements);
 
 	for (int p = 0; p < sim_ports.elements.size(); p++)
