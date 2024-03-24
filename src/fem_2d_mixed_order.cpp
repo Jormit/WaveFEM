@@ -61,6 +61,7 @@ Eigen::Matrix<double, 6, 2> fem::_2d::mixed_order::scalar_basis_grad(const Eigen
 	func.row(3) = 4 * (nabla_lambda.row(0) * lambda(1) + nabla_lambda.row(1) * lambda(0));
 	func.row(4) = 4 * (nabla_lambda.row(0) * lambda(2) + nabla_lambda.row(2) * lambda(0));
 	func.row(5) = 4 * (nabla_lambda.row(1) * lambda(2) + nabla_lambda.row(1) * lambda(0));
+
 	return func;
 }
 
