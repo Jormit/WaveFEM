@@ -42,6 +42,7 @@ struct node
 {
 	point_3d coords;
 	std::optional<point_2d> point_2d;
+	bool boundary_2d;
 };
 
 struct tri
