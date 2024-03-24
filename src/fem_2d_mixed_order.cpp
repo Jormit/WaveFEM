@@ -39,6 +39,31 @@ Eigen::Matrix<double, 8, 1> fem::_2d::mixed_order::basis_curl(const Eigen::Vecto
 	return func;
 }
 
+Eigen::Matrix<double, 6, 1> fem::_2d::mixed_order::scalar_basis(const Eigen::Vector3d& lambda)
+{
+	Eigen::Matrix<double, 8, 1> func;
+	func(0) = (2 * lambda(0) - 1) * lambda(0);
+	func(1) = (2 * lambda(1) - 1) * lambda(1);
+	func(2) = (2 * lambda(2) - 1) * lambda(2);
+	func(3) = 4 * lambda(0) * lambda(1);
+	func(4) = 4 * lambda(0) * lambda(2);
+	func(5) = 4 * lambda(1) * lambda(2);
+
+	return func;
+}
+
+Eigen::Matrix<double, 6, 2> fem::_2d::mixed_order::scalar_basis_grad(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda)
+{
+	Eigen::Matrix<double, 8, 2> func;
+	func.row(0) = nabla_lambda.row(0) * (4 * lambda(0) - 1);
+	func.row(1) = nabla_lambda.row(1) * (4 * lambda(1) - 1);
+	func.row(2) = nabla_lambda.row(2) * (4 * lambda(2) - 1);
+	func.row(3) = 4 * (nabla_lambda.row(0) * lambda(1) + nabla_lambda.row(1) * lambda(0));
+	func.row(4) = 4 * (nabla_lambda.row(0) * lambda(2) + nabla_lambda.row(2) * lambda(0));
+	func.row(5) = 4 * (nabla_lambda.row(1) * lambda(2) + nabla_lambda.row(1) * lambda(0));
+	return func;
+}
+
 std::pair<Eigen::Matrix<double, 8, 8>, Eigen::Matrix<double, 8, 8>>
 fem::_2d::mixed_order::S_T(const Eigen::Matrix<double, 3, 2>& coords)
 {

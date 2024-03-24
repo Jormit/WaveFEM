@@ -25,6 +25,9 @@ namespace fem
 			Eigen::Matrix<double, 8, 2> basis(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda);
 			Eigen::Matrix<double, 8, 1> basis_curl(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda);
 
+			Eigen::Matrix<double, 6, 1> scalar_basis(const Eigen::Vector3d& lambda);
+			Eigen::Matrix<double, 6, 2> scalar_basis_grad(const Eigen::Vector3d& lambda, const Eigen::Matrix<double, 3, 2>& nabla_lambda);
+
 			std::pair<Eigen::Matrix<double, 8, 8>, Eigen::Matrix<double, 8, 8>>
 				S_T(const Eigen::Matrix<double, 3, 2>& coords);
 
