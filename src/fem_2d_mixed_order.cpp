@@ -157,7 +157,7 @@ fem::dof_map fem::_2d::mixed_order::generate_dof_map(const std::vector<node>& no
 
 		for (size_t node = 0; node < 3; node++)
 		{
-			auto global_node = e.edges[node];
+			auto global_node = e.nodes[node];
 			if (!map.contains({ global_node, fem::dof_type::NODE_1 }))
 			{
 				if (!nodes[global_node - 1].boundary_2d)
