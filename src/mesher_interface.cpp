@@ -179,7 +179,7 @@ std::vector<node> mesher_interface::get_all_nodes()
 
 	int i = 0;
 	for (auto n : nodeTags) {
-		node nn{ { coord[3 * i], coord[3 * i + 1], coord[3 * i + 2] }, {} };
+		node nn{ { coord[3 * i], coord[3 * i + 1], coord[3 * i + 2] }, {}, false };
 		nodes_to_return[n - 1] = nn;
 		i++;
 	}
@@ -188,7 +188,7 @@ std::vector<node> mesher_interface::get_all_nodes()
 	std::vector<double> coord_boundary_2d;
 	std::vector<double> parametric_coord_boundary_2d;
 	gmsh::model::mesh::getNodes(nodeTags_boundary_2d, coord_boundary_2d, parametric_coord_boundary_2d, 1, -1, true, false);
-	for (auto n : nodeTags) {
+	for (auto n : nodeTags_boundary_2d) {
 		nodes_to_return[n - 1].boundary_2d = true;
 	}
 
