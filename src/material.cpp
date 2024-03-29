@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "material.h"
 
 material mat::vacuum()
@@ -29,7 +31,10 @@ std::vector<material> mat::load_user_materials(std::vector<material_config> mate
 	std::vector<material> user_materials;
 	for (const auto & mat : materials)
 	{
-		user_materials.push_back(material(mat.ep, mat.mu));
+		if (!mat.PEC)
+		{
+			user_materials.push_back(material(mat.ep, mat.mu));
+		}
 	}
 	return user_materials;
 }

@@ -83,7 +83,7 @@ sim sim::create(sim_config config, std::string data_path)
 		if (!config.materials[material_id].PEC)
 		{
 			size_t volume_id = i + 1;
-			size_t material_id = base_materials.size() + i;
+			material_id = base_materials.size() + material_id;
 			auto mat_elements = mesher_interface::get_volume_elems(volume_id);
 			mat::label_elems(mat_elements, material_id);
 			volume_material_map[volume_id] = material_id;
