@@ -24,8 +24,9 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> fem::solve_eigenproblem(const Eigen:
 	{
 		if (x > min)
 		{
-			eigen_map[x] = eVecs.col(i++);
-		}		
+			eigen_map[x] = eVecs.col(i);
+		}
+		i++;
 	}
 
 	Eigen::MatrixXd eVecs_sorted(eVecs.rows(), eigen_map.size());
