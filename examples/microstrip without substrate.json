@@ -1,5 +1,5 @@
 {
-  "model_file": "microstrip.step",
+  "model_file": "microstrip without substrate.step",
   "port_centres": [
     [ 0.25, 0, 0.275 ]
   ],
