@@ -22,7 +22,7 @@ std::vector<int> mesher_interface::import_model(const std::string& filename)
 	return ret;
 }
 
-void mesher_interface::mesh_model(int mesh_size_min, int mesh_size_max)
+void mesher_interface::mesh_model(double mesh_size_min, double mesh_size_max)
 {
 	gmsh::option::setNumber("Mesh.MeshSizeMin", mesh_size_min);
 	gmsh::option::setNumber("Mesh.MeshSizeMax", mesh_size_max);
