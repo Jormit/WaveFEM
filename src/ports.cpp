@@ -16,7 +16,6 @@ ports::ports(std::vector<box> boxes, std::unordered_map<size_t, size_t> volume_m
 	dummy_ids = mesher_interface::fuse_surfaces(entity_ids, false);
 	parametric_bounds = mesher_interface::get_surface_parametric_bounds(dummy_ids);
 	elements = {};
-	is_TEM = true;
 
 	for (const auto & port_ids : entity_ids)
 	{
