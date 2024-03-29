@@ -124,11 +124,7 @@ void sim::solve_ports(double k)
 
 		Eigen::VectorXd values;
 		Eigen::MatrixXd vecs;
-		double theta_squared = k * k;
-		std::tie(values, vecs) = fem::solve_eigenproblem(B, B + A / theta_squared, 1, 1);
-
-		auto n = values.size();
-		values = theta_squared * (Eigen::VectorXd::Ones(n) - values.cwiseInverse());
+		std::tie(values, vecs) = fem::solve_eigenproblem(A, -B, 1e-4);
 
 		port_eigen_wave_numbers.push_back(values.cwiseSqrt());
 		port_eigen_vectors.push_back(vecs);

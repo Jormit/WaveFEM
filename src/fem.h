@@ -11,7 +11,8 @@
 
 namespace fem
 {
-	std::pair<Eigen::VectorXd, Eigen::MatrixXd> solve_eigenproblem(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T, double guess, int num);
+	std::pair<Eigen::VectorXd, Eigen::MatrixXd> solve_eigenproblem(const Eigen::MatrixXd& S, const Eigen::MatrixXd& T, double min);
+	std::pair<Eigen::VectorXd, Eigen::MatrixXd> solve_eigenproblem_iram(const Eigen::SparseMatrix<double>& S, const Eigen::SparseMatrix<double>& T, double guess, int num);
 
 	enum dof_type
 	{
