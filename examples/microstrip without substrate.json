@@ -1,0 +1,15 @@
+{
+  "model_file": "microstrip.step",
+  "port_centres": [
+    [ 0.25, 0, 0.275 ]
+  ],
+  "bounding_box_padding": [ 1, 1, 1 ],
+  "pml_enable": false,
+  "pml_thickness": [ 1, 1, 1 ],
+  "frequency": 28000000000,
+  "target_elements_per_wavelength": 10,
+  "material_assignments": [ "conductor", "conductor", "conductor", "conductor" ],
+  "material_definitions": {
+    "conductor": { "PEC": true }
+  }
+}
