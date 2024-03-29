@@ -184,24 +184,25 @@ std::vector<node> mesher_interface::get_all_nodes()
 		i++;
 	}
 
-	std::vector<size_t> nodeTags_boundary_2d;
-	std::vector<double> coord_boundary_2d;
-	std::vector<double> parametric_coord_boundary_2d;
-	gmsh::model::mesh::getNodes(nodeTags_boundary_2d, coord_boundary_2d, parametric_coord_boundary_2d, 1, -1, true, false);
-	for (auto n : nodeTags_boundary_2d) {
-		nodes_to_return[n - 1].boundary_2d = true;
-	}
-
 	return nodes_to_return;
+}
+
+std::vector<size_t> mesher_interface::get_node_ids_in_line(int id)
+{
+	std::vector<size_t> nodeTags;
+	std::vector<double> coord;
+	std::vector<double> parametric_coord;
+	gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, 1, id, true, false);
+	return nodeTags;
 }
 
 std::vector<size_t> mesher_interface::get_node_ids_in_volume(int id)
 {
-	std::vector<size_t> nodeTags4;
-	std::vector<double> coord4;
-	std::vector<double> parametric_coord4;
-	gmsh::model::mesh::getNodes(nodeTags4, coord4, parametric_coord4, 3, id, true, false);
-	return nodeTags4;
+	std::vector<size_t> nodeTags;
+	std::vector<double> coord;
+	std::vector<double> parametric_coord;
+	gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, 3, id, true, false);
+	return nodeTags;
 }
 
 std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> mesher_interface::get_surface_edges_and_faces(int surface_id)
@@ -228,12 +229,12 @@ std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> mesher_interfa
 	return { edges, faces };
 }
 
-std::unordered_set<size_t> mesher_interface::get_surface_boundary_edges(int surface_id)
+std::vector<int> mesher_interface::get_surface_boundary_entities(int surface_id)
 {
-	return get_surface_boundary_edges(std::vector<int>{ surface_id });
+	return get_surface_boundary_entities(std::vector<int>{ surface_id });
 }
 
-std::unordered_set<size_t> mesher_interface::get_surface_boundary_edges(std::vector<int> surface_ids)
+std::vector<int> mesher_interface::get_surface_boundary_entities(std::vector<int> surface_ids)
 {
 	std::unordered_set<size_t> edges;
 	std::vector<std::pair<int, int>> objs;
@@ -244,7 +245,7 @@ std::unordered_set<size_t> mesher_interface::get_surface_boundary_edges(std::vec
 	std::vector<int> line_ids;
 	std::transform(boundary_entities.cbegin(), boundary_entities.cend(), std::back_inserter(line_ids), [](std::pair<int, int> c) { return c.second; });
 
-	return get_edges_on_line(line_ids);
+	return line_ids;
 }
 
 std::unordered_set<size_t> mesher_interface::get_edges_on_line(int line_id)

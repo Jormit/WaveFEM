@@ -94,8 +94,7 @@ sim sim::create(sim_config config, std::string data_path)
 	base_materials.insert(base_materials.end(), user_materials.begin(), user_materials.end());
 
 	ports ports(port_bounding_boxes, volume_material_map);
-	ports.setup_port_nodes(nodes);
-	ports.setup_port_faces_and_edges(boundary_edge_map, boundary_face_map);
+	ports.setup_port_nodes_faces_edges(nodes, boundary_edge_map, boundary_face_map);
 
 	return {
 		std::move(boundary),

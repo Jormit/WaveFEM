@@ -2,8 +2,7 @@
 #include "mesher_interface.h"
 #include "material.h"
 
-#include <fstream>
-#include <sstream>
+#include <iostream>
 
 std::vector<box> ports::get_port_bounding_boxes(std::vector<point_3d> points)
 {
@@ -36,13 +35,10 @@ ports::ports(std::vector<box> boxes, std::unordered_map<size_t, size_t> volume_m
 	}
 }
 
-void ports::setup_port_nodes(std::vector<node>& nodes)
+void ports::setup_port_nodes_faces_edges(std::vector<node>& nodes, std::unordered_map<size_t, int>& boundary_edge_map, std::unordered_map<size_t, int>& boundary_face_map)
 {
 	mesher_interface::parameterize_surface_nodes(nodes, dummy_ids, elements);
-}
 
-void ports::setup_port_faces_and_edges(std::unordered_map<size_t, int>& boundary_edge_map, std::unordered_map<size_t, int>& boundary_face_map)
-{
 	for (int i = 0; i < entity_ids.size(); i++)
 	{
 		for (auto id : entity_ids[i])
@@ -61,10 +57,20 @@ void ports::setup_port_faces_and_edges(std::unordered_map<size_t, int>& boundary
 			}
 		}		
 
-		auto port_outer_boundaries = mesher_interface::get_surface_boundary_edges(entity_ids[i]);
-		for (auto edge : port_outer_boundaries)
+		auto port_outer_boundary_entities = mesher_interface::get_surface_boundary_entities(entity_ids[i]);
+		for (auto e : port_outer_boundary_entities)
 		{
-			boundary_edge_map[edge] = PORT_OUTER_BOUNDARY;
+			auto edges = mesher_interface::get_edges_on_line(e);
+			for (auto edge : edges)
+			{
+				boundary_edge_map[edge] = PORT_OUTER_BOUNDARY;
+			}			
+
+			auto edge_nodes = mesher_interface::get_node_ids_in_line(e);
+			for (auto n : edge_nodes)
+			{
+				nodes[n - 1].boundary_2d = true;
+			}
 		}
 	}
 }

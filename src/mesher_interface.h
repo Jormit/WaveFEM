@@ -38,13 +38,15 @@ namespace mesher_interface {
 
 	// Vector is indexed by node number - 1 !!!!!
 	std::vector<node> get_all_nodes();
+	std::vector<size_t> get_node_ids_in_line(int id);
 	std::vector<size_t> get_node_ids_in_volume(int id);
 
 	std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> get_surface_edges_and_faces(int surface_id);
 	std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> get_surface_edges_and_faces(std::vector <int> surface_ids);
 
-	std::unordered_set<size_t> get_surface_boundary_edges(int surface_id);
-	std::unordered_set<size_t> get_surface_boundary_edges(std::vector <int> surface_ids);
+
+	std::vector<int> get_surface_boundary_entities(int surface_id);
+	std::vector<int> get_surface_boundary_entities(std::vector <int> surface_ids);
 
 	std::unordered_set<size_t> get_edges_on_line(int line_id);
 	std::unordered_set<size_t> get_edges_on_line(std::vector <int> line_id);
