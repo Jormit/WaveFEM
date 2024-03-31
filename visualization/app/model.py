@@ -19,4 +19,4 @@ class model:
         plotter.show()
 
     def get_part_ids(self):
-        return range(self.shape.solids().vals())
+        return list(range(self.shape.solids().size()))

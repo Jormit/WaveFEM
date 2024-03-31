@@ -20,7 +20,6 @@ class MyMainWindow(MainWindow):
 
         # Initialize object view
         self.plotter = QtInteractor(self.splitter)
-        self.splitter.addWidget(self.plotter.interactor)
         self.signal_close.connect(self.plotter.close)
 
         # Create menu bar
@@ -40,8 +39,14 @@ class MyMainWindow(MainWindow):
         # Add Tree
         self.tree = QtWidgets.QTreeWidget()
         self.tree.setColumnCount(2)
-        self.tree.setHeaderLabels(["Name", "Type"])
+        self.tree.setHeaderHidden(True)
+        self.tree_solids = QtWidgets.QTreeWidgetItem(["Solids"])
+        self.tree.insertTopLevelItems(0, [self.tree_solids])
+
+        # Add to splitter
         self.splitter.addWidget(self.tree)
+        self.splitter.addWidget(self.plotter.interactor)
+        
 
         if show:
             self.show()
@@ -52,6 +57,12 @@ class MyMainWindow(MainWindow):
             return
         self.model = model(filename[0])
         self.model.plot(self.plotter)
+        part_ids = self.model.get_part_ids()
+        widget_items = []
+        for id in part_ids:
+            widget_items.append(QtWidgets.QTreeWidgetItem(["Body"+str(id)]))
+
+        self.tree_solids.insertChildren(0, widget_items)
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
