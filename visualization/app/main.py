@@ -11,7 +11,7 @@ os.environ["QT_API"] = "pyqt5"
 
 class MyMainWindow(MainWindow):
 
-    def __init__(self, parent=None, show=True):
+    def __init__(self, parent=None):
         QtWidgets.QMainWindow.__init__(self, parent)
 
         # Create central frame
@@ -46,10 +46,8 @@ class MyMainWindow(MainWindow):
         # Add to splitter
         self.splitter.addWidget(self.tree)
         self.splitter.addWidget(self.plotter.interactor)
-        
-
-        if show:
-            self.show()
+            
+        self.show()
 
     def open_file(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Step Files (*.stp *.step)")
