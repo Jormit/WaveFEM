@@ -1,23 +1,55 @@
-import cadquery as cq
+import sys
+import os
+from qtpy import QtWidgets
 import numpy as np
 import pyvista as pv
+from pyvistaqt import QtInteractor, MainWindow
 
-shape = cq.importers.importStep("horn.step")
+from model import model
 
-points, faces = shape.val().tessellate(0.1)
+os.environ["QT_API"] = "pyqt5"
 
-points = list(map(lambda x: x.toTuple(),points))
+class MyMainWindow(MainWindow):
 
-faces = np.array(faces)
-points = np.array(points)
+    def __init__(self, parent=None, show=True):
+        QtWidgets.QMainWindow.__init__(self, parent)
 
-print(faces)
-print(points)
+        # Create central frame
+        self.frame = QtWidgets.QFrame()
+        vlayout = QtWidgets.QVBoxLayout()
+        self.frame.setLayout(vlayout)
+        self.setCentralWidget(self.frame)
 
-num_points = 3 * np.ones((faces.shape[0], 1), dtype="int")
+        # Initialize object view
+        self.plotter = QtInteractor(self.frame)
+        vlayout.addWidget(self.plotter.interactor)
+        self.signal_close.connect(self.plotter.close) 
 
-mesh = pv.PolyData(points, np.hstack((num_points, faces)))
-pl = pv.Plotter()
-pl.add_mesh(mesh, opacity=0.85)
+        # Create menu bar
+        main_menu = self.menuBar()
+        file_menu = main_menu.addMenu('File')
 
-pl.show()
+        open_button = QtWidgets.QAction('Open', self)
+        open_button.setShortcut('Ctrl+O')
+        open_button.triggered.connect(self.open_file)
+        file_menu.addAction(open_button)
+
+        exit_button = QtWidgets.QAction('Exit', self)
+        exit_button.setShortcut('Ctrl+Q')
+        exit_button.triggered.connect(self.close)
+        file_menu.addAction(exit_button)
+
+        if show:
+            self.show()
+
+    def open_file(self):
+        filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Step Files (*.stp *.step)")
+        if filename[0] == '':
+            return
+        self.model = model(filename[0])
+        self.model.plot(self.plotter)
+
+if __name__ == '__main__':
+    app = QtWidgets.QApplication(sys.argv)
+    window = MyMainWindow()
+    sys.exit(app.exec_())
