@@ -2,17 +2,16 @@ import cadquery as cq
 import numpy as np
 import pyvista as pv
 
-shape = cq.importers.importStep("./examples/horn.step")
+shape = cq.importers.importStep("./examples/dielectric loaded waveguide.step")
+
+
+print(shape.solids().vals()[0])
 
 points, faces = shape.val().tessellate(0.1)
 
 points = list(map(lambda x: x.toTuple(),points))
 
 faces = np.array(faces)
-points = np.array(points)
-
-print(faces)
-print(points)
 
 num_points = 3 * np.ones((faces.shape[0], 1), dtype="int")
 

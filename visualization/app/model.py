@@ -17,3 +17,6 @@ class model:
         mesh = pv.PolyData(self.points, np.hstack((num_points, self.faces)))
         plotter.add_mesh(mesh, opacity=0.85)
         plotter.show()
+
+    def get_part_ids(self):
+        return range(self.shape.solids().vals())

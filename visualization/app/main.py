@@ -1,6 +1,6 @@
 import sys
 import os
-from qtpy import QtWidgets
+from qtpy import QtWidgets, QtGui, QtCore
 import numpy as np
 import pyvista as pv
 from pyvistaqt import QtInteractor, MainWindow
@@ -15,15 +15,13 @@ class MyMainWindow(MainWindow):
         QtWidgets.QMainWindow.__init__(self, parent)
 
         # Create central frame
-        self.frame = QtWidgets.QFrame()
-        vlayout = QtWidgets.QVBoxLayout()
-        self.frame.setLayout(vlayout)
-        self.setCentralWidget(self.frame)
+        self.splitter =  QtWidgets.QSplitter()
+        self.setCentralWidget(self.splitter)
 
         # Initialize object view
-        self.plotter = QtInteractor(self.frame)
-        vlayout.addWidget(self.plotter.interactor)
-        self.signal_close.connect(self.plotter.close) 
+        self.plotter = QtInteractor(self.splitter)
+        self.splitter.addWidget(self.plotter.interactor)
+        self.signal_close.connect(self.plotter.close)
 
         # Create menu bar
         main_menu = self.menuBar()
@@ -38,6 +36,12 @@ class MyMainWindow(MainWindow):
         exit_button.setShortcut('Ctrl+Q')
         exit_button.triggered.connect(self.close)
         file_menu.addAction(exit_button)
+
+        # Add Tree
+        self.tree = QtWidgets.QTreeWidget()
+        self.tree.setColumnCount(2)
+        self.tree.setHeaderLabels(["Name", "Type"])
+        self.splitter.addWidget(self.tree)
 
         if show:
             self.show()
