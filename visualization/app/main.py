@@ -9,6 +9,16 @@ from model import model
 
 os.environ["QT_API"] = "pyqt5"
 
+class DeselectableTreeWidget(QtWidgets.QTreeWidget):
+    def __init__(self, deselect_callback):
+        QtWidgets.QTreeWidget.__init__(self)
+        self.callback = deselect_callback
+
+    def mousePressEvent(self, event):
+        self.clearSelection()
+        self.callback()
+        QtWidgets.QTreeWidget.mousePressEvent(self, event)
+
 class MyMainWindow(MainWindow):
 
     def __init__(self, parent=None):
@@ -40,7 +50,7 @@ class MyMainWindow(MainWindow):
         file_menu.addAction(exit_button)
 
         # Add Tree
-        self.tree = QtWidgets.QTreeWidget()
+        self.tree = DeselectableTreeWidget(self.tree_deselected)
         self.tree.setColumnCount(1)
         self.tree.setHeaderHidden(True)
         self.tree_solids = QtWidgets.QTreeWidgetItem(["Solids"])
@@ -73,6 +83,10 @@ class MyMainWindow(MainWindow):
         if (it is not self.tree_solids):
             id = int(it.text(0)[-1])
             self.model.highlight_part(id)
+
+    def tree_deselected(self):
+        if (self.model is not None):
+            self.model.remove_highlights()
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
