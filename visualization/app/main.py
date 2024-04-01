@@ -13,6 +13,9 @@ class MyMainWindow(MainWindow):
 
     def __init__(self, parent=None):
         QtWidgets.QMainWindow.__init__(self, parent)
+        self.model = None
+
+        self.setWindowTitle("FEM3D")
 
         # Create central frame
         self.splitter =  QtWidgets.QSplitter()
@@ -65,7 +68,8 @@ class MyMainWindow(MainWindow):
         self.tree_solids.insertChildren(0, widget_items)
 
     def tree_item_clicked(self, it, col):
-        self.model.remove_highlights()
+        if (self.model is not None):
+            self.model.remove_highlights()
         if (it is not self.tree_solids):
             id = int(it.text(0)[-1])
             self.model.highlight_part(id)
