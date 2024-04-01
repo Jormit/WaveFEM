@@ -28,11 +28,13 @@ class MyMainWindow(MainWindow):
         self.setWindowTitle("FEM3D")
 
         # Create central frame
-        self.splitter =  QtWidgets.QSplitter()
-        self.setCentralWidget(self.splitter)
+        self.left_vertical_splitter = QtWidgets.QSplitter()
+        self.left_vertical_splitter.setOrientation(QtCore.Qt.Orientation.Vertical)
+        self.horizontal_splitter = QtWidgets.QSplitter()
+        self.setCentralWidget(self.horizontal_splitter)
 
         # Initialize object view
-        self.plotter = QtInteractor(self.splitter)
+        self.plotter = QtInteractor(self.horizontal_splitter)
         self.signal_close.connect(self.plotter.close)
 
         # Create menu bar
@@ -54,13 +56,19 @@ class MyMainWindow(MainWindow):
         self.tree.setColumnCount(1)
         self.tree.setHeaderHidden(True)
         self.tree_solids = QtWidgets.QTreeWidgetItem(["Solids"])
-        self.tree.insertTopLevelItems(0, [self.tree_solids])
-
+        self.tree_ports = QtWidgets.QTreeWidgetItem(["Ports"])
+        self.tree_materials = QtWidgets.QTreeWidgetItem(["Materials"])
+        self.tree.insertTopLevelItems(0, [self.tree_solids, self.tree_ports, self.tree_materials])
         self.tree.itemClicked.connect(self.tree_item_clicked)
 
+        # Add Properties Window
+        self.properties = QtWidgets.QWidget()
+
         # Add to splitter
-        self.splitter.addWidget(self.tree)
-        self.splitter.addWidget(self.plotter.interactor)
+        self.left_vertical_splitter.addWidget(self.tree)
+        self.left_vertical_splitter.addWidget(self.properties)
+        self.horizontal_splitter.addWidget(self.left_vertical_splitter)
+        self.horizontal_splitter.addWidget(self.plotter.interactor)
             
         self.show()
 
@@ -78,9 +86,7 @@ class MyMainWindow(MainWindow):
         self.tree_solids.insertChildren(0, widget_items)
 
     def tree_item_clicked(self, it, col):
-        if (self.model is not None):
-            self.model.remove_highlights()
-        if (it is not self.tree_solids):
+        if (it not in [self.tree_solids, self.tree_ports, self.tree_materials]):
             id = int(it.text(0)[-1])
             self.model.highlight_part(id)
 
