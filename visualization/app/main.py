@@ -38,10 +38,12 @@ class MyMainWindow(MainWindow):
 
         # Add Tree
         self.tree = QtWidgets.QTreeWidget()
-        self.tree.setColumnCount(2)
+        self.tree.setColumnCount(1)
         self.tree.setHeaderHidden(True)
         self.tree_solids = QtWidgets.QTreeWidgetItem(["Solids"])
         self.tree.insertTopLevelItems(0, [self.tree_solids])
+
+        self.tree.itemClicked.connect(self.tree_item_clicked)
 
         # Add to splitter
         self.splitter.addWidget(self.tree)
@@ -61,6 +63,12 @@ class MyMainWindow(MainWindow):
             widget_items.append(QtWidgets.QTreeWidgetItem(["Body"+str(id)]))
 
         self.tree_solids.insertChildren(0, widget_items)
+
+    def tree_item_clicked(self, it, col):
+        self.model.remove_highlights()
+        if (it is not self.tree_solids):
+            id = int(it.text(0)[-1])
+            self.model.highlight_part(id)
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
