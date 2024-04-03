@@ -42,3 +42,7 @@ class model:
         for id in self.highlighted_parts:
             self.plot_handles[id].GetProperty().SetColor(regular_color)
         self.highlight_parts = []
+
+    def select_faces(self, point, vector):
+        return self.shape.val().facesIntersectedByLine(tuple(point), tuple(vector))
+    

@@ -6,6 +6,7 @@ import pyvista as pv
 from pyvistaqt import QtInteractor, MainWindow
 
 from model import model
+import geo
 
 os.environ["QT_API"] = "pyqt5"
 
@@ -24,6 +25,7 @@ class MyMainWindow(MainWindow):
     def __init__(self, parent=None):
         QtWidgets.QMainWindow.__init__(self, parent)
         self.model = None
+        self.selected_faces = None
 
         self.setWindowTitle("FEM3D")
 
@@ -35,6 +37,7 @@ class MyMainWindow(MainWindow):
 
         # Initialize object view
         self.plotter = QtInteractor(self.horizontal_splitter)
+        self.plotter.enable_surface_point_picking(callback=self.surface_selection_callback, show_point=True, font_size=10)
         self.signal_close.connect(self.plotter.close)
 
         # Create menu bar
@@ -93,6 +96,13 @@ class MyMainWindow(MainWindow):
     def tree_deselected(self):
         if (self.model is not None):
             self.model.remove_highlights()
+
+    def surface_selection_callback(self, point):
+        mouse_vector = np.subtract(point, self.plotter.camera_position[0])
+        mouse_vector = mouse_vector / np.linalg.norm(mouse_vector)
+
+        self.selected_faces = self.model.select_faces(self.plotter.camera_position[0], mouse_vector)
+        print(geo.tesselate_face_list(faces))
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
