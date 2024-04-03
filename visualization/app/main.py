@@ -102,7 +102,8 @@ class MyMainWindow(MainWindow):
         mouse_vector = mouse_vector / np.linalg.norm(mouse_vector)
 
         self.selected_faces = self.model.select_faces(self.plotter.camera_position[0], mouse_vector)
-        print(geo.tesselate_face_list(faces))
+        #print(geo.tesselate_face_list(self.selected_faces))
+        print(len(self.selected_faces))
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
