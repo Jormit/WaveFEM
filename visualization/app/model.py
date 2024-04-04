@@ -1,14 +1,21 @@
 import cadquery as cq
 import numpy as np
 import pyvista as pv
+import geo
 
 regular_color = [0.4, 0.6, 0.6]
-highlight_color = [0, 0, 1]
+highlight_color = [1, 0, 1]
 
 class model:
     def __init__(self, filename):
         self.faces = []
         self.points = []
+
+        self.selected_faces = None
+        self.selected_faces_faces = None
+        self.selected_faces_points = None
+        self.selected_face_handle = None
+
         self.shape = cq.importers.importStep(filename)
         self.plot_handles = []
         self.highlighted_parts = []
@@ -44,5 +51,19 @@ class model:
         self.highlight_parts = []
 
     def select_faces(self, point, vector):
-        return self.shape.val().facesIntersectedByLine(tuple(point), tuple(vector))
+        self.selected_faces = self.shape.val().facesIntersectedByLine(tuple(point), tuple(vector))
+        self.selected_faces_points, self.selected_faces_faces = geo.tesselate_face_list(self.selected_faces)
+        self.selected_faces_faces = np.array(self.selected_faces_faces)
+        self.selected_faces_points = np.array(self.selected_faces_points)
+    
+    def cycle_highlighted_face(self, plotter):
+        if (self.selected_face_handle is not None):
+            plotter.remove_actor(self.selected_face_handle)
+        
+        if (len(self.selected_faces_faces)):
+            f = self.selected_faces_faces[0]
+            p = self.selected_faces_points[0]
+            num_points = 3 * np.ones((f.shape[0], 1), dtype="int")
+            mesh = pv.PolyData(p, np.hstack((num_points, f)))
+            self.selected_face_handle = plotter.add_mesh(mesh, color=highlight_color)
     

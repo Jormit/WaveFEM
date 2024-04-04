@@ -25,7 +25,6 @@ class MyMainWindow(MainWindow):
     def __init__(self, parent=None):
         QtWidgets.QMainWindow.__init__(self, parent)
         self.model = None
-        self.selected_faces = None
 
         self.setWindowTitle("FEM3D")
 
@@ -101,9 +100,8 @@ class MyMainWindow(MainWindow):
         mouse_vector = np.subtract(point, self.plotter.camera_position[0])
         mouse_vector = mouse_vector / np.linalg.norm(mouse_vector)
 
-        self.selected_faces = self.model.select_faces(self.plotter.camera_position[0], mouse_vector)
-        #print(geo.tesselate_face_list(self.selected_faces))
-        print(len(self.selected_faces))
+        self.model.select_faces(self.plotter.camera_position[0], mouse_vector)
+        self.model.cycle_highlighted_face(self.plotter)
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
