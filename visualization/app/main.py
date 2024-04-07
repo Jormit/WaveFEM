@@ -40,8 +40,8 @@ class MyMainWindow(MainWindow):
         self.signal_close.connect(self.plotter.close)
 
         # Create menu bar
-        main_menu = self.menuBar()
-        file_menu = main_menu.addMenu('File')
+        self.main_menu = self.menuBar()
+        file_menu = self.main_menu.addMenu('File')
 
         open_button = QtWidgets.QAction('Open', self)
         open_button.setShortcut('Ctrl+O')
@@ -85,6 +85,12 @@ class MyMainWindow(MainWindow):
         for id in part_ids:
             widget_items.append(QtWidgets.QTreeWidgetItem(["Body"+str(id)]))
 
+        edit_menu = self.main_menu.addMenu('Edit')
+        select_behind_button = QtWidgets.QAction('Select Behind', self)
+        select_behind_button.setShortcut('b')
+        select_behind_button.triggered.connect(self.select_behind)
+        edit_menu.addAction(select_behind_button)
+
         self.tree_solids.insertChildren(0, widget_items)
 
     def tree_item_clicked(self, it, col):
@@ -103,7 +109,11 @@ class MyMainWindow(MainWindow):
         self.model.select_faces(self.plotter.camera_position[0], mouse_vector)
         self.model.cycle_highlighted_face(self.plotter)
 
+    def select_behind(self):
+        self.model.cycle_highlighted_face(self.plotter)
+
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = MyMainWindow()
+    window.show()
     sys.exit(app.exec_())
