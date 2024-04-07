@@ -106,6 +106,7 @@ class MyMainWindow(MainWindow):
         mouse_vector = np.subtract(point, self.plotter.camera_position[0])
         mouse_vector = mouse_vector / np.linalg.norm(mouse_vector)
 
+        self.model.remove_highlights()
         self.model.select_faces(self.plotter.camera_position[0], mouse_vector)
         self.model.cycle_highlighted_face(self.plotter)
 

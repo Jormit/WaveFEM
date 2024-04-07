@@ -47,9 +47,9 @@ class model:
         self.plot_handles[id].GetProperty().SetColor(highlight_color)
 
     def remove_highlights(self):
-        for id in self.highlighted_parts:
+        for id in self.highlighted_tags:
             self.plot_handles[id].GetProperty().SetColor(regular_color)
-        self.highlight_parts = []
+        self.highlighted_tags = []
 
     def select_faces(self, point, vector):
         self.selected_face_index = 0
@@ -68,6 +68,8 @@ class model:
             f = self.selected_faces[self.selected_face_index]
             tag = self.face_2_tag[f]
             self.plot_handles[tag].GetProperty().SetColor(highlight_color)
+
+            self.highlighted_tags.append(tag)
 
             self.selected_face_index = (self.selected_face_index + 1) % num_selected_faces
     
