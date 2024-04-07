@@ -49,6 +49,11 @@ class MyMainWindow(MainWindow):
         open_button.triggered.connect(self.open_file)
         file_menu.addAction(open_button)
 
+        save_button = QtWidgets.QAction('Save', self)
+        save_button.setShortcut('Ctrl+S')
+        save_button.triggered.connect(self.save_file)
+        file_menu.addAction(save_button)
+
         import_button = QtWidgets.QAction('Import .step file', self)
         import_button.triggered.connect(self.import_step)
         file_menu.addAction(import_button)
@@ -110,6 +115,7 @@ class MyMainWindow(MainWindow):
         self.setup = setup(filename[0])
 
     def save_file(self):
+        print("Saved!")
         return
 
     def tree_item_clicked(self, it, col):
