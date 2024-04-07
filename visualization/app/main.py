@@ -44,14 +44,14 @@ class MyMainWindow(MainWindow):
         self.main_menu = self.menuBar()
         file_menu = self.main_menu.addMenu('File')
 
-        import_button = QtWidgets.QAction('Import .step file', self)
-        import_button.triggered.connect(self.import_step)
-        file_menu.addAction(import_button)
-
         open_button = QtWidgets.QAction('Open', self)
         open_button.setShortcut('Ctrl+O')
         open_button.triggered.connect(self.open_file)
         file_menu.addAction(open_button)
+
+        import_button = QtWidgets.QAction('Import .step file', self)
+        import_button.triggered.connect(self.import_step)
+        file_menu.addAction(import_button)
 
         exit_button = QtWidgets.QAction('Exit', self)
         exit_button.setShortcut('Ctrl+Q')
