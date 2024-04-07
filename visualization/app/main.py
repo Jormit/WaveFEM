@@ -6,7 +6,7 @@ import pyvista as pv
 from pyvistaqt import QtInteractor, MainWindow
 
 from model import model
-import geo
+from setup import setup
 
 os.environ["QT_API"] = "pyqt5"
 
@@ -25,6 +25,7 @@ class MyMainWindow(MainWindow):
     def __init__(self, parent=None):
         QtWidgets.QMainWindow.__init__(self, parent)
         self.model = None
+        self.filename = None
 
         self.setWindowTitle("FEM3D")
 
@@ -43,6 +44,10 @@ class MyMainWindow(MainWindow):
         self.main_menu = self.menuBar()
         file_menu = self.main_menu.addMenu('File')
 
+        import_button = QtWidgets.QAction('Import .step file', self)
+        import_button.triggered.connect(self.import_step)
+        file_menu.addAction(import_button)
+
         open_button = QtWidgets.QAction('Open', self)
         open_button.setShortcut('Ctrl+O')
         open_button.triggered.connect(self.open_file)
@@ -51,6 +56,11 @@ class MyMainWindow(MainWindow):
         exit_button = QtWidgets.QAction('Exit', self)
         exit_button.setShortcut('Ctrl+Q')
         exit_button.triggered.connect(self.close)
+        file_menu.addAction(exit_button)
+
+        save_button = QtWidgets.QAction('Save', self)
+        save_button.setShortcut('Ctrl+S')
+        save_button.triggered.connect(self.close)
         file_menu.addAction(exit_button)
 
         # Add Tree
@@ -74,7 +84,7 @@ class MyMainWindow(MainWindow):
             
         self.show()
 
-    def open_file(self):
+    def import_step(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Step Files (*.stp *.step)")
         if filename[0] == '':
             return
@@ -93,6 +103,15 @@ class MyMainWindow(MainWindow):
 
         self.tree_solids.insertChildren(0, widget_items)
 
+    def open_file(self):
+        filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Json Config Files (*.json)")
+        if filename[0] == '':
+            return
+        self.setup = setup(filename[0])
+
+    def save_file(self):
+        return
+
     def tree_item_clicked(self, it, col):
         if (it not in [self.tree_solids, self.tree_ports, self.tree_materials]):
             id = int(it.text(0)[-1])
@@ -102,12 +121,15 @@ class MyMainWindow(MainWindow):
         if (self.model is not None):
             self.model.remove_highlights()
 
-    def surface_selection_callback(self, point):
+    def get_mouse_vector_and_position(self, point):
         mouse_vector = np.subtract(point, self.plotter.camera_position[0])
         mouse_vector = mouse_vector / np.linalg.norm(mouse_vector)
+        return self.plotter.camera_position[0], mouse_vector
 
+    def surface_selection_callback(self, point):
+        position, mouse_vector = self.get_mouse_vector_and_position(point)
         self.model.remove_highlights()
-        self.model.select_faces(self.plotter.camera_position[0], mouse_vector)
+        self.model.select_faces(position, mouse_vector)
         self.model.cycle_highlighted_face(self.plotter)
 
     def select_behind(self):

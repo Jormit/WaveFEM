@@ -43,8 +43,11 @@ class model:
     def highlight_part(self, id):
         if (id >= self.get_num_parts()):
             return
-        self.highlighted_parts.append(id)  
-        self.plot_handles[id].GetProperty().SetColor(highlight_color)
+        s = self.shape.solids().all()[id]
+        for f in s.faces().vals():
+            tag = self.face_2_tag[f]
+            self.highlighted_tags.append(tag)
+            self.plot_handles[tag].GetProperty().SetColor(highlight_color)
 
     def remove_highlights(self):
         for id in self.highlighted_tags:
@@ -68,6 +71,9 @@ class model:
             f = self.selected_faces[self.selected_face_index]
             tag = self.face_2_tag[f]
             self.plot_handles[tag].GetProperty().SetColor(highlight_color)
+
+            bbox = self.shape.faces(tag=tag).val().BoundingBox(0.01)
+            print(bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, bbox.zmin, bbox.zmax)
 
             self.highlighted_tags.append(tag)
 
