@@ -3,7 +3,7 @@ import numpy as np
 import pyvista as pv
 import geo
 
-regular_color = [0.2, 0.2, 0.2]
+regular_color = [0.5, 0.5, 0.5]
 highlight_color = [1, 0, 1]
 
 class model:
@@ -32,6 +32,8 @@ class model:
             num_vertices = 3 * np.ones((triangles.shape[0], 1), dtype="int")
             mesh = pv.PolyData(vertices, np.hstack((num_vertices, triangles)))
             self.plot_handles.append(plotter.add_mesh(mesh, opacity=0.85, color=regular_color))
+
+        plotter.add_axes()
         plotter.show()
 
     def get_part_ids(self):

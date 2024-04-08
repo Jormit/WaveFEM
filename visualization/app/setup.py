@@ -28,7 +28,7 @@ class setup:
         self.pml_thickness = data['pml_thickness']
         self.frequency = data['frequency']
         self.target_elements_per_wavelength = data['target_elements_per_wavelength']
-        self.material_assignments = data['conductor']
+        self.material_assignments = data['material_assignments']
         self.material_definitions = data['material_definitions']
 
         print(data)
