@@ -2,24 +2,13 @@ import sys
 import os
 from qtpy import QtWidgets, QtGui, QtCore
 import numpy as np
-import pyvista as pv
 from pyvistaqt import QtInteractor, MainWindow
 
 from model import model
 from setup import setup
-from menubar import menu
+from ui_components import *
 
 os.environ["QT_API"] = "pyqt5"
-
-class DeselectableTreeWidget(QtWidgets.QTreeWidget):
-    def __init__(self, deselect_callback):
-        QtWidgets.QTreeWidget.__init__(self)
-        self.callback = deselect_callback
-
-    def mousePressEvent(self, event):
-        self.clearSelection()
-        self.callback()
-        QtWidgets.QTreeWidget.mousePressEvent(self, event)
 
 class MyMainWindow(MainWindow):
 
@@ -45,20 +34,13 @@ class MyMainWindow(MainWindow):
         self.menubar = menu(self, self.open_file, self.save_file, self.import_step, self.close, self.select_behind)
 
         # Add Tree
-        self.tree = DeselectableTreeWidget(self.tree_deselected)
-        self.tree.setColumnCount(1)
-        self.tree.setHeaderHidden(True)
-        self.tree_solids = QtWidgets.QTreeWidgetItem(["Solids"])
-        self.tree_ports = QtWidgets.QTreeWidgetItem(["Ports"])
-        self.tree_materials = QtWidgets.QTreeWidgetItem(["Materials"])
-        self.tree.insertTopLevelItems(0, [self.tree_solids, self.tree_ports, self.tree_materials])
-        self.tree.itemClicked.connect(self.tree_item_clicked)
+        self.tree = model_tree(self.tree_deselected, self.tree_item_selected)
 
         # Add Properties Window
         self.properties = QtWidgets.QStackedWidget()
 
-        # Add to splitter
-        self.left_vertical_splitter.addWidget(self.tree)
+        # Form layout
+        self.left_vertical_splitter.addWidget(self.tree.widget_handle())
         self.left_vertical_splitter.addWidget(self.properties)
         self.horizontal_splitter.addWidget(self.left_vertical_splitter)
         self.horizontal_splitter.addWidget(self.plotter.interactor)
@@ -71,16 +53,9 @@ class MyMainWindow(MainWindow):
             return
         self.model = model(filename[0])
         self.model.plot(self.plotter)
-        part_ids = self.model.get_part_ids()
-        widget_items = []
-        for id in part_ids:
-            widget_items.append(QtWidgets.QTreeWidgetItem(["Body"+str(id)]))
-
-        self.tree_solids.insertChildren(0, widget_items)
-
+        self.tree.set_solids(self.model.get_part_ids())
         self.setup = setup()
         self.setup.model_file = os.path.basename(filename[0])
-
         self.menubar.enable_edit()
 
     def open_file(self):
@@ -93,8 +68,8 @@ class MyMainWindow(MainWindow):
         print("Saved!")
         return
 
-    def tree_item_clicked(self, it, col):
-        if (it not in [self.tree_solids, self.tree_ports, self.tree_materials]):
+    def tree_item_selected(self, it, col):
+        if self.tree.is_solid_selection(it):
             id = int(it.text(0)[-1])
             self.model.highlight_part(id)
 

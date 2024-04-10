@@ -33,3 +33,36 @@ class menu:
 
     def enable_edit(self):
         self.edit_menu.setEnabled(True)
+
+class DeselectableTreeWidget(QtWidgets.QTreeWidget):
+    def __init__(self, deselect_callback):
+        QtWidgets.QTreeWidget.__init__(self)
+        self.callback = deselect_callback
+
+    def mousePressEvent(self, event):
+        self.clearSelection()
+        self.callback()
+        QtWidgets.QTreeWidget.mousePressEvent(self, event)
+
+class model_tree:
+    def __init__(self, deselected_func, selected_func):
+        self.tree = DeselectableTreeWidget(deselected_func)
+        self.tree.setColumnCount(1)
+        self.tree.setHeaderHidden(True)
+        self.tree_solids = QtWidgets.QTreeWidgetItem(["Solids"])
+        self.tree_ports = QtWidgets.QTreeWidgetItem(["Ports"])
+        self.tree_materials = QtWidgets.QTreeWidgetItem(["Materials"])
+        self.tree.insertTopLevelItems(0, [self.tree_solids, self.tree_ports, self.tree_materials])
+        self.tree.itemClicked.connect(selected_func)
+
+    def set_solids(self, ids):
+        widget_items = []
+        for id in ids:
+            widget_items.append(QtWidgets.QTreeWidgetItem(["Body"+str(id)]))
+        self.tree_solids.insertChildren(0, widget_items)
+
+    def widget_handle(self):
+        return self.tree
+    
+    def is_solid_selection(self, it):
+        return (it not in [self.tree_solids, self.tree_ports, self.tree_materials])
