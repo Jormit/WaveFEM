@@ -36,8 +36,12 @@ class MyMainWindow(MainWindow):
         # Add Tree
         self.tree = model_tree(self.tree_deselected, self.tree_item_selected)
 
+        # Volume properties widget
+        self.volume_properties = volume_widget()
+
         # Add Properties Window
         self.properties = QtWidgets.QStackedWidget()
+        self.properties.addWidget(self.volume_properties.widget_handle())
 
         # Form layout
         self.left_vertical_splitter.addWidget(self.tree.widget_handle())

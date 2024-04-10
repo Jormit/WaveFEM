@@ -24,6 +24,7 @@ class menu:
         file_menu.addAction(exit_button)
 
         self.edit_menu = window_handle.menuBar().addMenu('Edit')
+        
         select_behind_button = QtWidgets.QAction('Select Behind', window_handle)
         select_behind_button.setShortcut('b')
         select_behind_button.triggered.connect(select_behind_func)
@@ -66,3 +67,27 @@ class model_tree:
     
     def is_solid_selection(self, it):
         return (it not in [self.tree_solids, self.tree_ports, self.tree_materials])
+    
+class volume_widget:
+    def __init__(self):
+        self.layout = QtWidgets.QGridLayout()
+
+        material_label = QtWidgets.QLabel("Material")
+        self.material = QtWidgets.QComboBox()
+
+        self.layout.addWidget(material_label, 0, 0)
+        self.layout.addWidget(self.material, 0, 1)
+
+        self.container = QtWidgets.QWidget()
+        self.container.setLayout(self.layout)
+
+    def widget_handle(self):
+        return self.container
+    
+    def set_materials(self, materials):
+        self.material.clear()
+        for mat in materials:
+            self.material.addItem(mat)
+
+
+
