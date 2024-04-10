@@ -7,6 +7,7 @@ from pyvistaqt import QtInteractor, MainWindow
 
 from model import model
 from setup import setup
+from menubar import menu
 
 os.environ["QT_API"] = "pyqt5"
 
@@ -41,32 +42,7 @@ class MyMainWindow(MainWindow):
         self.signal_close.connect(self.plotter.close)
 
         # Create menu bar
-        self.main_menu = self.menuBar()
-        file_menu = self.main_menu.addMenu('File')
-
-        open_button = QtWidgets.QAction('Open', self)
-        open_button.setShortcut('Ctrl+O')
-        open_button.triggered.connect(self.open_file)
-        file_menu.addAction(open_button)
-
-        save_button = QtWidgets.QAction('Save', self)
-        save_button.setShortcut('Ctrl+S')
-        save_button.triggered.connect(self.save_file)
-        file_menu.addAction(save_button)
-
-        import_button = QtWidgets.QAction('Import .step file', self)
-        import_button.triggered.connect(self.import_step)
-        file_menu.addAction(import_button)
-
-        exit_button = QtWidgets.QAction('Exit', self)
-        exit_button.setShortcut('Ctrl+Q')
-        exit_button.triggered.connect(self.close)
-        file_menu.addAction(exit_button)
-
-        save_button = QtWidgets.QAction('Save', self)
-        save_button.setShortcut('Ctrl+S')
-        save_button.triggered.connect(self.close)
-        file_menu.addAction(exit_button)
+        self.menubar = menu(self, self.open_file, self.save_file, self.import_step, self.close, self.select_behind)
 
         # Add Tree
         self.tree = DeselectableTreeWidget(self.tree_deselected)
@@ -79,7 +55,7 @@ class MyMainWindow(MainWindow):
         self.tree.itemClicked.connect(self.tree_item_clicked)
 
         # Add Properties Window
-        self.properties = QtWidgets.QWidget()
+        self.properties = QtWidgets.QStackedWidget()
 
         # Add to splitter
         self.left_vertical_splitter.addWidget(self.tree)
@@ -100,13 +76,12 @@ class MyMainWindow(MainWindow):
         for id in part_ids:
             widget_items.append(QtWidgets.QTreeWidgetItem(["Body"+str(id)]))
 
-        edit_menu = self.main_menu.addMenu('Edit')
-        select_behind_button = QtWidgets.QAction('Select Behind', self)
-        select_behind_button.setShortcut('b')
-        select_behind_button.triggered.connect(self.select_behind)
-        edit_menu.addAction(select_behind_button)
-
         self.tree_solids.insertChildren(0, widget_items)
+
+        self.setup = setup()
+        self.setup.model_file = os.path.basename(filename[0])
+
+        self.menubar.enable_edit()
 
     def open_file(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Json Config Files (*.json)")

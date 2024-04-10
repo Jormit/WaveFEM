@@ -1,37 +1,34 @@
 import json
 
 class setup:
-    def __init__(self):
-
-        self.model_file = None
-        self.port_centres = None
-        self.bounding_box_padding = None
-        self.pml_enable = None
-        self.pml_thickness = None
-        self.frequency = None
-        self.target_elements_per_wavelength = None
-        self.material_assignments = None
-        self.material_definitions = None
-
-        return
-
-    def __init__(self, filename):
+    def __init__(self, filename=None):
         self.filename = filename
 
-        f = open(filename)
-        data = json.load(f)
+        if (filename):
 
-        self.model_file = data['model_file']
-        self.port_centres = data['port_centres']
-        self.bounding_box_padding = data['bounding_box_padding']
-        self.pml_enable = data['pml_enable']
-        self.pml_thickness = data['pml_thickness']
-        self.frequency = data['frequency']
-        self.target_elements_per_wavelength = data['target_elements_per_wavelength']
-        self.material_assignments = data['material_assignments']
-        self.material_definitions = data['material_definitions']
+            f = open(filename)
+            data = json.load(f)
 
-        print(data)
+            self.model_file = data['model_file']
+            self.port_centres = data['port_centres']
+            self.bounding_box_padding = data['bounding_box_padding']
+            self.pml_enable = data['pml_enable']
+            self.pml_thickness = data['pml_thickness']
+            self.frequency = data['frequency']
+            self.target_elements_per_wavelength = data['target_elements_per_wavelength']
+            self.material_assignments = data['material_assignments']
+            self.material_definitions = data['material_definitions']
+
+        else:
+            self.model_file = None
+            self.port_centres = None
+            self.bounding_box_padding = None
+            self.pml_enable = None
+            self.pml_thickness = None
+            self.frequency = None
+            self.target_elements_per_wavelength = None
+            self.material_assignments = None
+            self.material_definitions = None
 
     def validate(self):
         valid = True
@@ -72,5 +69,6 @@ class setup:
             print("Material definitions not set!")            
 
         return valid
-        
+    
+
     
