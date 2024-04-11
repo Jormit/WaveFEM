@@ -1,7 +1,14 @@
-from qtpy import QtWidgets
+from qtpy import QtWidgets, QtCore
 
 class menu:
-    def __init__(self, window_handle, open_file_func, save_file_func, import_step_func, close_func, select_behind_func):
+    def __init__(self,
+                 window_handle,
+                 open_file_func,
+                 save_file_func,
+                 import_step_func,
+                 close_func,
+                 select_behind_func,
+                 create_material_func):
         file_menu = window_handle.menuBar().addMenu('File')
 
         open_button = QtWidgets.QAction('Open', window_handle)
@@ -30,6 +37,12 @@ class menu:
         select_behind_button.triggered.connect(select_behind_func)
         self.edit_menu.addAction(select_behind_button)
         self.edit_menu.setEnabled(False)
+
+        self.create_menu = window_handle.menuBar().addMenu('Create')
+
+        create_material_button = QtWidgets.QAction('Material', window_handle)
+        create_material_button.triggered.connect(create_material_func)
+        self.create_menu.addAction(create_material_button)
         
 
     def enable_edit(self):
@@ -89,5 +102,53 @@ class volume_widget:
         for mat in materials:
             self.material.addItem(mat)
 
+class value_table:
+    def __init__(self, values):
+        self.table = QtWidgets.QTableWidget()
+        self.table.setRowCount(len(values))
+        self.table.setColumnCount(2)
+        self.table.horizontalHeader().setStretchLastSection(True)  
+        self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+
+        i = 0
+        for key, value in values.items():
+            self.table.setItem(i, 0, QtWidgets.QTableWidgetItem(key))
+
+            val_item = QtWidgets.QTableWidgetItem()
+            val_item.setData(QtCore.Qt.EditRole, value)
+            self.table.setItem(i, 1, val_item)
+            i+=1
+
+    def widget_handle(self):
+        return self.table
+
+
+class material_dialog(QtWidgets.QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setWindowTitle("Create Material")
+
+        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.layout = QtWidgets.QVBoxLayout()
+
+        default_vals = {
+            "ep": 1.0,
+            "mu": 1.0,
+            "tand": 0.00
+        }
+        
+        self.table = value_table(default_vals)
+        self.layout.addWidget(self.table.widget_handle())
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
+
+        
 
 

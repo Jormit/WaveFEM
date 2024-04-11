@@ -31,7 +31,7 @@ class MyMainWindow(MainWindow):
         self.signal_close.connect(self.plotter.close)
 
         # Create menu bar
-        self.menubar = menu(self, self.open_file, self.save_file, self.import_step, self.close, self.select_behind)
+        self.menubar = menu(self, self.open_file, self.save_file, self.import_step, self.close, self.select_behind, self.create_material)
 
         # Add Tree
         self.tree = model_tree(self.tree_deselected, self.tree_item_selected)
@@ -94,6 +94,13 @@ class MyMainWindow(MainWindow):
 
     def select_behind(self):
         self.model.cycle_highlighted_face(self.plotter)
+
+    def create_material(self):
+        dialog = material_dialog(self)
+        if dialog.exec():
+            print("Success!")
+        else:
+            print("Cancel!")
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
