@@ -99,6 +99,7 @@ class MyMainWindow(MainWindow):
         dialog = material_dialog(self)
         if dialog.exec():
             print("Success!")
+            print(dialog.get_result())
         else:
             print("Cancel!")
 

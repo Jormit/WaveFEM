@@ -111,6 +111,7 @@ class value_table:
         self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.table.horizontalHeader().setVisible(False)
         self.table.verticalHeader().setVisible(False)
+        self.values = values
 
         i = 0
         for key, value in values.items():
@@ -135,6 +136,20 @@ class value_table:
 
     def widget_handle(self):
         return self.table
+    
+    def get_result(self):
+        i = 0
+        for key, value in self.values.items():
+            if (isinstance(value, float)):
+                self.values[key] = float(self.table.cellWidget(i, 1).text())
+            if (isinstance(value, bool)):
+                text = self.table.cellWidget(i, 1).currentText()
+                if text == "True":
+                    self.values[key] = True
+                else:
+                    self.values[key] = False
+            i+=1
+        return self.values
 
 
 class material_dialog(QtWidgets.QDialog):
@@ -162,6 +177,9 @@ class material_dialog(QtWidgets.QDialog):
         self.layout.addWidget(self.table.widget_handle())
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
+
+    def get_result(self):
+        return self.table.get_result()
 
 
         
