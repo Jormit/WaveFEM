@@ -1,4 +1,4 @@
-from qtpy import QtWidgets, QtCore
+from qtpy import QtWidgets, QtCore, QtGui
 
 class menu:
     def __init__(self,
@@ -109,14 +109,28 @@ class value_table:
         self.table.setColumnCount(2)
         self.table.horizontalHeader().setStretchLastSection(True)  
         self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.table.horizontalHeader().setVisible(False)
+        self.table.verticalHeader().setVisible(False)
 
         i = 0
         for key, value in values.items():
             self.table.setItem(i, 0, QtWidgets.QTableWidgetItem(key))
 
-            val_item = QtWidgets.QTableWidgetItem()
-            val_item.setData(QtCore.Qt.EditRole, value)
-            self.table.setItem(i, 1, val_item)
+            if (isinstance(value, float)):
+                val_item = QtWidgets.QLineEdit()
+                val_item.setValidator(QtGui.QDoubleValidator())
+                val_item.setText(str(value))
+                self.table.setCellWidget(i, 1, val_item)
+            elif isinstance(value, bool):
+                val_item = QtWidgets.QComboBox()
+                val_item.addItem("True")
+                val_item.addItem("False")
+                if val_item is True:
+                    val_item.setCurrentIndex(0)
+                else:
+                    val_item.setCurrentIndex(1)
+                self.table.setCellWidget(i, 1, val_item)
+
             i+=1
 
     def widget_handle(self):
@@ -140,7 +154,8 @@ class material_dialog(QtWidgets.QDialog):
         default_vals = {
             "ep": 1.0,
             "mu": 1.0,
-            "tand": 0.00
+            "tand": 0.00,
+            "PEC": False
         }
         
         self.table = value_table(default_vals)
