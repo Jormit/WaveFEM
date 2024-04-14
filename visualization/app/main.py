@@ -99,8 +99,6 @@ class MyMainWindow(MainWindow):
         dialog = material_dialog(self)
         if dialog.exec():
             self.tree.add_material([dialog.get_result()])
-        else:
-            print("Cancel!")
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
