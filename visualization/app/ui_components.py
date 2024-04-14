@@ -75,11 +75,18 @@ class model_tree:
             widget_items.append(QtWidgets.QTreeWidgetItem(["Body"+str(id)]))
         self.tree_solids.insertChildren(0, widget_items)
 
+    def add_material(self, materials):
+        widget_items = []
+        for mat in materials:
+            widget_items.append(QtWidgets.QTreeWidgetItem([str(mat['name'])]))
+        self.tree_materials.insertChildren(0, widget_items)
+
+
     def widget_handle(self):
         return self.tree
     
     def is_solid_selection(self, it):
-        return (it not in [self.tree_solids, self.tree_ports, self.tree_materials])
+        return (it.parent() is self.tree_solids)
     
 class volume_widget:
     def __init__(self):
@@ -131,7 +138,10 @@ class value_table:
                 else:
                     val_item.setCurrentIndex(1)
                 self.table.setCellWidget(i, 1, val_item)
-
+            elif isinstance(value, str):
+                val_item = QtWidgets.QLineEdit()
+                val_item.setText(str(value))
+                self.table.setCellWidget(i, 1, val_item)
             i+=1
 
     def widget_handle(self):
@@ -167,6 +177,7 @@ class material_dialog(QtWidgets.QDialog):
         self.layout = QtWidgets.QVBoxLayout()
 
         default_vals = {
+            "name": "Material",
             "ep": 1.0,
             "mu": 1.0,
             "tand": 0.00,

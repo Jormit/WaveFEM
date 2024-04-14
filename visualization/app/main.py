@@ -98,8 +98,7 @@ class MyMainWindow(MainWindow):
     def create_material(self):
         dialog = material_dialog(self)
         if dialog.exec():
-            print("Success!")
-            print(dialog.get_result())
+            self.tree.add_material([dialog.get_result()])
         else:
             print("Cancel!")
 
