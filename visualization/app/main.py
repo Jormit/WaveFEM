@@ -16,6 +16,7 @@ class MyMainWindow(MainWindow):
         QtWidgets.QMainWindow.__init__(self, parent)
         self.model = None
         self.filename = None
+        self.setup = setup()
 
         self.setWindowTitle("FEM3D")
 
@@ -58,7 +59,6 @@ class MyMainWindow(MainWindow):
         self.model = model(filename[0])
         self.model.plot(self.plotter)
         self.tree.set_solids(self.model.get_part_ids())
-        self.setup = setup()
         self.setup.model_file = os.path.basename(filename[0])
         self.menubar.enable_edit()
 
@@ -99,6 +99,7 @@ class MyMainWindow(MainWindow):
         dialog = material_dialog(self)
         if dialog.exec():
             self.tree.add_material([dialog.get_result()])
+            self.setup.add_material(dialog.get_result())
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
