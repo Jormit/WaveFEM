@@ -88,26 +88,8 @@ class model_tree:
     def is_solid_selection(self, it):
         return (it.parent() is self.tree_solids)
     
-class volume_widget:
-    def __init__(self):
-        self.layout = QtWidgets.QGridLayout()
-
-        material_label = QtWidgets.QLabel("Material")
-        self.material = QtWidgets.QComboBox()
-
-        self.layout.addWidget(material_label, 0, 0)
-        self.layout.addWidget(self.material, 0, 1)
-
-        self.container = QtWidgets.QWidget()
-        self.container.setLayout(self.layout)
-
-    def widget_handle(self):
-        return self.container
-    
-    def set_materials(self, materials):
-        self.material.clear()
-        for mat in materials:
-            self.material.addItem(mat)
+    def is_material_selection(self, it):
+        return (it.parent() is self.tree_materials)
 
 class value_table:
     def __init__(self, values):

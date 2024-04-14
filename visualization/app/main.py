@@ -37,16 +37,8 @@ class MyMainWindow(MainWindow):
         # Add Tree
         self.tree = model_tree(self.tree_deselected, self.tree_item_selected)
 
-        # Volume properties widget
-        self.volume_properties = volume_widget()
-
-        # Add Properties Window
-        self.properties = QtWidgets.QStackedWidget()
-        self.properties.addWidget(self.volume_properties.widget_handle())
-
         # Form layout
         self.left_vertical_splitter.addWidget(self.tree.widget_handle())
-        self.left_vertical_splitter.addWidget(self.properties)
         self.horizontal_splitter.addWidget(self.left_vertical_splitter)
         self.horizontal_splitter.addWidget(self.plotter.interactor)
             
@@ -76,6 +68,10 @@ class MyMainWindow(MainWindow):
         if self.tree.is_solid_selection(it):
             id = int(it.text(0)[-1])
             self.model.highlight_part(id)
+
+        if self.tree.is_material_selection(it):
+            table = value_table(self.setup.get_material(it.text(0)))
+            self.left_vertical_splitter.addWidget(table.widget_handle())
 
     def tree_deselected(self):
         if (self.model is not None):
