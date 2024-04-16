@@ -63,17 +63,24 @@ class MyMainWindow(MainWindow):
     def save_file(self):
         print("Saved!")
         return
+    
+    def remove_splitter_focus(self):
+        to_delete = self.left_vertical_splitter.widget(1)
+        if (to_delete is not None):
+            to_delete.hide()
+            to_delete.deleteLater()
 
     def tree_item_selected(self, it, col):
         if self.tree.is_solid_selection(it):
             id = int(it.text(0)[-1])
             self.model.highlight_part(id)
 
-        if self.tree.is_material_selection(it):
+        if self.tree.is_material_selection(it):            
             table = value_table(self.setup.get_material(it.text(0)))
             self.left_vertical_splitter.addWidget(table.widget_handle())
 
     def tree_deselected(self):
+        self.remove_splitter_focus()
         if (self.model is not None):
             self.model.remove_highlights()
 
@@ -100,5 +107,6 @@ class MyMainWindow(MainWindow):
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = MyMainWindow()
+    window.resize(1200, 700)
     window.show()
     sys.exit(app.exec_())

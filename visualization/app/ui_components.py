@@ -140,6 +140,8 @@ class value_table:
                     self.values[key] = True
                 else:
                     self.values[key] = False
+            elif isinstance(value, str):
+                self.values[key] = str(self.table.cellWidget(i, 1).text())
             i+=1
         return self.values
 
