@@ -176,6 +176,22 @@ class material_dialog(QtWidgets.QDialog):
     def get_result(self):
         return self.table.get_result()
 
+class warning_dialog(QtWidgets.QDialog):
+    def __init__(self, title, message, parent=None):
+        super().__init__(parent)
+
+        self.setWindowTitle(title)
+
+        QBtn = QtWidgets.QDialogButtonBox.Ok
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+
+        self.layout = QtWidgets.QVBoxLayout()
+        message = QtWidgets.QLabel(message)
+        self.layout.addWidget(message)
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
 
         
 

@@ -66,3 +66,7 @@ class setup:
     def get_material(self, name):
         return self.data["material_definitions"][name]
     
+    def contains_material(self, name):
+        print(self.data["material_definitions"])
+        return name in self.data["material_definitions"]
+    

@@ -100,9 +100,15 @@ class MyMainWindow(MainWindow):
 
     def create_material(self):
         dialog = material_dialog(self)
-        if dialog.exec():
-            self.tree.add_material([dialog.get_result()])
-            self.setup.add_material(dialog.get_result())
+
+        while dialog.exec():
+            if not self.setup.contains_material(dialog.get_result()["name"]):
+                self.tree.add_material([dialog.get_result()])
+                self.setup.add_material(dialog.get_result())
+                break
+            else:
+                warning = warning_dialog("Warning!", "Material with same name already exists.", dialog)
+                warning.exec()
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
