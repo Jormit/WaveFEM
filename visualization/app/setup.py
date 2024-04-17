@@ -70,3 +70,13 @@ class setup:
         print(self.data["material_definitions"])
         return name in self.data["material_definitions"]
     
+    def assign_material(self, ids, material):
+        for id in ids:
+            self.data["material_assignments"][id] = material
+
+    def update_from_model(self, model):
+        self.data["model_file"] = model.filename
+        self.data["material_assignments"] = [""] * model.get_num_parts()
+        print(self.data)
+        
+    

@@ -8,7 +8,8 @@ class menu:
                  import_step_func,
                  close_func,
                  select_behind_func,
-                 create_material_func):
+                 create_material_func,
+                 assign_material_func):
         file_menu = window_handle.menuBar().addMenu('File')
 
         open_button = QtWidgets.QAction('Open', window_handle)
@@ -43,6 +44,12 @@ class menu:
         create_material_button = QtWidgets.QAction('Material', window_handle)
         create_material_button.triggered.connect(create_material_func)
         self.create_menu.addAction(create_material_button)
+
+        self.create_menu = window_handle.menuBar().addMenu('Assign')
+
+        assign_material_button = QtWidgets.QAction('Material', window_handle)
+        assign_material_button.triggered.connect(assign_material_func)
+        self.create_menu.addAction(assign_material_button)
         
 
     def enable_edit(self):

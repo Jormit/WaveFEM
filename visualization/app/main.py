@@ -32,7 +32,7 @@ class MyMainWindow(MainWindow):
         self.signal_close.connect(self.plotter.close)
 
         # Create menu bar
-        self.menubar = menu(self, self.open_file, self.save_file, self.import_step, self.close, self.select_behind, self.create_material)
+        self.menubar = menu(self, self.open_file, self.save_file, self.import_step, self.close, self.select_behind, self.create_material, self.assign_material)
 
         # Add Tree
         self.tree = model_tree(self.tree_deselected, self.tree_item_selected)
@@ -53,6 +53,7 @@ class MyMainWindow(MainWindow):
         self.tree.set_solids(self.model.get_part_ids())
         self.setup.model_file = os.path.basename(filename[0])
         self.menubar.enable_edit()
+        self.setup.update_from_model(self.model)
 
     def open_file(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Json Config Files (*.json)")
@@ -109,6 +110,9 @@ class MyMainWindow(MainWindow):
             else:
                 warning = warning_dialog("Warning!", "Material with same name already exists.", dialog)
                 warning.exec()
+
+    def assign_material(self):
+        self.model.get_highlighted_parts()
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

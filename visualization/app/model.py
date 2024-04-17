@@ -8,6 +8,7 @@ highlight_color = [1, 0, 1]
 
 class model:
     def __init__(self, filename):
+        self.filename = filename
         self.shape = cq.importers.importStep(filename)
         self.plot_handles = []
         self.highlighted_tags = []
@@ -50,6 +51,9 @@ class model:
             tag = self.face_2_tag[f]
             self.highlighted_tags.append(tag)
             self.plot_handles[tag].GetProperty().SetColor(highlight_color)
+
+    def get_highlighted_parts(self):
+        return self.highlighted_tags
 
     def remove_highlights(self):
         for id in self.highlighted_tags:
