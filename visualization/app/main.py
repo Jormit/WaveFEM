@@ -100,7 +100,7 @@ class MyMainWindow(MainWindow):
         self.model.cycle_highlighted_face(self.plotter)
 
     def create_material(self):
-        dialog = material_dialog(self)
+        dialog = material_create_dialog(self)
 
         while dialog.exec():
             if not self.setup.contains_material(dialog.get_result()["name"]):

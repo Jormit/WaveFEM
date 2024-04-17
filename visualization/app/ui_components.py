@@ -153,7 +153,7 @@ class value_table:
         return self.values
 
 
-class material_dialog(QtWidgets.QDialog):
+class material_create_dialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
