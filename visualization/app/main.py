@@ -32,7 +32,15 @@ class MyMainWindow(MainWindow):
         self.signal_close.connect(self.plotter.close)
 
         # Create menu bar
-        self.menubar = menu(self, self.open_file, self.save_file, self.import_step, self.close, self.select_behind, self.create_material, self.assign_material)
+        self.menubar = menu(self,
+                            self.open_file, 
+                            self.save_file,
+                            self.import_step,
+                            self.close,
+                            self.select_behind,
+                            self.create_material,
+                            self.assign_material,
+                            self.assign_port)
 
         # Add Tree
         self.tree = model_tree(self.tree_deselected, self.tree_item_selected)
@@ -128,6 +136,9 @@ class MyMainWindow(MainWindow):
         dialog = list_select_dialog("Select Material", self.setup.get_materials())
         if dialog.exec():
             self.setup.assign_material(selected_parts, dialog.get_result())
+
+    def assign_port(self):
+        print("Assigned!")
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

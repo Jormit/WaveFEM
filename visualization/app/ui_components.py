@@ -9,7 +9,10 @@ class menu:
                  close_func,
                  select_behind_func,
                  create_material_func,
-                 assign_material_func):
+                 assign_material_func,
+                 assign_port_func):
+        
+        # File ====================================================
         file_menu = window_handle.menuBar().addMenu('File')
 
         open_button = QtWidgets.QAction('Open', window_handle)
@@ -31,6 +34,7 @@ class menu:
         exit_button.triggered.connect(close_func)
         file_menu.addAction(exit_button)
 
+        # Edit ====================================================
         self.edit_menu = window_handle.menuBar().addMenu('Edit')
         self.edit_menu.setEnabled(False)
         
@@ -39,18 +43,24 @@ class menu:
         select_behind_button.triggered.connect(select_behind_func)
         self.edit_menu.addAction(select_behind_button)        
 
+        # Create ====================================================
         self.create_menu = window_handle.menuBar().addMenu('Create')
 
         create_material_button = QtWidgets.QAction('Material', window_handle)
         create_material_button.triggered.connect(create_material_func)
         self.create_menu.addAction(create_material_button)
 
+        # Assign ====================================================
         self.assign_menu = window_handle.menuBar().addMenu('Assign')
         self.assign_menu.setEnabled(False)
 
         assign_material_button = QtWidgets.QAction('Material', window_handle)
         assign_material_button.triggered.connect(assign_material_func)
         self.assign_menu.addAction(assign_material_button)
+
+        port_material_button = QtWidgets.QAction('Port', window_handle)
+        port_material_button.triggered.connect(assign_port_func)
+        self.assign_menu.addAction(port_material_button)
         
 
     def enable_edit(self):
