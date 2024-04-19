@@ -11,7 +11,8 @@ class model:
         self.filename = filename
         self.shape = cq.importers.importStep(filename)
         self.plot_handles = []
-        self.highlighted_tags = []
+        self.highlighted_surfaces = []
+        self.highlighted_parts = []
         self.face_2_tag = {}
         self.selected_faces = []
         self.selected_face_index = 0
@@ -49,16 +50,18 @@ class model:
         s = self.shape.solids().all()[id]
         for f in s.faces().vals():
             tag = self.face_2_tag[f]
-            self.highlighted_tags.append(tag)
+            self.highlighted_surfaces.append(tag)
             self.plot_handles[tag].GetProperty().SetColor(highlight_color)
+        self.highlighted_parts.append(id)
 
     def get_highlighted_parts(self):
-        return self.highlighted_tags
+        return self.highlighted_parts
 
     def remove_highlights(self):
-        for id in self.highlighted_tags:
+        for id in self.highlighted_surfaces:
             self.plot_handles[id].GetProperty().SetColor(regular_color)
-        self.highlighted_tags = []
+        self.highlighted_surfaces = []
+        self.highlighted_parts = []
 
     def select_faces(self, point, vector):
         self.selected_face_index = 0
@@ -81,7 +84,7 @@ class model:
             bbox = self.shape.faces(tag=tag).val().BoundingBox(0.01)
             print(bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, bbox.zmin, bbox.zmax)
 
-            self.highlighted_tags.append(tag)
+            self.highlighted_surfaces.append(tag)
 
             self.selected_face_index = (self.selected_face_index + 1) % num_selected_faces
     

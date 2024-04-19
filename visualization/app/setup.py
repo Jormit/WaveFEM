@@ -66,8 +66,10 @@ class setup:
     def get_material(self, name):
         return self.data["material_definitions"][name]
     
+    def get_materials(self):
+        return self.data["material_definitions"]
+    
     def contains_material(self, name):
-        print(self.data["material_definitions"])
         return name in self.data["material_definitions"]
     
     def assign_material(self, ids, material):
@@ -77,6 +79,8 @@ class setup:
     def update_from_model(self, model):
         self.data["model_file"] = model.filename
         self.data["material_assignments"] = [""] * model.get_num_parts()
+
+    def print_setup(self):
         print(self.data)
         
     

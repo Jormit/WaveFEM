@@ -32,12 +32,12 @@ class menu:
         file_menu.addAction(exit_button)
 
         self.edit_menu = window_handle.menuBar().addMenu('Edit')
+        self.edit_menu.setEnabled(False)
         
         select_behind_button = QtWidgets.QAction('Select Behind', window_handle)
         select_behind_button.setShortcut('b')
         select_behind_button.triggered.connect(select_behind_func)
-        self.edit_menu.addAction(select_behind_button)
-        self.edit_menu.setEnabled(False)
+        self.edit_menu.addAction(select_behind_button)        
 
         self.create_menu = window_handle.menuBar().addMenu('Create')
 
@@ -45,15 +45,17 @@ class menu:
         create_material_button.triggered.connect(create_material_func)
         self.create_menu.addAction(create_material_button)
 
-        self.create_menu = window_handle.menuBar().addMenu('Assign')
+        self.assign_menu = window_handle.menuBar().addMenu('Assign')
+        self.assign_menu.setEnabled(False)
 
         assign_material_button = QtWidgets.QAction('Material', window_handle)
         assign_material_button.triggered.connect(assign_material_func)
-        self.create_menu.addAction(assign_material_button)
+        self.assign_menu.addAction(assign_material_button)
         
 
     def enable_edit(self):
         self.edit_menu.setEnabled(True)
+        self.assign_menu.setEnabled(True)
 
 class DeselectableTreeWidget(QtWidgets.QTreeWidget):
     def __init__(self, deselect_callback):
@@ -199,6 +201,31 @@ class warning_dialog(QtWidgets.QDialog):
         self.layout.addWidget(message)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
+
+
+class list_select_dialog(QtWidgets.QDialog):
+    def __init__(self, title, things, parent=None):
+        super().__init__(parent)
+
+        self.setWindowTitle(title)
+
+        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)        
+
+        self.things = QtWidgets.QComboBox()
+        for thing in things:
+            self.things.addItem(thing)
+        
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.addWidget(self.things)
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
+    def get_result(self):
+        return self.things.currentText()
 
         
 

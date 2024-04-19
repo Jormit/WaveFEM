@@ -112,7 +112,22 @@ class MyMainWindow(MainWindow):
                 warning.exec()
 
     def assign_material(self):
-        self.model.get_highlighted_parts()
+        selected_parts = self.model.get_highlighted_parts()
+        materials = self.setup.get_materials()
+
+        if len(selected_parts) == 0:
+            warning = warning_dialog("Warning!", "No volumes selected.", self)
+            warning.exec()
+            return
+        
+        if len(materials) == 0:
+            warning = warning_dialog("Warning!", "No materials available.", self)
+            warning.exec()
+            return
+                        
+        dialog = list_select_dialog("Select Material", self.setup.get_materials())
+        if dialog.exec():
+            self.setup.assign_material(selected_parts, dialog.get_result())
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
