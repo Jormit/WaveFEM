@@ -54,7 +54,7 @@ class MyMainWindow(MainWindow):
 
     def load_step(self, filename):
         self.plotter.clear_actors()
-        self.model = model(filename[0])
+        self.model = model(filename)
         self.model.plot(self.plotter)
         self.tree.set_solids(self.model.get_part_ids())
         self.menubar.enable_edit()
@@ -64,13 +64,14 @@ class MyMainWindow(MainWindow):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Step Files (*.stp *.step)")
         if filename[0] == '':
             return
-        self.load_step(filename)
+        self.load_step(filename[0])
 
     def open_file(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Json Config Files (*.json)")
         if filename[0] == '':
             return
         self.setup = setup(filename[0])
+        self.load_step(self.setup.get_step_filename())
 
     def save_file(self):
         print("Saved!")

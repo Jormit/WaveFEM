@@ -4,11 +4,13 @@ import os
 class setup:
     def __init__(self, filename=None):
         self.filename = filename
+        self.path = None
         self.data = {}
 
         if (filename):
             f = open(filename)
             self.data = json.load(f)
+            self.path = os.path.dirname(filename)
 
         else:
             self.data["model_file"] = None
@@ -77,11 +79,15 @@ class setup:
         for id in ids:
             self.data["material_assignments"][id] = material
 
-    def update_from_model(self, model):
+    def update_from_model(self, model):        
         self.data["model_file"] = os.path.basename(model.filename)
-        self.data["material_assignments"] = [""] * model.get_num_parts()
+        if (self.data["material_assignments"] is None):
+            self.data["material_assignments"] = [""] * model.get_num_parts()
 
     def print_setup(self):
         print(self.data)
+
+    def get_step_filename(self):
+        return os.path.join(self.path, self.data["model_file"]).replace("/","\\")
         
     
