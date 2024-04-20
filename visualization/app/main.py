@@ -28,7 +28,7 @@ class MyMainWindow(MainWindow):
 
         # Initialize object view
         self.plotter = QtInteractor(self.horizontal_splitter)
-        self.plotter.enable_surface_point_picking(callback=self.surface_selection_callback, show_point=True, font_size=10)
+        self.plotter.enable_surface_point_picking(callback=self.surface_selection_callback, show_point=True, font_size=10, show_message=False)
         self.signal_close.connect(self.plotter.close)
 
         # Create menu bar
@@ -52,16 +52,19 @@ class MyMainWindow(MainWindow):
             
         self.show()
 
+    def load_step(self, filename):
+        self.plotter.clear_actors()
+        self.model = model(filename[0])
+        self.model.plot(self.plotter)
+        self.tree.set_solids(self.model.get_part_ids())
+        self.menubar.enable_edit()
+        self.setup.update_from_model(self.model)
+
     def import_step(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Step Files (*.stp *.step)")
         if filename[0] == '':
             return
-        self.model = model(filename[0])
-        self.model.plot(self.plotter)
-        self.tree.set_solids(self.model.get_part_ids())
-        self.setup.model_file = os.path.basename(filename[0])
-        self.menubar.enable_edit()
-        self.setup.update_from_model(self.model)
+        self.load_step(filename)
 
     def open_file(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Json Config Files (*.json)")

@@ -1,4 +1,5 @@
 import json
+import os
 
 class setup:
     def __init__(self, filename=None):
@@ -77,7 +78,7 @@ class setup:
             self.data["material_assignments"][id] = material
 
     def update_from_model(self, model):
-        self.data["model_file"] = model.filename
+        self.data["model_file"] = os.path.basename(model.filename)
         self.data["material_assignments"] = [""] * model.get_num_parts()
 
     def print_setup(self):
