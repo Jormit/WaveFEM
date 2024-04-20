@@ -88,18 +88,29 @@ class model_tree:
         self.tree.insertTopLevelItems(0, [self.tree_solids, self.tree_ports, self.tree_materials])
         self.tree.itemClicked.connect(selected_func)
 
-    def set_solids(self, ids):
+    def clear_solids(self):
+        for i in reversed(range(self.tree_solids.childCount())):
+            self.tree_solids.removeChild(self.tree_solids.child(i))
+
+    def add_solids(self, ids):
         widget_items = []
         for id in ids:
-            widget_items.append(QtWidgets.QTreeWidgetItem(["Body"+str(id)]))
+            widget_items.append(QtWidgets.QTreeWidgetItem(["Body"+str(id)]))    
         self.tree_solids.insertChildren(0, widget_items)
 
-    def add_material(self, materials):
+    def clear_materials(self):
+        for i in reversed(range(self.tree_materials.childCount())):
+            self.tree_materials.removeChild(self.tree_materials.child(i))
+
+    def add_materials(self, materials):
         widget_items = []
         for mat in materials:
-            widget_items.append(QtWidgets.QTreeWidgetItem([str(mat['name'])]))
+            widget_items.append(QtWidgets.QTreeWidgetItem([mat]))
         self.tree_materials.insertChildren(0, widget_items)
 
+    def clear_ports(self):
+        for i in reversed(range(self.tree_ports.childCount())):
+            self.tree_ports.removeChild(self.tree_ports.child(i))
 
     def widget_handle(self):
         return self.tree

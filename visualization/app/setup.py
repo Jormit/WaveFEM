@@ -90,4 +90,13 @@ class setup:
     def get_step_filename(self):
         return os.path.join(self.path, self.data["model_file"]).replace("/","\\")
         
+    def has_filename(self):
+        return self.filename is not None
     
+    def set_filename(self, filename):
+        self.filename = filename
+        self.path = os.path.dirname(filename)
+
+    def save_setup(self):
+        with open(self.filename, 'w') as f:
+            json.dump(self.data, f)

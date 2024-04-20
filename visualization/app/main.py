@@ -56,7 +56,8 @@ class MyMainWindow(MainWindow):
         self.plotter.clear_actors()
         self.model = model(filename)
         self.model.plot(self.plotter)
-        self.tree.set_solids(self.model.get_part_ids())
+        self.tree.clear_solids()
+        self.tree.add_solids(self.model.get_part_ids())
         self.menubar.enable_edit()
         self.setup.update_from_model(self.model)
 
@@ -72,10 +73,16 @@ class MyMainWindow(MainWindow):
             return
         self.setup = setup(filename[0])
         self.load_step(self.setup.get_step_filename())
+        self.tree.clear_materials()
+        self.tree.add_materials(self.setup.get_materials())
 
     def save_file(self):
-        print("Saved!")
-        return
+        if not self.setup.has_filename():
+            filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', './', "Json Config Files (*.json)")
+            if filename[0] == '':
+                return
+            self.setup.set_filename(filename[0])
+        self.setup.save_setup()
     
     def remove_splitter_focus(self):
         to_delete = self.left_vertical_splitter.widget(1)
@@ -116,8 +123,9 @@ class MyMainWindow(MainWindow):
 
         while dialog.exec():
             if not self.setup.contains_material(dialog.get_result()["name"]):
-                self.tree.add_material([dialog.get_result()])
                 self.setup.add_material(dialog.get_result())
+                self.tree.clear_materials()
+                self.tree.add_materials(self.setup.get_materials())
                 break
             else:
                 warning = warning_dialog("Warning!", "Material with same name already exists.", dialog)
