@@ -28,7 +28,7 @@ class MyMainWindow(MainWindow):
 
         # Initialize object view
         self.plotter = QtInteractor(self.horizontal_splitter)
-        self.plotter.enable_surface_point_picking(callback=self.surface_selection_callback, show_point=False, show_message=False)
+        self.plotter.enable_surface_point_picking(callback=self.surface_selection_callback, show_point=False, show_message=False, tolerance=0.001)
         self.signal_close.connect(self.plotter.close)
 
         # Create menu bar
