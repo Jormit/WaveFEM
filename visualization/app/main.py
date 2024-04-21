@@ -17,6 +17,7 @@ class MyMainWindow(MainWindow):
         self.model = None
         self.filename = None
         self.setup = setup()
+        self.surface_clicked = False
 
         self.setWindowTitle("FEM3D")
 
@@ -29,6 +30,8 @@ class MyMainWindow(MainWindow):
         # Initialize object view
         self.plotter = QtInteractor(self.horizontal_splitter)
         self.plotter.enable_surface_point_picking(callback=self.surface_selection_callback, show_point=False, show_message=False, tolerance=0.001)
+        self.plotter.track_click_position(callback=self.plotter_click_callback)
+
         self.signal_close.connect(self.plotter.close)
 
         # Create menu bar
@@ -49,6 +52,8 @@ class MyMainWindow(MainWindow):
         self.left_vertical_splitter.addWidget(self.tree.widget_handle())
         self.horizontal_splitter.addWidget(self.left_vertical_splitter)
         self.horizontal_splitter.addWidget(self.plotter.interactor)
+        
+        self.horizontal_splitter.setSizes([int(self.frameGeometry().width() * 0.2), int(self.frameGeometry().width() * 0.8)])
             
         self.show()
 
@@ -113,11 +118,17 @@ class MyMainWindow(MainWindow):
         mouse_vector = mouse_vector / np.linalg.norm(mouse_vector)
         return self.plotter.camera_position[0], mouse_vector
 
+    def plotter_click_callback(self, point):
+        if (self.surface_clicked is False):
+            self.model.remove_highlights()
+        self.surface_clicked = False
+
     def surface_selection_callback(self, point):
         position, mouse_vector = self.get_mouse_vector_and_position(point)
         self.model.remove_highlights()
         self.model.select_faces(position, mouse_vector)
         self.model.cycle_highlighted_face(self.plotter)
+        self.surface_clicked = True
 
     def select_behind(self):
         self.model.cycle_highlighted_face(self.plotter)

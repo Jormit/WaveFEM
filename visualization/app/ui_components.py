@@ -1,5 +1,12 @@
 from qtpy import QtWidgets, QtGui
 
+solids_icon = "./visualization/app/assets/icons/database.png"
+ports_icon = "./visualization/app/assets/icons/slide.png"
+materials_icon = "./visualization/app/assets/icons/category.png"
+save_icon = "./visualization/app/assets/icons/disk.png"
+open_icon = "./visualization/app/assets/icons/folder.png"
+import_icon = "./visualization/app/assets/icons/database-import.png"
+
 class menu:
     def __init__(self,
                  window_handle,
@@ -17,15 +24,18 @@ class menu:
 
         open_button = QtWidgets.QAction('Open', window_handle)
         open_button.setShortcut('Ctrl+O')
+        open_button.setIcon(QtGui.QIcon(open_icon))
         open_button.triggered.connect(open_file_func)
         file_menu.addAction(open_button)
 
         save_button = QtWidgets.QAction('Save', window_handle)
         save_button.setShortcut('Ctrl+S')
+        save_button.setIcon(QtGui.QIcon(save_icon))
         save_button.triggered.connect(save_file_func)
         file_menu.addAction(save_button)
 
         import_button = QtWidgets.QAction('Import .step file', window_handle)
+        import_button.setIcon(QtGui.QIcon(import_icon))        
         import_button.triggered.connect(import_step_func)
         file_menu.addAction(import_button)
 
@@ -48,6 +58,7 @@ class menu:
 
         create_material_button = QtWidgets.QAction('Material', window_handle)
         create_material_button.triggered.connect(create_material_func)
+        create_material_button.setIcon(QtGui.QIcon(materials_icon))
         self.create_menu.addAction(create_material_button)
 
         # Assign ====================================================
@@ -56,11 +67,13 @@ class menu:
 
         assign_material_button = QtWidgets.QAction('Material', window_handle)
         assign_material_button.triggered.connect(assign_material_func)
+        assign_material_button.setIcon(QtGui.QIcon(materials_icon))
         self.assign_menu.addAction(assign_material_button)
 
-        port_material_button = QtWidgets.QAction('Port', window_handle)
-        port_material_button.triggered.connect(assign_port_func)
-        self.assign_menu.addAction(port_material_button)
+        assign_port_button = QtWidgets.QAction('Port', window_handle)
+        assign_port_button.triggered.connect(assign_port_func)
+        assign_port_button.setIcon(QtGui.QIcon(ports_icon))
+        self.assign_menu.addAction(assign_port_button)
         
 
     def enable_edit(self):
@@ -80,12 +93,18 @@ class DeselectableTreeWidget(QtWidgets.QTreeWidget):
 class model_tree:
     def __init__(self, deselected_func, selected_func):
         self.tree = DeselectableTreeWidget(deselected_func)
-        self.tree.setColumnCount(1)
+        self.tree.setColumnCount(2)
         self.tree.setHeaderHidden(True)
+
         self.tree_solids = QtWidgets.QTreeWidgetItem(["Solids"])
         self.tree_ports = QtWidgets.QTreeWidgetItem(["Ports"])
         self.tree_materials = QtWidgets.QTreeWidgetItem(["Materials"])
-        self.tree.insertTopLevelItems(0, [self.tree_solids, self.tree_ports, self.tree_materials])
+        self.tree.insertTopLevelItems(0, [self.tree_solids, self.tree_ports, self.tree_materials])        
+
+        self.tree_solids.setIcon(0, QtGui.QIcon(solids_icon))
+        self.tree_ports.setIcon(0, QtGui.QIcon(ports_icon))
+        self.tree_materials.setIcon(0, QtGui.QIcon(materials_icon))
+
         self.tree.itemClicked.connect(selected_func)
 
     def clear_solids(self):
