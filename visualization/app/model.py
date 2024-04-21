@@ -43,6 +43,11 @@ class model:
     def get_num_parts(self):
         return self.shape.solids().size()
     
+    def reset_shading(self, opacity=1):
+        for handle in self.plot_handles:
+            handle.GetProperty().SetColor(regular_color)
+            handle.GetProperty().SetOpacity(opacity)
+    
     def highlight_part(self, id):
         if (id >= self.get_num_parts()):
             return
@@ -51,14 +56,15 @@ class model:
             tag = self.face_2_tag[f]
             self.highlighted_surfaces.append(tag)
             self.plot_handles[tag].GetProperty().SetColor(highlight_color)
+            self.plot_handles[tag].GetProperty().SetOpacity(1)
+
         self.highlighted_parts.append(id)
 
     def get_highlighted_parts(self):
         return self.highlighted_parts
 
     def remove_highlights(self):
-        for id in self.highlighted_surfaces:
-            self.plot_handles[id].GetProperty().SetColor(regular_color)
+        self.reset_shading()
         self.highlighted_surfaces = []
         self.highlighted_parts = []
 
@@ -70,15 +76,13 @@ class model:
         num_selected_faces = len(self.selected_faces)
         if (num_selected_faces > 0):
             # Remove Previous Selection
-            previous_index = (self.selected_face_index - 1 + num_selected_faces) % num_selected_faces
-            f = self.selected_faces[previous_index]
-            tag = self.face_2_tag[f]
-            self.plot_handles[tag].GetProperty().SetColor(regular_color)
+            self.reset_shading(0.3)
 
             # Add New Selection
             f = self.selected_faces[self.selected_face_index]
             tag = self.face_2_tag[f]
             self.plot_handles[tag].GetProperty().SetColor(highlight_color)
+            self.plot_handles[tag].GetProperty().SetOpacity(1)
 
             bbox = self.shape.faces(tag=tag).val().BoundingBox(0.01)
             print(bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, bbox.zmin, bbox.zmax)

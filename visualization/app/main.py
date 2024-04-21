@@ -96,6 +96,7 @@ class MyMainWindow(MainWindow):
         material_index = self.tree.get_material_index(it)
 
         if (solid_index > -1):
+            self.model.reset_shading(0.3)
             self.model.highlight_part(solid_index)
         
         elif (material_index > -1):
