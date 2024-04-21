@@ -103,6 +103,7 @@ class MyMainWindow(MainWindow):
         if (solid_index > -1):
             self.model.reset_shading(0.3)
             self.model.highlight_part(solid_index)
+            self.menubar.enable_material_assignment()
         
         elif (material_index > -1):
             table = value_table(self.setup.get_material(it.text(0)))
@@ -112,6 +113,7 @@ class MyMainWindow(MainWindow):
         self.remove_splitter_focus()
         if (self.model is not None):
             self.model.remove_highlights()
+        self.menubar.disable_assignment()
 
     def get_mouse_vector_and_position(self, point):
         mouse_vector = np.subtract(point, self.plotter.camera_position[0])
@@ -122,6 +124,7 @@ class MyMainWindow(MainWindow):
         if (self.surface_clicked is False):
             self.model.remove_highlights()
         self.surface_clicked = False
+        self.menubar.disable_assignment()
 
     def surface_selection_callback(self, point):
         position, mouse_vector = self.get_mouse_vector_and_position(point)
@@ -129,6 +132,7 @@ class MyMainWindow(MainWindow):
         self.model.select_faces(position, mouse_vector)
         self.model.cycle_highlighted_face(self.plotter)
         self.surface_clicked = True
+        self.menubar.enable_port_assignment()
 
     def select_behind(self):
         self.model.cycle_highlighted_face(self.plotter)
@@ -149,11 +153,6 @@ class MyMainWindow(MainWindow):
     def assign_material(self):
         selected_parts = self.model.get_highlighted_parts()
         materials = self.setup.get_materials()
-
-        if len(selected_parts) == 0:
-            warning = warning_dialog("Warning!", "No volumes selected.", self)
-            warning.exec()
-            return
         
         if len(materials) == 0:
             warning = warning_dialog("Warning!", "No materials available.", self)
@@ -165,7 +164,8 @@ class MyMainWindow(MainWindow):
             self.setup.assign_material(selected_parts, dialog.get_result())
 
     def assign_port(self):
-        print("Assigned!")
+        bbox = self.model.get_selected_face()
+        print([bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, bbox.zmin, bbox.zmax])
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

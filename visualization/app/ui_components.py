@@ -65,20 +65,33 @@ class menu:
         self.assign_menu = window_handle.menuBar().addMenu('Assign')
         self.assign_menu.setEnabled(False)
 
-        assign_material_button = QtWidgets.QAction('Material', window_handle)
-        assign_material_button.triggered.connect(assign_material_func)
-        assign_material_button.setIcon(QtGui.QIcon(materials_icon))
-        self.assign_menu.addAction(assign_material_button)
+        self.assign_material_button = QtWidgets.QAction('Material', window_handle)
+        self.assign_material_button.triggered.connect(assign_material_func)
+        self.assign_material_button.setIcon(QtGui.QIcon(materials_icon))
+        self.assign_material_button.setEnabled(False)
+        self.assign_menu.addAction(self.assign_material_button)
 
-        assign_port_button = QtWidgets.QAction('Port', window_handle)
-        assign_port_button.triggered.connect(assign_port_func)
-        assign_port_button.setIcon(QtGui.QIcon(ports_icon))
-        self.assign_menu.addAction(assign_port_button)
+        self.assign_port_button = QtWidgets.QAction('Port', window_handle)
+        self.assign_port_button.triggered.connect(assign_port_func)
+        self.assign_port_button.setIcon(QtGui.QIcon(ports_icon))
+        self.assign_port_button.setEnabled(False)
+        self.assign_menu.addAction(self.assign_port_button)
         
-
     def enable_edit(self):
         self.edit_menu.setEnabled(True)
         self.assign_menu.setEnabled(True)
+
+    def enable_port_assignment(self):
+        self.assign_material_button.setEnabled(False)
+        self.assign_port_button.setEnabled(True)
+
+    def enable_material_assignment(self):
+        self.assign_material_button.setEnabled(True)
+        self.assign_port_button.setEnabled(False)
+
+    def disable_assignment(self):
+        self.assign_material_button.setEnabled(False)
+        self.assign_material_button.setEnabled(False)
 
 class DeselectableTreeWidget(QtWidgets.QTreeWidget):
     def __init__(self, deselect_callback):

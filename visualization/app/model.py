@@ -12,7 +12,7 @@ class model:
         self.filename = filename
         self.shape = cq.importers.importStep(filename)
         self.plot_handles = []
-        self.highlighted_surfaces = []
+        self.highlighted_surface = None
         self.highlighted_parts = []
         self.face_2_tag = {}
         self.selected_faces = []
@@ -58,7 +58,6 @@ class model:
         s = self.shape.solids().all()[id]
         for f in s.faces().vals():
             tag = self.face_2_tag[f]
-            self.highlighted_surfaces.append(tag)
             self.plot_handles[tag].GetProperty().SetColor(highlight_color)
             self.plot_handles[tag].GetProperty().SetOpacity(1)
 
@@ -69,7 +68,7 @@ class model:
 
     def remove_highlights(self):
         self.reset_shading()
-        self.highlighted_surfaces = []
+        self.highlighted_surface = None
         self.highlighted_parts = []
 
     def select_faces(self, point, vector):
@@ -85,13 +84,15 @@ class model:
             # Add New Selection
             f = self.selected_faces[self.selected_face_index]
             tag = self.face_2_tag[f]
+            self.highlighted_surface = tag
+
             self.plot_handles[tag].GetProperty().SetColor(highlight_color)
-            self.plot_handles[tag].GetProperty().SetOpacity(1)
-
-            bbox = self.shape.faces(tag=tag).val().BoundingBox(0.01)
-            print(bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, bbox.zmin, bbox.zmax)
-
-            self.highlighted_surfaces.append(tag)
+            self.plot_handles[tag].GetProperty().SetOpacity(1)            
 
             self.selected_face_index = (self.selected_face_index + 1) % num_selected_faces
+
+    def get_selected_face(self):
+        if (self.highlighted_surface is None):
+            return None
+        return self.shape.faces(tag=self.highlighted_surface).val().BoundingBox(0.01)
     
