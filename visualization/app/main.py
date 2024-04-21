@@ -54,9 +54,10 @@ class MyMainWindow(MainWindow):
 
     def load_step(self, filename):
         self.plotter.clear_actors()
-        self.model = model(filename)
-        self.model.plot(self.plotter)
         self.tree.clear_solids()
+
+        self.model = model(filename)
+        self.model.plot(self.plotter)        
         self.tree.add_solids(self.model.get_part_ids())
         self.menubar.enable_edit()
         self.setup.update_from_model(self.model)
@@ -91,11 +92,13 @@ class MyMainWindow(MainWindow):
             to_delete.deleteLater()
 
     def tree_item_selected(self, it, col):
-        if self.tree.is_solid_selection(it):
-            id = int(it.text(0)[-1])
-            self.model.highlight_part(id)
+        solid_index = self.tree.get_solid_index(it)
+        material_index = self.tree.get_material_index(it)
 
-        if self.tree.is_material_selection(it):            
+        if (solid_index > -1):
+            self.model.highlight_part(solid_index)
+        
+        elif (material_index > -1):
             table = value_table(self.setup.get_material(it.text(0)))
             self.left_vertical_splitter.addWidget(table.widget_handle())
 

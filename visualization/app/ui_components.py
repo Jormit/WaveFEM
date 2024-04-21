@@ -1,4 +1,4 @@
-from qtpy import QtWidgets, QtCore, QtGui
+from qtpy import QtWidgets, QtGui
 
 class menu:
     def __init__(self,
@@ -115,11 +115,11 @@ class model_tree:
     def widget_handle(self):
         return self.tree
     
-    def is_solid_selection(self, it):
-        return (it.parent() is self.tree_solids)
+    def get_solid_index(self, it):
+        return self.tree_solids.indexOfChild(it)
     
-    def is_material_selection(self, it):
-        return (it.parent() is self.tree_materials)
+    def get_material_index(self, it):
+        return self.tree_materials.indexOfChild(it)
 
 class value_table:
     def __init__(self, values):

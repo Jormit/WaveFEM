@@ -81,7 +81,7 @@ class setup:
 
     def update_from_model(self, model):        
         self.data["model_file"] = os.path.basename(model.filename)
-        if (self.data["material_assignments"] is None):
+        if (self.data["material_assignments"] is None or len(self.data["material_assignments"]) != model.get_num_parts()):
             self.data["material_assignments"] = [""] * model.get_num_parts()
 
     def print_setup(self):

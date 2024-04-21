@@ -33,8 +33,7 @@ class model:
             vertices, triangles = geo.tesselate_face(face)
             num_vertices = 3 * np.ones((triangles.shape[0], 1), dtype="int")
             mesh = pv.PolyData(vertices, np.hstack((num_vertices, triangles)))
-            self.plot_handles.append(plotter.add_mesh(mesh, opacity=0.85, color=regular_color))
-
+            self.plot_handles.append(plotter.add_mesh(mesh, color=regular_color))
         plotter.add_axes()
         plotter.show()
 
