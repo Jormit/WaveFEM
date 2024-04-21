@@ -1,6 +1,6 @@
 import sys
 import os
-from qtpy import QtWidgets, QtGui, QtCore
+from qtpy import QtWidgets, QtCore
 import numpy as np
 from pyvistaqt import QtInteractor, MainWindow
 
