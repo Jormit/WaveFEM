@@ -5,6 +5,7 @@ import geo
 
 regular_color = [0.5, 0.5, 0.5]
 highlight_color = [1, 0, 1]
+edge_color = [0, 0, 0]
 
 class model:
     def __init__(self, filename):
@@ -33,7 +34,10 @@ class model:
             vertices, triangles = geo.tesselate_face(face)
             num_vertices = 3 * np.ones((triangles.shape[0], 1), dtype="int")
             mesh = pv.PolyData(vertices, np.hstack((num_vertices, triangles)))
+            feat_edges = mesh.extract_feature_edges()
+            feat_edges.clear_data()
             self.plot_handles.append(plotter.add_mesh(mesh, color=regular_color))
+            plotter.add_mesh(feat_edges, color=edge_color)
         plotter.add_axes()
         plotter.show()
 
