@@ -91,8 +91,17 @@ class model:
 
             self.selected_face_index = (self.selected_face_index + 1) % num_selected_faces
 
-    def get_selected_face(self):
+    def get_selected_face_bbox(self):
         if (self.highlighted_surface is None):
             return None
         return self.shape.faces(tag=self.highlighted_surface).val().BoundingBox(0.01)
     
+    def highlight_faces_in_bounding_box(self, bbox):
+        faces = self.shape.faces(cq.selectors.BoxSelector((bbox[0], bbox[2], bbox[4]), (bbox[1], bbox[3], bbox[5]), True)).vals()
+
+        self.reset_shading(0.3)
+        for f in faces:
+            tag = self.face_2_tag[f]
+            self.plot_handles[tag].GetProperty().SetColor(highlight_color)
+            self.plot_handles[tag].GetProperty().SetOpacity(1)
+        

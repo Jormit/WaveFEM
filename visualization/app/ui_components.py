@@ -91,7 +91,7 @@ class menu:
 
     def disable_assignment(self):
         self.assign_material_button.setEnabled(False)
-        self.assign_material_button.setEnabled(False)
+        self.assign_port_button.setEnabled(False)
 
 class DeselectableTreeWidget(QtWidgets.QTreeWidget):
     def __init__(self, deselect_callback):
@@ -144,6 +144,13 @@ class model_tree:
         for i in reversed(range(self.tree_ports.childCount())):
             self.tree_ports.removeChild(self.tree_ports.child(i))
 
+    def set_number_of_ports(self, num):
+        self.clear_ports()
+        widget_items = []
+        for i in range(num):
+            widget_items.append(QtWidgets.QTreeWidgetItem(["Port" + str(i)]))
+        self.tree_ports.insertChildren(0, widget_items)
+
     def widget_handle(self):
         return self.tree
     
@@ -152,6 +159,9 @@ class model_tree:
     
     def get_material_index(self, it):
         return self.tree_materials.indexOfChild(it)
+    
+    def get_port_index(self, it):
+        return self.tree_ports.indexOfChild(it)
 
 class value_table:
     def __init__(self, values):

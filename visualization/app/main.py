@@ -60,6 +60,7 @@ class MyMainWindow(MainWindow):
     def load_step(self, filename):
         self.plotter.clear_actors()
         self.tree.clear_solids()
+        self.tree.clear_ports()
 
         self.model = model(filename)
         self.model.plot(self.plotter)        
@@ -81,6 +82,7 @@ class MyMainWindow(MainWindow):
         self.load_step(self.setup.get_step_filename())
         self.tree.clear_materials()
         self.tree.add_materials(self.setup.get_materials())
+        self.tree.set_number_of_ports(self.setup.num_ports())
 
     def save_file(self):
         if not self.setup.has_filename():
@@ -99,6 +101,7 @@ class MyMainWindow(MainWindow):
     def tree_item_selected(self, it, col):
         solid_index = self.tree.get_solid_index(it)
         material_index = self.tree.get_material_index(it)
+        port_index = self.tree.get_port_index(it)
 
         if (solid_index > -1):
             self.model.reset_shading(0.3)
@@ -108,6 +111,9 @@ class MyMainWindow(MainWindow):
         elif (material_index > -1):
             table = value_table(self.setup.get_material(it.text(0)))
             self.left_vertical_splitter.addWidget(table.widget_handle())
+
+        elif (port_index > -1):
+            self.model.highlight_faces_in_bounding_box(self.setup.get_port(port_index))
 
     def tree_deselected(self):
         self.remove_splitter_focus()
@@ -123,8 +129,8 @@ class MyMainWindow(MainWindow):
     def plotter_click_callback(self, point):
         if (self.surface_clicked is False):
             self.model.remove_highlights()
-        self.surface_clicked = False
-        self.menubar.disable_assignment()
+            self.menubar.disable_assignment()
+        self.surface_clicked = False        
 
     def surface_selection_callback(self, point):
         position, mouse_vector = self.get_mouse_vector_and_position(point)
@@ -164,8 +170,9 @@ class MyMainWindow(MainWindow):
             self.setup.assign_material(selected_parts, dialog.get_result())
 
     def assign_port(self):
-        bbox = self.model.get_selected_face()
-        print([bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, bbox.zmin, bbox.zmax])
+        bbox = self.model.get_selected_face_bbox()
+        self.setup.add_port(bbox)
+        self.tree.set_number_of_ports(self.setup.num_ports())
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

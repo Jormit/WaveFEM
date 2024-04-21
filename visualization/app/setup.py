@@ -1,6 +1,8 @@
 import json
 import os
 
+bbox_padding = 1e-5
+
 class setup:
     def __init__(self, filename=None):
         self.filename = filename
@@ -14,7 +16,7 @@ class setup:
 
         else:
             self.data["model_file"] = None
-            self.data["port_centres"] = None
+            self.data["port_centres"] = []
             self.data["bounding_box_padding"] = None
             self.data["pml_enable"] = None
             self.data["pml_thickness"] = None
@@ -79,7 +81,23 @@ class setup:
         for id in ids:
             self.data["material_assignments"][id] = material
 
-    def update_from_model(self, model):        
+    def add_port(self, bbox):
+        self.data["port_centres"].append([
+            bbox.xmin-bbox_padding,
+            bbox.xmax+bbox_padding,
+            bbox.ymin-bbox_padding,
+            bbox.ymax+bbox_padding,
+            bbox.zmin-bbox_padding,
+            bbox.zmax+bbox_padding])
+
+    def get_port(self, id):        
+        return self.data["port_centres"][id]
+
+    def num_ports(self):
+        return len(self.data["port_centres"])
+
+    def update_from_model(self, model):
+        self.data["port_centres"] = []
         self.data["model_file"] = os.path.basename(model.filename)
         if (self.data["material_assignments"] is None or len(self.data["material_assignments"]) != model.get_num_parts()):
             self.data["material_assignments"] = [""] * model.get_num_parts()
