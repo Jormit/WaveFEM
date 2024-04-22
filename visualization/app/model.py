@@ -37,7 +37,7 @@ class model:
             feat_edges = mesh.extract_feature_edges()
             feat_edges.clear_data()
             self.plot_handles.append(plotter.add_mesh(mesh, color=regular_color))
-            plotter.add_mesh(feat_edges, color=edge_color)
+            plotter.add_mesh(feat_edges, color=edge_color, render_lines_as_tubes=True, line_width=2)
         plotter.add_axes()
         plotter.show()
 
