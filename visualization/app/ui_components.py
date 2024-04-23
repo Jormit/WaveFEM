@@ -1,4 +1,4 @@
-from qtpy import QtWidgets, QtGui
+from qtpy import QtWidgets, QtGui, QtCore
 
 solids_icon = "./visualization/app/assets/icons/database.png"
 ports_icon = "./visualization/app/assets/icons/slide.png"
@@ -162,7 +162,7 @@ class model_tree:
     
     def get_port_index(self, it):
         return self.tree_ports.indexOfChild(it)
-
+    
 class value_table:
     def __init__(self, values):
         self.table = QtWidgets.QTableWidget()
@@ -176,7 +176,34 @@ class value_table:
 
         i = 0
         for key, value in values.items():
-            self.table.setItem(i, 0, QtWidgets.QTableWidgetItem(key))
+            key_item = QtWidgets.QTableWidgetItem(str(key))
+            val_item = QtWidgets.QTableWidgetItem(str(value))
+            key_item.setFlags(key_item.flags() ^ QtCore.Qt.ItemIsEditable)
+            val_item.setFlags(val_item.flags() ^ QtCore.Qt.ItemIsEditable)
+
+            self.table.setItem(i, 0, key_item)
+            self.table.setItem(i, 1, val_item)
+            i+=1
+
+    def widget_handle(self):
+        return self.table
+
+class editable_value_table:
+    def __init__(self, values):
+        self.table = QtWidgets.QTableWidget()
+        self.table.setRowCount(len(values))
+        self.table.setColumnCount(2)
+        self.table.horizontalHeader().setStretchLastSection(True)  
+        self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.table.horizontalHeader().setVisible(False)
+        self.table.verticalHeader().setVisible(False)
+        self.values = values
+
+        i = 0
+        for key, value in values.items():
+            key_item = QtWidgets.QTableWidgetItem(str(key))
+            key_item.setFlags(key_item.flags() ^ QtCore.Qt.ItemIsEditable)
+            self.table.setItem(i, 0, key_item)
 
             if (isinstance(value, float)):
                 val_item = QtWidgets.QLineEdit()
@@ -240,7 +267,7 @@ class material_create_dialog(QtWidgets.QDialog):
             "PEC": False
         }
         
-        self.table = value_table(default_vals)
+        self.table = editable_value_table(default_vals)
         self.layout.addWidget(self.table.widget_handle())
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
