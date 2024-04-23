@@ -180,7 +180,6 @@ class value_table:
             val_item = QtWidgets.QTableWidgetItem(str(value))
             key_item.setFlags(key_item.flags() ^ QtCore.Qt.ItemIsEditable)
             val_item.setFlags(val_item.flags() ^ QtCore.Qt.ItemIsEditable)
-
             self.table.setItem(i, 0, key_item)
             self.table.setItem(i, 1, val_item)
             i+=1
