@@ -1,11 +1,14 @@
 from qtpy import QtWidgets, QtGui, QtCore
 
-solids_icon = "./visualization/app/assets/icons/database.png"
-ports_icon = "./visualization/app/assets/icons/slide.png"
-materials_icon = "./visualization/app/assets/icons/category.png"
 save_icon = "./visualization/app/assets/icons/disk.png"
 open_icon = "./visualization/app/assets/icons/folder.png"
 import_icon = "./visualization/app/assets/icons/database-import.png"
+
+solids_icon = "./visualization/app/assets/icons/database.png"
+ports_icon = "./visualization/app/assets/icons/slide.png"
+materials_icon = "./visualization/app/assets/icons/category.png"
+setup_icon = "./visualization/app/assets/icons/gear.png"
+results_icon = "./visualization/app/assets/icons/document-table.png"
 
 class menu:
     def __init__(self,
@@ -112,11 +115,20 @@ class model_tree:
         self.tree_solids = QtWidgets.QTreeWidgetItem(["Solids"])
         self.tree_ports = QtWidgets.QTreeWidgetItem(["Ports"])
         self.tree_materials = QtWidgets.QTreeWidgetItem(["Materials"])
-        self.tree.insertTopLevelItems(0, [self.tree_solids, self.tree_ports, self.tree_materials])        
+        self.tree_setup = QtWidgets.QTreeWidgetItem(["Setup"])
+        self.tree_results = QtWidgets.QTreeWidgetItem(["Results"])
+        self.tree.insertTopLevelItems(0, [
+            self.tree_solids,
+            self.tree_ports,
+            self.tree_materials,
+            self.tree_setup,
+            self.tree_results])        
 
         self.tree_solids.setIcon(0, QtGui.QIcon(solids_icon))
         self.tree_ports.setIcon(0, QtGui.QIcon(ports_icon))
         self.tree_materials.setIcon(0, QtGui.QIcon(materials_icon))
+        self.tree_setup.setIcon(0, QtGui.QIcon(setup_icon))
+        self.tree_results.setIcon(0, QtGui.QIcon(results_icon))
 
         self.tree.itemClicked.connect(selected_func)
 
@@ -127,7 +139,7 @@ class model_tree:
     def add_solids(self, ids):
         widget_items = []
         for id in ids:
-            widget_items.append(QtWidgets.QTreeWidgetItem(["Body"+str(id)]))    
+            widget_items.append(QtWidgets.QTreeWidgetItem(["Body_"+str(id)]))    
         self.tree_solids.insertChildren(0, widget_items)
 
     def clear_materials(self):
