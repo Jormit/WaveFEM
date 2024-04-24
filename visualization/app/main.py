@@ -144,7 +144,14 @@ class MyMainWindow(MainWindow):
         self.model.cycle_highlighted_face(self.plotter)
 
     def create_material(self):
-        dialog = material_create_dialog(self)
+        default_vals = {
+            "name": "Material",
+            "ep": 1.0,
+            "mu": 1.0,
+            "tand": 0.00,
+            "PEC": False
+        }
+        dialog = table_create_dialog(default_vals, "Create Material", self)
 
         while dialog.exec():
             if not self.setup.contains_material(dialog.get_result()["name"]):

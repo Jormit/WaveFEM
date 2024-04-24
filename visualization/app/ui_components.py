@@ -244,11 +244,11 @@ class editable_value_table:
         return self.values
 
 
-class material_create_dialog(QtWidgets.QDialog):
-    def __init__(self, parent=None):
+class table_create_dialog(QtWidgets.QDialog):
+    def __init__(self, default_vals, title, parent=None):
         super().__init__(parent)
 
-        self.setWindowTitle("Create Material")
+        self.setWindowTitle(title)
 
         QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
 
@@ -257,14 +257,6 @@ class material_create_dialog(QtWidgets.QDialog):
         self.buttonBox.rejected.connect(self.reject)
 
         self.layout = QtWidgets.QVBoxLayout()
-
-        default_vals = {
-            "name": "Material",
-            "ep": 1.0,
-            "mu": 1.0,
-            "tand": 0.00,
-            "PEC": False
-        }
         
         self.table = editable_value_table(default_vals)
         self.layout.addWidget(self.table.widget_handle())
