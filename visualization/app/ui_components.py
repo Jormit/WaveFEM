@@ -198,6 +198,24 @@ class value_table:
 
     def widget_handle(self):
         return self.table
+    
+class value_table_with_edit_and_delete_button():
+    def __init__(self, values):
+        self.widget = QtWidgets.QWidget()
+        self.v_layout = QtWidgets.QVBoxLayout()        
+        self.table = value_table(values)
+        h_layout = QtWidgets.QHBoxLayout()
+        edit_button = QtWidgets.QPushButton("Edit")
+        delete_button = QtWidgets.QPushButton("Delete")
+
+        h_layout.addWidget(edit_button)
+        h_layout.addWidget(delete_button)
+        self.v_layout.addWidget(self.table.widget_handle())
+        self.v_layout.addLayout(h_layout)
+        self.widget.setLayout(self.v_layout)
+
+    def widget_handle(self):
+        return self.widget
 
 class editable_value_table:
     def __init__(self, values):
@@ -255,7 +273,6 @@ class editable_value_table:
             i+=1
         return self.values
 
-
 class table_create_dialog(QtWidgets.QDialog):
     def __init__(self, default_vals, title, parent=None):
         super().__init__(parent)
@@ -295,7 +312,6 @@ class warning_dialog(QtWidgets.QDialog):
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
 
-
 class list_select_dialog(QtWidgets.QDialog):
     def __init__(self, title, things, parent=None):
         super().__init__(parent)
@@ -319,7 +335,4 @@ class list_select_dialog(QtWidgets.QDialog):
 
     def get_result(self):
         return self.things.currentText()
-
-        
-
-
+    

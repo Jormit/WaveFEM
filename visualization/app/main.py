@@ -109,7 +109,7 @@ class MyMainWindow(MainWindow):
             self.menubar.enable_material_assignment()
         
         elif (material_index > -1):
-            table = value_table(self.setup.get_material(it.text(0)))
+            table = value_table_with_edit_and_delete_button(self.setup.get_material(it.text(0)))
             self.left_vertical_splitter.addWidget(table.widget_handle())
 
         elif (port_index > -1):
