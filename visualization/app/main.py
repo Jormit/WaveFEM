@@ -1,6 +1,6 @@
 import sys
 import os
-from qtpy import QtWidgets, QtCore
+from qtpy import QtWidgets, QtCore, QtGui
 import numpy as np
 from pyvistaqt import QtInteractor, MainWindow
 
@@ -22,6 +22,7 @@ class MyMainWindow(MainWindow):
         self.focused_material = None
 
         self.setWindowTitle("FEM3D")
+        self.setWindowIcon(QtGui.QIcon(app_icon))
 
         # Create central frame
         self.left_vertical_splitter = QtWidgets.QSplitter()

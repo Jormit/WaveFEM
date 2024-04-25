@@ -1,5 +1,6 @@
 from qtpy import QtWidgets, QtGui, QtCore
 
+app_icon = "./visualization/app/assets/icons/application-wave.png"
 save_icon = "./visualization/app/assets/icons/disk.png"
 open_icon = "./visualization/app/assets/icons/folder.png"
 import_icon = "./visualization/app/assets/icons/application-import.png"
