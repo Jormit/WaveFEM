@@ -162,7 +162,7 @@ class model_tree:
         self.clear_ports()
         widget_items = []
         for i in range(num):
-            widget_items.append(QtWidgets.QTreeWidgetItem(["Port" + str(i)]))
+            widget_items.append(QtWidgets.QTreeWidgetItem(["Port_" + str(i)]))
         self.tree_ports.insertChildren(0, widget_items)
 
     def widget_handle(self):
