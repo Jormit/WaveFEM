@@ -84,6 +84,11 @@ class setup:
         for id in ids:
             self.data["material_assignments"][id] = material
 
+    def update_material_assignment(self, name, new_name):
+        for i in range(len(self.data["material_assignments"])):
+            if self.data["material_assignments"][i] == name:
+                self.data["material_assignments"][i] = new_name
+
     def add_port(self, bbox):
         self.data["port_centres"].append([
             bbox.xmin-bbox_padding,

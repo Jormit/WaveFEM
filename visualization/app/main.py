@@ -170,6 +170,7 @@ class MyMainWindow(MainWindow):
             elif not self.setup.contains_material(new_name):
                 self.setup.remove_material(self.focused_material)
                 self.setup.add_material(dialog.get_result())
+                self.setup.update_material_assignment(self.focused_material, new_name)
                 break
             else:
                 warning = warning_dialog("Warning!", "Material with same name already exists.", dialog)
@@ -178,7 +179,7 @@ class MyMainWindow(MainWindow):
         if new_name is not None:
             self.tree.clear_materials()
             self.tree.add_materials(self.setup.get_materials())
-            self.remove_splitter_focus()
+            self.remove_splitter_focus()            
 
             self.focused_material = new_name
             table = value_table_with_edit_and_delete_button(self.setup.get_material(self.focused_material), self.edit_material, self.delete_material)
@@ -186,6 +187,7 @@ class MyMainWindow(MainWindow):
 
     def delete_material(self):
         self.setup.remove_material(self.focused_material)
+        self.setup.update_material_assignment(self.focused_material, "")
         self.tree.clear_materials()
         self.tree.add_materials(self.setup.get_materials())
         self.remove_splitter_focus()
