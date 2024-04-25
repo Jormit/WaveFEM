@@ -200,13 +200,16 @@ class value_table:
         return self.table
     
 class value_table_with_edit_and_delete_button():
-    def __init__(self, values):
+    def __init__(self, values, edit_function, delete_function):
         self.widget = QtWidgets.QWidget()
         self.v_layout = QtWidgets.QVBoxLayout()        
         self.table = value_table(values)
         h_layout = QtWidgets.QHBoxLayout()
         edit_button = QtWidgets.QPushButton("Edit")
         delete_button = QtWidgets.QPushButton("Delete")
+
+        edit_button.clicked.connect(edit_function)
+        delete_button.clicked.connect(delete_function)
 
         h_layout.addWidget(edit_button)
         h_layout.addWidget(delete_button)

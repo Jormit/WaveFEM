@@ -6,6 +6,7 @@ from pyvistaqt import QtInteractor, MainWindow
 
 from model import model
 from setup import setup
+import defaults
 from ui_components import *
 
 os.environ["QT_API"] = "pyqt5"
@@ -18,6 +19,7 @@ class MyMainWindow(MainWindow):
         self.filename = None
         self.setup = setup()
         self.surface_clicked = False
+        self.focused_material = None
 
         self.setWindowTitle("FEM3D")
 
@@ -109,7 +111,8 @@ class MyMainWindow(MainWindow):
             self.menubar.enable_material_assignment()
         
         elif (material_index > -1):
-            table = value_table_with_edit_and_delete_button(self.setup.get_material(it.text(0)))
+            self.focused_material = it.text(0)
+            table = value_table_with_edit_and_delete_button(self.setup.get_material(self.focused_material), self.edit_material, self.delete_material)
             self.left_vertical_splitter.addWidget(table.widget_handle())
 
         elif (port_index > -1):
@@ -144,14 +147,7 @@ class MyMainWindow(MainWindow):
         self.model.cycle_highlighted_face(self.plotter)
 
     def create_material(self):
-        default_vals = {
-            "name": "Material",
-            "ep": 1.0,
-            "mu": 1.0,
-            "tand": 0.00,
-            "PEC": False
-        }
-        dialog = table_create_dialog(default_vals, "Create Material", self)
+        dialog = table_create_dialog(dict(defaults.material), "Create Material", self)
 
         while dialog.exec():
             if not self.setup.contains_material(dialog.get_result()["name"]):
@@ -162,6 +158,37 @@ class MyMainWindow(MainWindow):
             else:
                 warning = warning_dialog("Warning!", "Material with same name already exists.", dialog)
                 warning.exec()
+
+    def edit_material(self):
+        dialog = table_create_dialog(self.setup.get_material(self.focused_material), "Edit Material", self)
+        new_name = None
+        while dialog.exec():
+            new_name = dialog.get_result()["name"]
+            if new_name == self.focused_material:
+                self.setup.add_material(dialog.get_result())
+                break
+            elif not self.setup.contains_material(new_name):
+                self.setup.remove_material(self.focused_material)
+                self.setup.add_material(dialog.get_result())
+                break
+            else:
+                warning = warning_dialog("Warning!", "Material with same name already exists.", dialog)
+                warning.exec()
+
+        if new_name is not None:
+            self.tree.clear_materials()
+            self.tree.add_materials(self.setup.get_materials())
+            self.remove_splitter_focus()
+
+            self.focused_material = new_name
+            table = value_table_with_edit_and_delete_button(self.setup.get_material(self.focused_material), self.edit_material, self.delete_material)
+            self.left_vertical_splitter.addWidget(table.widget_handle())
+
+    def delete_material(self):
+        self.setup.remove_material(self.focused_material)
+        self.tree.clear_materials()
+        self.tree.add_materials(self.setup.get_materials())
+        self.remove_splitter_focus()
 
     def assign_material(self):
         selected_parts = self.model.get_highlighted_parts()

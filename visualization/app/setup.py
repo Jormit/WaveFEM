@@ -68,6 +68,9 @@ class setup:
     def add_material(self, material):
         self.data["material_definitions"][material["name"]] = material
 
+    def remove_material(self, name):
+        del self.data["material_definitions"][name]
+
     def get_material(self, name):
         return self.data["material_definitions"][name]
     
