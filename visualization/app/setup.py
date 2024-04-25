@@ -134,3 +134,14 @@ class setup:
         self.data["pml_thickness"] = data["pml_thickness"]
         self.data["frequency"] = data["frequency"]
         self.data["target_elements_per_wavelength"] = data["target_elements_per_wavelength"]
+
+    def get_part_ids(self):
+        ids = []
+        for i in range(len(self.data["material_assignments"])):
+            material = self.data["material_assignments"][i]
+            if material == "":
+                ids.append("Body_{}".format(i))
+            else:
+                ids.append("Body_{} [{}]".format(i, material))
+        print(ids)
+        return ids

@@ -40,9 +40,6 @@ class model:
             plotter.add_mesh(feat_edges, color=edge_color, render_lines_as_tubes=True, line_width=2)
         plotter.add_axes()
         plotter.show()
-
-    def get_part_ids(self):
-        return list(range(self.get_num_parts()))
     
     def get_num_parts(self):
         return self.shape.solids().size()

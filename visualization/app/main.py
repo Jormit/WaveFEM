@@ -65,10 +65,10 @@ class MyMainWindow(MainWindow):
         self.tree.clear_ports()
 
         self.model = model(filename)
-        self.model.plot(self.plotter)        
-        self.tree.add_solids(self.model.get_part_ids())
-        self.menubar.enable_edit()
         self.setup.update_from_model(self.model)
+        self.model.plot(self.plotter)        
+        self.tree.add_solids(self.setup.get_part_ids())
+        self.menubar.enable_edit()        
 
     def import_step(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Step Files (*.stp *.step)")
@@ -197,6 +197,8 @@ class MyMainWindow(MainWindow):
         self.tree.clear_materials()
         self.tree.add_materials(self.setup.get_materials())
         self.remove_splitter_focus()
+        self.tree.clear_solids()
+        self.tree.add_solids(self.setup.get_part_ids())
 
     def assign_material(self):
         selected_parts = self.model.get_highlighted_parts()
@@ -210,6 +212,8 @@ class MyMainWindow(MainWindow):
         dialog = list_select_dialog("Select Material", self.setup.get_materials())
         if dialog.exec():
             self.setup.assign_material(selected_parts, dialog.get_result())
+            self.tree.clear_solids()
+            self.tree.add_solids(self.setup.get_part_ids())
 
     def assign_port(self):
         bbox = self.model.get_selected_face_bbox()
