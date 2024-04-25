@@ -143,5 +143,4 @@ class setup:
                 ids.append("Body_{}".format(i))
             else:
                 ids.append("Body_{} [{}]".format(i, material))
-        print(ids)
         return ids

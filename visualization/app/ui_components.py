@@ -116,7 +116,7 @@ class model_tree:
         self.tree = DeselectableTreeWidget(deselected_func)
         self.tree.setColumnCount(2)
         self.tree.setHeaderHidden(True)
-        self.tree.setColumnWidth(0, 800)
+        self.tree.setColumnWidth(0, 200)
 
         self.tree_solids = QtWidgets.QTreeWidgetItem(["Solids"])
         self.tree_ports = QtWidgets.QTreeWidgetItem(["Ports"])
