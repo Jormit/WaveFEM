@@ -5,6 +5,7 @@ open_icon = "./visualization/app/assets/icons/folder.png"
 import_icon = "./visualization/app/assets/icons/application-import.png"
 close_icon = "./visualization/app/assets/icons/cross.png"
 select_behind_icon = "./visualization/app/assets/icons/arrow-return.png"
+warning_icon = "./visualization/app/assets/icons/exclamation.png"
 
 solids_icon = "./visualization/app/assets/icons/application-resize.png"
 ports_icon = "./visualization/app/assets/icons/slide.png"
@@ -323,6 +324,7 @@ class warning_dialog(QtWidgets.QDialog):
         super().__init__(parent)
 
         self.setWindowTitle(title)
+        self.setWindowIcon(QtGui.QIcon(warning_icon))
 
         QBtn = QtWidgets.QDialogButtonBox.Ok
 
