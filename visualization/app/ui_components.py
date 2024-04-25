@@ -4,10 +4,11 @@ save_icon = "./visualization/app/assets/icons/disk.png"
 open_icon = "./visualization/app/assets/icons/folder.png"
 import_icon = "./visualization/app/assets/icons/application-import.png"
 close_icon = "./visualization/app/assets/icons/cross.png"
+select_behind_icon = "./visualization/app/assets/icons/arrow-return.png"
 
 solids_icon = "./visualization/app/assets/icons/application-resize.png"
 ports_icon = "./visualization/app/assets/icons/slide.png"
-materials_icon = "./visualization/app/assets/icons/category.png"
+materials_icon = "./visualization/app/assets/icons/ice.png"
 setup_icon = "./visualization/app/assets/icons/gear.png"
 results_icon = "./visualization/app/assets/icons/document-table.png"
 
@@ -54,6 +55,7 @@ class menu:
         self.edit_menu.setEnabled(False)
         
         select_behind_button = QtWidgets.QAction('Select Behind', window_handle)
+        select_behind_button.setIcon(QtGui.QIcon(select_behind_icon))
         select_behind_button.setShortcut('b')
         select_behind_button.triggered.connect(select_behind_func)
         self.edit_menu.addAction(select_behind_button)        
