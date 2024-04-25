@@ -2,9 +2,10 @@ from qtpy import QtWidgets, QtGui, QtCore
 
 save_icon = "./visualization/app/assets/icons/disk.png"
 open_icon = "./visualization/app/assets/icons/folder.png"
-import_icon = "./visualization/app/assets/icons/database-import.png"
+import_icon = "./visualization/app/assets/icons/application-import.png"
+close_icon = "./visualization/app/assets/icons/cross.png"
 
-solids_icon = "./visualization/app/assets/icons/database.png"
+solids_icon = "./visualization/app/assets/icons/application-resize.png"
 ports_icon = "./visualization/app/assets/icons/slide.png"
 materials_icon = "./visualization/app/assets/icons/category.png"
 setup_icon = "./visualization/app/assets/icons/gear.png"
@@ -43,6 +44,7 @@ class menu:
         file_menu.addAction(import_button)
 
         exit_button = QtWidgets.QAction('Exit', window_handle)
+        exit_button.setIcon(QtGui.QIcon(close_icon))
         exit_button.setShortcut('Ctrl+Q')
         exit_button.triggered.connect(close_func)
         file_menu.addAction(exit_button)
@@ -175,6 +177,9 @@ class model_tree:
     def get_port_index(self, it):
         return self.tree_ports.indexOfChild(it)
     
+    def is_setup(self, it):
+        return self.tree_setup is it
+    
 class value_table:
     def __init__(self, values):
         self.table = QtWidgets.QTableWidget()
@@ -205,14 +210,18 @@ class value_table_with_edit_and_delete_button():
         self.v_layout = QtWidgets.QVBoxLayout()        
         self.table = value_table(values)
         h_layout = QtWidgets.QHBoxLayout()
+        
         edit_button = QtWidgets.QPushButton("Edit")
         delete_button = QtWidgets.QPushButton("Delete")
 
-        edit_button.clicked.connect(edit_function)
-        delete_button.clicked.connect(delete_function)
+        if edit_function is not None:
+            edit_button.clicked.connect(edit_function)
+            h_layout.addWidget(edit_button)
 
-        h_layout.addWidget(edit_button)
-        h_layout.addWidget(delete_button)
+        if delete_function is not None:
+            delete_button.clicked.connect(delete_function)       
+            h_layout.addWidget(delete_button)
+
         self.v_layout.addWidget(self.table.widget_handle())
         self.v_layout.addLayout(h_layout)
         self.widget.setLayout(self.v_layout)
@@ -255,6 +264,12 @@ class editable_value_table:
                 val_item = QtWidgets.QLineEdit()
                 val_item.setText(str(value))
                 self.table.setCellWidget(i, 1, val_item)
+
+            elif isinstance(value, int):
+                val_item = QtWidgets.QLineEdit()
+                val_item.setValidator(QtGui.QIntValidator())
+                val_item.setText(str(value))
+                self.table.setCellWidget(i, 1, val_item)
             i+=1
 
     def widget_handle(self):
@@ -265,7 +280,7 @@ class editable_value_table:
         for key, value in self.values.items():
             if (isinstance(value, float)):
                 self.values[key] = float(self.table.cellWidget(i, 1).text())
-            if (isinstance(value, bool)):
+            elif (isinstance(value, bool)):
                 text = self.table.cellWidget(i, 1).currentText()
                 if text == "True":
                     self.values[key] = True
@@ -273,6 +288,8 @@ class editable_value_table:
                     self.values[key] = False
             elif isinstance(value, str):
                 self.values[key] = str(self.table.cellWidget(i, 1).text())
+            elif isinstance(value, int):
+                self.values[key] = int(self.table.cellWidget(i, 1).text())
             i+=1
         return self.values
 

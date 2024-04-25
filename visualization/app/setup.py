@@ -1,7 +1,6 @@
 import json
 import os
-
-bbox_padding = 1e-5
+import defaults
 
 class setup:
     def __init__(self, filename=None):
@@ -15,15 +14,7 @@ class setup:
             self.path = os.path.dirname(filename)
 
         else:
-            self.data["model_file"] = None
-            self.data["port_centres"] = []
-            self.data["bounding_box_padding"] = None
-            self.data["pml_enable"] = None
-            self.data["pml_thickness"] = None
-            self.data["frequency"] = None
-            self.data["target_elements_per_wavelength"] = None
-            self.data["material_assignments"] = None
-            self.data["material_definitions"] = {}
+            self.data = defaults.setup
 
     def validate(self):
         valid = True
@@ -93,12 +84,12 @@ class setup:
 
     def add_port(self, bbox):
         self.data["port_centres"].append([
-            bbox.xmin-bbox_padding,
-            bbox.xmax+bbox_padding,
-            bbox.ymin-bbox_padding,
-            bbox.ymax+bbox_padding,
-            bbox.zmin-bbox_padding,
-            bbox.zmax+bbox_padding])
+            bbox.xmin-defaults.bbox_padding,
+            bbox.xmax+defaults.bbox_padding,
+            bbox.ymin-defaults.bbox_padding,
+            bbox.ymax+defaults.bbox_padding,
+            bbox.zmin-defaults.bbox_padding,
+            bbox.zmax+defaults.bbox_padding])
 
     def get_port(self, id):        
         return self.data["port_centres"][id]
@@ -127,3 +118,19 @@ class setup:
     def save_setup(self):
         with open(self.filename, 'w') as f:
             json.dump(self.data, f)
+
+    def get_misc_params(self):
+        return {
+            "bounding_box_padding": self.data["bounding_box_padding"],
+            "pml_enable": self.data["pml_enable"],
+            "pml_thickness": self.data["pml_thickness"],
+            "frequency": self.data["frequency"],
+            "target_elements_per_wavelength": self.data["target_elements_per_wavelength"]
+        }
+    
+    def set_misc_params(self, data):
+        self.data["bounding_box_padding"] = data["bounding_box_padding"]
+        self.data["pml_enable"] = data["pml_enable"]
+        self.data["pml_thickness"] = data["pml_thickness"]
+        self.data["frequency"] = data["frequency"]
+        self.data["target_elements_per_wavelength"] = data["target_elements_per_wavelength"]

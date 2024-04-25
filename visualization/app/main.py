@@ -104,6 +104,7 @@ class MyMainWindow(MainWindow):
         solid_index = self.tree.get_solid_index(it)
         material_index = self.tree.get_material_index(it)
         port_index = self.tree.get_port_index(it)
+        is_setup = self.tree.is_setup(it)
 
         if (solid_index > -1):
             self.model.reset_shading(0.3)
@@ -117,6 +118,11 @@ class MyMainWindow(MainWindow):
 
         elif (port_index > -1):
             self.model.highlight_faces_in_bounding_box(self.setup.get_port(port_index))
+        
+        elif (is_setup):
+            table = value_table_with_edit_and_delete_button(self.setup.get_misc_params(), self.edit_setup, None)
+            self.left_vertical_splitter.addWidget(table.widget_handle())
+            
 
     def tree_deselected(self):
         self.remove_splitter_focus()
@@ -209,6 +215,14 @@ class MyMainWindow(MainWindow):
         bbox = self.model.get_selected_face_bbox()
         self.setup.add_port(bbox)
         self.tree.set_number_of_ports(self.setup.num_ports())
+
+    def edit_setup(self):
+        dialog = table_create_dialog(self.setup.get_misc_params(), "Edit Setup", self)
+        if dialog.exec():
+            self.setup.set_misc_params(dialog.get_result())
+            self.remove_splitter_focus()
+            table = value_table_with_edit_and_delete_button(self.setup.get_misc_params(), self.edit_setup, None)
+            self.left_vertical_splitter.addWidget(table.widget_handle())
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
