@@ -85,6 +85,8 @@ class setup:
             self.data["material_assignments"][id] = material
 
     def update_material_assignment(self, name, new_name):
+        if self.data["material_assignments"] is None:
+            return
         for i in range(len(self.data["material_assignments"])):
             if self.data["material_assignments"][i] == name:
                 self.data["material_assignments"][i] = new_name
