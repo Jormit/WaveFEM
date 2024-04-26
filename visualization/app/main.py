@@ -240,10 +240,8 @@ class main_window(MainWindow):
         else:
             print("Setup is Invalid!")
         
-
     def run_simulation(self):
         print("Running!")
-
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
