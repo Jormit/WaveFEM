@@ -16,6 +16,6 @@ setup = {
         "pml_thickness" : 10.0,
         "frequency" : 5000000.0,
         "target_elements_per_wavelength" : 3,
-        "material_assignments" : None,
+        "material_assignments" : [],
         "material_definitions" : {}
 }

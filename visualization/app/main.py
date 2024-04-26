@@ -46,7 +46,9 @@ class MyMainWindow(MainWindow):
                             self.select_behind,
                             self.create_material,
                             self.assign_material,
-                            self.assign_port)
+                            self.assign_port,
+                            self.validate_simulation,
+                            self.run_simulation)
 
         # Add Tree
         self.tree = model_tree(self.tree_deselected, self.tree_item_selected)
@@ -123,7 +125,6 @@ class MyMainWindow(MainWindow):
         elif (is_setup):
             table = value_table_with_edit_and_delete_button(self.setup.get_misc_params(), self.edit_setup, None)
             self.left_vertical_splitter.addWidget(table.widget_handle())
-            
 
     def tree_deselected(self):
         self.remove_splitter_focus()
@@ -230,6 +231,19 @@ class MyMainWindow(MainWindow):
             self.remove_splitter_focus()
             table = value_table_with_edit_and_delete_button(self.setup.get_misc_params(), self.edit_setup, None)
             self.left_vertical_splitter.addWidget(table.widget_handle())
+
+    def validate_simulation(self):
+        print("\nValidation Result:")
+        is_valid = self.setup.validate()
+        if is_valid:
+            print("Setup is Valid!")
+        else:
+            print("Setup is Invalid!")
+        
+
+    def run_simulation(self):
+        print("Running!")
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

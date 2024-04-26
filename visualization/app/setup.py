@@ -22,37 +22,17 @@ class setup:
             valid = False
             print("Model file not defined!")
 
-        if self.data["port_centres"] is None:
+        if len(self.data["port_centres"]) == 0:
             valid = False
             print("No ports defined!")
 
-        if self.data["bounding_box_padding"] is None:
-            valid = False
-            print("Bounding box not defined!")
-
-        if self.data["pml_enable"] is None:
-            valid = False
-            print("PML option not defined!")
-
-        if self.data["pml_thickness"] is None:
-            valid = False
-            print("PML thickness not defined!")
-
-        if self.data["frequency"] is None:
-            valid = False
-            print("Simulation frequency not defined!")
-
-        if self.data["target_elements_per_wavelength"] is None:
-            valid = False
-            print("Elements per wavelength not defined!")
-
-        if self.data["material_assignments"] is None:
+        if "" in self.data["material_assignments"]:
             valid = False
             print("Material assignments not set!")
 
         if len(self.data["material_definitions"]) == 0:
             valid = False
-            print("Material definitions not set!")            
+            print("Material definitions not set!")
 
         return valid
     

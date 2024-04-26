@@ -7,6 +7,8 @@ import_icon = "./visualization/app/assets/icons/application-import.png"
 close_icon = "./visualization/app/assets/icons/cross.png"
 select_behind_icon = "./visualization/app/assets/icons/arrow-return.png"
 warning_icon = "./visualization/app/assets/icons/exclamation.png"
+validate_icon = "./visualization/app/assets/icons/tick.png"
+run_icon = "./visualization/app/assets/icons/arrow.png"
 
 solids_icon = "./visualization/app/assets/icons/application-resize.png"
 ports_icon = "./visualization/app/assets/icons/slide.png"
@@ -24,7 +26,9 @@ class menu:
                  select_behind_func,
                  create_material_func,
                  assign_material_func,
-                 assign_port_func):
+                 assign_port_func,
+                 validate_simulation_func,
+                 run_simulation_func):
         
         # File ====================================================
         file_menu = window_handle.menuBar().addMenu('File')
@@ -85,6 +89,20 @@ class menu:
         self.assign_port_button.setIcon(QtGui.QIcon(ports_icon))
         self.assign_port_button.setEnabled(False)
         self.assign_menu.addAction(self.assign_port_button)
+
+        # Simulation ====================================================
+        self.simulation_menu = window_handle.menuBar().addMenu('Simulation')
+        self.simulation_menu.setEnabled(True)
+
+        self.validate_button = QtWidgets.QAction('Validate', window_handle)
+        self.validate_button.triggered.connect(validate_simulation_func)
+        self.validate_button.setIcon(QtGui.QIcon(validate_icon))
+        self.simulation_menu.addAction(self.validate_button)
+
+        self.run_button = QtWidgets.QAction('Run', window_handle)
+        self.run_button.triggered.connect(run_simulation_func)
+        self.run_button.setIcon(QtGui.QIcon(run_icon))
+        self.simulation_menu.addAction(self.run_button)
         
     def enable_edit(self):
         self.edit_menu.setEnabled(True)
