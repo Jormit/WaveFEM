@@ -11,7 +11,7 @@ from ui_components import *
 
 os.environ["QT_API"] = "pyqt5"
 
-class MyMainWindow(MainWindow):
+class main_window(MainWindow):
 
     def __init__(self, parent=None):
         QtWidgets.QMainWindow.__init__(self, parent)
@@ -247,7 +247,7 @@ class MyMainWindow(MainWindow):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    window = MyMainWindow()
+    window = main_window()
     window.resize(1200, 700)
     window.show()
     sys.exit(app.exec_())
