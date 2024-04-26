@@ -178,6 +178,8 @@ class MyMainWindow(MainWindow):
                 self.setup.remove_material(self.focused_material)
                 self.setup.add_material(dialog.get_result())
                 self.setup.update_material_assignment(self.focused_material, new_name)
+                self.tree.clear_solids()
+                self.tree.add_solids(self.setup.get_part_ids())
                 break
             else:
                 warning = warning_dialog("Warning!", "Material with same name already exists.", dialog)
