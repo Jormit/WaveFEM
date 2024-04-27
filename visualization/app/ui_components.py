@@ -161,7 +161,8 @@ class model_tree:
         for i in reversed(range(self.tree_solids.childCount())):
             self.tree_solids.removeChild(self.tree_solids.child(i))
 
-    def add_solids(self, ids):
+    def set_solids(self, ids):
+        self.clear_solids()
         widget_items = []
         for id in ids:
             widget_items.append(QtWidgets.QTreeWidgetItem([id]))

@@ -21,7 +21,7 @@ class main_window(MainWindow):
         self.surface_clicked = False
         self.focused_material = None
 
-        self.setWindowTitle("FEM3D")
+        self.setWindowTitle(defaults.title)
         self.setWindowIcon(QtGui.QIcon(app_icon))
 
         # Create central frame
@@ -74,13 +74,12 @@ class main_window(MainWindow):
 
     def load_step(self, filename):
         self.plotter.clear_actors()
-        self.tree.clear_solids()
         self.tree.clear_ports()
 
         self.model = model(filename)
         self.setup.update_from_model(self.model)
         self.model.plot(self.plotter)        
-        self.tree.add_solids(self.setup.get_part_ids())
+        self.tree.set_solids(self.setup.get_part_ids())
         self.menubar.enable_edit()
 
         print("Loaded {}".format(filename))
@@ -105,11 +104,14 @@ class main_window(MainWindow):
 
     def save_file(self):
         if not self.setup.has_filename():
-            filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', './', "Json Config Files (*.json)")
-            if filename[0] == '':
+            filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', './', "Json Config Files (*.json)")[0]
+            if filename == '':
                 return
             self.setup.set_filename(filename)
         self.setup.save_setup()
+
+        if self.model is not None:
+            self.model.move_file_to(self.setup.get_step_filename())
 
         print("Saved {}".format(self.setup.filename))
     
@@ -195,8 +197,7 @@ class main_window(MainWindow):
                 self.setup.remove_material(self.focused_material)
                 self.setup.add_material(dialog.get_result())
                 self.setup.update_material_assignment(self.focused_material, new_name)
-                self.tree.clear_solids()
-                self.tree.add_solids(self.setup.get_part_ids())
+                self.tree.set_solids(self.setup.get_part_ids())
                 break
             else:
                 warning = warning_dialog("Warning!", "Material with same name already exists.", dialog)
@@ -217,8 +218,7 @@ class main_window(MainWindow):
         self.tree.clear_materials()
         self.tree.add_materials(self.setup.get_materials())
         self.remove_splitter_focus()
-        self.tree.clear_solids()
-        self.tree.add_solids(self.setup.get_part_ids())
+        self.tree.set_solids(self.setup.get_part_ids())
 
     def assign_material(self):
         selected_parts = self.model.get_highlighted_parts()
@@ -232,8 +232,7 @@ class main_window(MainWindow):
         dialog = list_select_dialog("Select Material", self.setup.get_materials())
         if dialog.exec():
             self.setup.assign_material(selected_parts, dialog.get_result())
-            self.tree.clear_solids()
-            self.tree.add_solids(self.setup.get_part_ids())
+            self.tree.set_solids(self.setup.get_part_ids())
 
     def assign_port(self):
         bbox = self.model.get_selected_face_bbox()

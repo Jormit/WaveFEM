@@ -2,6 +2,7 @@ import cadquery as cq
 import numpy as np
 import pyvista as pv
 import geo
+import shutil
 
 regular_color = [0.5, 0.5, 0.5]
 highlight_color = [1, 0, 1]
@@ -101,4 +102,8 @@ class model:
             tag = self.face_2_tag[f]
             self.plot_handles[tag].GetProperty().SetColor(highlight_color)
             self.plot_handles[tag].GetProperty().SetOpacity(1)
-        
+
+    def move_file_to(self, filename):
+        if (self.filename != filename):
+            shutil.copyfile(self.filename, filename)
+            self.filename = filename

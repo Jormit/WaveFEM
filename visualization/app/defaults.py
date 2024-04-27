@@ -1,3 +1,5 @@
+title = "FEM3D"
+
 bbox_padding = 1e-5
 
 material = {
