@@ -27,11 +27,14 @@ class main_window(MainWindow):
         # Create central frame
         self.left_vertical_splitter = QtWidgets.QSplitter()
         self.left_vertical_splitter.setOrientation(QtCore.Qt.Orientation.Vertical)
+        self.right_vertical_splitter = QtWidgets.QSplitter()
+        self.right_vertical_splitter.setOrientation(QtCore.Qt.Orientation.Vertical)
+
         self.horizontal_splitter = QtWidgets.QSplitter()
         self.setCentralWidget(self.horizontal_splitter)
 
         # Initialize object view
-        self.plotter = QtInteractor(self.horizontal_splitter)
+        self.plotter = QtInteractor(self.right_vertical_splitter)
         self.plotter.enable_surface_point_picking(callback=self.surface_selection_callback, show_point=False, show_message=False, tolerance=0.001)
         self.plotter.track_click_position(callback=self.plotter_click_callback)
 
@@ -56,7 +59,7 @@ class main_window(MainWindow):
         # Form layout
         self.left_vertical_splitter.addWidget(self.tree.widget_handle())
         self.horizontal_splitter.addWidget(self.left_vertical_splitter)
-        self.horizontal_splitter.addWidget(self.plotter.interactor)
+        self.horizontal_splitter.addWidget(self.right_vertical_splitter)
         
         self.horizontal_splitter.setSizes([int(self.frameGeometry().width() * 0.2), int(self.frameGeometry().width() * 0.8)])
             
