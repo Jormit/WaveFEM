@@ -73,12 +73,15 @@ class main_window(MainWindow):
             
         self.show()
 
-    def load_step(self, filename):
+    def load_step(self, filename, new_project):
         self.plotter.clear_actors()
         self.tree.clear_ports()
 
         self.model = model(filename)
-        self.setup.update_from_model(self.model)
+
+        if (new_project):
+            self.setup.update_from_model(self.model)
+
         self.model.plot(self.plotter)        
         self.tree.set_solids(self.setup.get_part_ids())
         self.menubar.enable_edit()
@@ -89,14 +92,14 @@ class main_window(MainWindow):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Step Files (*.stp *.step)")[0]
         if filename == '':
             return
-        self.load_step(filename)
+        self.load_step(filename, True)
 
     def open_file(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Json Config Files (*.json)")[0]
         if filename == '':
             return
         self.setup = setup(filename)
-        self.load_step(self.setup.get_step_filename())
+        self.load_step(self.setup.get_step_filename(), False)
         self.tree.clear_materials()
         self.tree.add_materials(self.setup.get_materials())
         self.tree.set_number_of_ports(self.setup.num_ports())
