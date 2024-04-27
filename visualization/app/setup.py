@@ -17,13 +17,12 @@ class setup:
             self.data = defaults.setup
 
     def validate(self):
-        print(self.data)
         valid = True
         if self.data["model_file"] is None:
             valid = False
             print("Model file not defined!")
 
-        if len(self.data["port_centres"]) == 0:
+        if len(self.data["port_bounding_boxes"]) == 0:
             valid = False
             print("No ports defined!")
 
@@ -64,7 +63,7 @@ class setup:
                 self.data["material_assignments"][i] = new_name
 
     def add_port(self, bbox):
-        self.data["port_centres"].append([
+        self.data["port_bounding_boxes"].append([
             bbox.xmin-defaults.bbox_padding,
             bbox.xmax+defaults.bbox_padding,
             bbox.ymin-defaults.bbox_padding,
@@ -73,13 +72,13 @@ class setup:
             bbox.zmax+defaults.bbox_padding])
 
     def get_port(self, id):        
-        return self.data["port_centres"][id]
+        return self.data["port_bounding_boxes"][id]
 
     def num_ports(self):
-        return len(self.data["port_centres"])
+        return len(self.data["port_bounding_boxes"])
 
     def update_from_model(self, model):
-        self.data["port_centres"] = []
+        self.data["port_bounding_boxes"] = []
         self.data["model_file"] = os.path.basename(model.filename)
         self.data["material_assignments"] = [""] * model.get_num_parts()
 
