@@ -108,7 +108,7 @@ class main_window(MainWindow):
             filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', './', "Json Config Files (*.json)")
             if filename[0] == '':
                 return
-            self.setup.set_filename(filename[0])
+            self.setup.set_filename(filename)
         self.setup.save_setup()
 
         print("Saved {}".format(self.setup.filename))
