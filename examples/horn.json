@@ -1,13 +1,30 @@
 {
-  "model_file": "horn.step",
-  "port_centres": [ [ 0.0, 0.0, 1.6 ] ],
-  "bounding_box_padding": [ 10, 10, 10 ],
-  "pml_enable": true,
-  "pml_thickness": [ 20, 20, 20 ],
-  "frequency": 5000000000,
-  "target_elements_per_wavelength": 3,
-  "material_assignments": [ "conductor" ],
-  "material_definitions": {
-    "conductor": { "PEC": true }
-  }
+    "model_file": "horn.step",
+    "port_bounding_boxes": [
+        [
+            -31.166010100000012,
+            31.166010099999983,
+            -9.449010099999999,
+            9.449010099999999,
+            1.5999898999999997,
+            1.6000101000000004
+        ]
+    ],
+    "bounding_box_padding": 10.0,
+    "pml_enable": true,
+    "pml_thickness": 20.0,
+    "frequency": 5000000000.0,
+    "target_elements_per_wavelength": 3,
+    "material_assignments": [
+        "Conductor"
+    ],
+    "material_definitions": {
+        "Conductor": {
+            "name": "Conductor",
+            "ep": 1.0,
+            "mu": 1.0,
+            "tand": 0.0,
+            "PEC": true
+        }
+    }
 }

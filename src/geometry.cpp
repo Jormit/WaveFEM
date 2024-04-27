@@ -39,6 +39,11 @@ void box::add_padding(point_3d padding)
 	add_padding(padding.x, padding.y, padding.z);
 }
 
+void box::add_padding(double padding)
+{
+	add_padding(padding, padding, padding);
+}
+
 std::array<size_t, 2> tri::get_edge_nodes(size_t edge) const
 {
 	switch (edge) {

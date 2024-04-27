@@ -36,6 +36,7 @@ struct box
 	double xmin, ymin, zmin, xmax, ymax, zmax;
 	void add_padding(double x, double y, double z);
 	void add_padding(point_3d padding);
+	void add_padding(double padding);
 };
 
 struct node

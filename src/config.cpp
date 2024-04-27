@@ -29,25 +29,19 @@ sim_config::sim_config(std::string filename)
 		json data = json::parse(f);
 
 		model_file = data["model_file"];
-		for (auto& p : data["port_centres"])
+		for (auto& p : data["port_bounding_boxes"])
 		{
-			double x = static_cast<double>(p[0]);
-			double y = static_cast<double>(p[1]);
-			double z = static_cast<double>(p[2]);
-			port_centres.push_back({ x,y,z });
+			double xmin = static_cast<double>(p[0]);
+			double xmax = static_cast<double>(p[1]);
+			double ymin = static_cast<double>(p[2]);
+			double ymax = static_cast<double>(p[3]);
+			double zmin = static_cast<double>(p[4]);
+			double zmax = static_cast<double>(p[5]);
+			port_bounding_boxes.push_back({ xmin, ymin, zmin, xmax, ymax, zmax });
 		}
 
-		bounding_box_padding = { 
-			static_cast<double>(data["bounding_box_padding"][0]),
-			static_cast<double>(data["bounding_box_padding"][1]),
-			static_cast<double>(data["bounding_box_padding"][2]) 
-		};
-
-		pml_thickness = { 
-			static_cast<double>(data["pml_thickness"][0]),
-			static_cast<double>(data["pml_thickness"][1]),
-			static_cast<double>(data["pml_thickness"][2])
-		};
+		bounding_box_padding = static_cast<double>(data["bounding_box_padding"]);
+		pml_thickness = static_cast<double>(data["pml_thickness"]);
 
 		pml_enable = static_cast<bool>(data["pml_enable"]);
 

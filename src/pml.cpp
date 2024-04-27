@@ -2,7 +2,7 @@
 #include "helpers.h"
 #include "material.h"
 
-pml_boundary pml::create(point_3d pml_box_padding)
+pml_boundary pml::create(float pml_box_padding)
 {
 	auto free_space_bounds = mesher_interface::get_bounding_box();
 	auto pml_bounds = free_space_bounds;

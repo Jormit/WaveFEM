@@ -20,7 +20,6 @@ sim sim::create(sim_config config, std::string data_path)
 	mesher_interface::initialize();
 	auto model_ids = mesher_interface::import_model(data_path + config.model_file);
 
-	auto port_bounding_boxes = ports::get_port_bounding_boxes(config.port_centres);
 	auto boundary = mesher_interface::get_bounding_box();
 	boundary.add_padding(config.bounding_box_padding);
 	int boundary_id = mesher_interface::add_box(boundary);
@@ -93,7 +92,7 @@ sim sim::create(sim_config config, std::string data_path)
 
 	base_materials.insert(base_materials.end(), user_materials.begin(), user_materials.end());
 
-	ports ports(port_bounding_boxes, volume_material_map);
+	ports ports(config.port_bounding_boxes, volume_material_map);
 	ports.setup_port_nodes_faces_edges(nodes, boundary_edge_map, boundary_face_map);
 
 	return {

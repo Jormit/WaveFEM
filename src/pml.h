@@ -19,8 +19,7 @@ struct pml_boundary
 
 namespace pml
 {
-	pml_boundary create(point_3d pml_box_padding);
-	pml_boundary setup_pml_boundary(point_3d pml_box_padding);
+	pml_boundary create(float pml_box_padding);
 	std::vector<tet> get_elements(pml_boundary pml_volumes);
 }
 
