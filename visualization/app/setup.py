@@ -17,6 +17,7 @@ class setup:
             self.data = defaults.setup
 
     def validate(self):
+        print(self.data)
         valid = True
         if self.data["model_file"] is None:
             valid = False

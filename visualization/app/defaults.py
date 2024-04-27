@@ -21,3 +21,5 @@ setup = {
         "material_assignments" : [],
         "material_definitions" : {}
 }
+
+sim_location = "./out/build/x64-release/FEM3D.exe"

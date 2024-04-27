@@ -3,6 +3,7 @@ import os
 from qtpy import QtWidgets, QtCore, QtGui
 import numpy as np
 from pyvistaqt import QtInteractor, MainWindow
+import subprocess
 
 from model import model
 from setup import setup
@@ -256,7 +257,9 @@ class main_window(MainWindow):
             print("Setup is Invalid!")
         
     def run_simulation(self):
-        print("Running!")
+        if (self.setup.validate()):
+            print("Running!")        
+            subprocess.call([defaults.sim_location, self.setup.filename])            
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
