@@ -56,8 +56,15 @@ class main_window(MainWindow):
         # Add Tree
         self.tree = model_tree(self.tree_deselected, self.tree_item_selected)
 
+        # Add Console Box
+        self.console = console_box()
+        sys.stdout.write = self.console.print_text
+
         # Form layout
+        self.right_vertical_splitter.addWidget(self.plotter)
+        self.right_vertical_splitter.addWidget(self.console.widget_handle())
         self.left_vertical_splitter.addWidget(self.tree.widget_handle())
+
         self.horizontal_splitter.addWidget(self.left_vertical_splitter)
         self.horizontal_splitter.addWidget(self.right_vertical_splitter)
         
