@@ -81,23 +81,27 @@ class main_window(MainWindow):
         self.setup.update_from_model(self.model)
         self.model.plot(self.plotter)        
         self.tree.add_solids(self.setup.get_part_ids())
-        self.menubar.enable_edit()        
+        self.menubar.enable_edit()
+
+        print("Loaded {}".format(filename))
 
     def import_step(self):
-        filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Step Files (*.stp *.step)")
-        if filename[0] == '':
+        filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Step Files (*.stp *.step)")[0]
+        if filename == '':
             return
-        self.load_step(filename[0])
+        self.load_step(filename)
 
     def open_file(self):
-        filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Json Config Files (*.json)")
-        if filename[0] == '':
+        filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', './', "Json Config Files (*.json)")[0]
+        if filename == '':
             return
-        self.setup = setup(filename[0])
+        self.setup = setup(filename)
         self.load_step(self.setup.get_step_filename())
         self.tree.clear_materials()
         self.tree.add_materials(self.setup.get_materials())
         self.tree.set_number_of_ports(self.setup.num_ports())
+
+        print("Loaded {}".format(filename))
 
     def save_file(self):
         if not self.setup.has_filename():
@@ -106,6 +110,8 @@ class main_window(MainWindow):
                 return
             self.setup.set_filename(filename[0])
         self.setup.save_setup()
+
+        print("Saved {}".format(self.setup.filename))
     
     def remove_splitter_focus(self):
         to_delete = self.left_vertical_splitter.widget(1)

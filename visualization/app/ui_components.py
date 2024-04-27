@@ -384,7 +384,7 @@ class console_box():
     def __init__(self):
         self.box = QtWidgets.QPlainTextEdit()
         self.box.setReadOnly(True)
-        self.box.setFont(QtGui.QFont("Consolas"))
+        self.box.setFont(QtGui.QFont("Consolas", 12))
     
     def print_text(self, text):
         self.box.moveCursor(QtGui.QTextCursor.MoveOperation.End)
