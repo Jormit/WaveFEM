@@ -97,7 +97,7 @@ class setup:
 
     def save_setup(self):
         with open(self.filename, 'w') as f:
-            json.dump(self.data, f)
+            json.dump(self.data, f, indent=4)
 
     def get_misc_params(self):
         return {
