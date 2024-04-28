@@ -8,5 +8,6 @@ struct arg_parser
 
 	std::string data_path;
 	std::string config_filename;
+	std::string raw_config_filename;
 
 };

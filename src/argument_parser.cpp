@@ -16,4 +16,7 @@ arg_parser::arg_parser(int argc, char* argv[])
 
 	config_filename = filename.substr(filename.find_last_of("/\\") + 1);
 	data_path = filename.substr(0, filename.find_last_of("/\\") + 1);
+
+	size_t lastindex = config_filename.find_last_of(".");
+	raw_config_filename = config_filename.substr(0, lastindex);
 }
