@@ -7,7 +7,8 @@ arg_parser::arg_parser(int argc, char* argv[])
 {
 	if (argc < 2)
 	{
-		std::cout << "Not config file provided" << std::endl;
+		std::cout << "Not config file provided!" << std::endl;
+		exit(1);
 	}
 
 	std::string filename(argv[1]);
