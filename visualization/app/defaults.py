@@ -12,7 +12,7 @@ material = {
 
 setup = {
         "model_file" : None,
-        "port_centres" : [],
+        "port_bounding_boxes" : [],
         "bounding_box_padding" : 10.0,
         "pml_enable" : True,
         "pml_thickness" : 10.0,
