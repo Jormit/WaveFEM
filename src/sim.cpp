@@ -82,7 +82,7 @@ sim sim::create(sim_config config, std::string data_path)
 		if (!config.materials[material_id].PEC)
 		{
 			size_t volume_id = i + 1;
-			material_id = base_materials.size() + material_id;
+			material_id = base_materials.size() + material_id - 1;
 			auto mat_elements = mesher_interface::get_volume_elems(volume_id);
 			mat::label_elems(mat_elements, material_id);
 			volume_material_map[volume_id] = material_id;
@@ -138,7 +138,6 @@ void sim::solve_full(double k)
 
 	full_dof_map = fem::_3d::mixed_order::generate_dof_map(volume_elems, boundary_edge_map, boundary_face_map);
 	auto surface_elems = helpers::flatten_vector<tri>(sim_ports.elements);
-
 	for (int p = 0; p < sim_ports.elements.size(); p++)
 	{
 		std::complex<double> k_inc = port_eigen_wave_numbers[p](0);
@@ -162,7 +161,7 @@ void sim::solve_full(double k)
 			port_dof_maps[p],
 			port_eigen_vectors[p].col(0),
 			k_inc
-		);
+		);		
 		full_solutions.push_back(solver.solve(-b));
 	}
 }
