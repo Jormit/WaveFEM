@@ -7,6 +7,7 @@ import subprocess
 
 from model import model
 from setup import setup
+from results import results
 import defaults
 from ui_components import *
 
@@ -19,6 +20,7 @@ class main_window(MainWindow):
         self.model = None
         self.filename = None
         self.setup = setup()
+        self.results = None
         self.surface_clicked = False
         self.focused_material = None
 
@@ -100,10 +102,11 @@ class main_window(MainWindow):
             return
         self.setup = setup(filename)
         self.load_step(self.setup.get_step_filename(), False)
-        self.tree.clear_materials()
-        self.tree.add_materials(self.setup.get_materials())
-        self.tree.set_number_of_ports(self.setup.num_ports())
+        self.results = results(self.setup.results_directory())
 
+        self.tree.set_materials(self.setup.get_materials())
+        self.tree.set_number_of_ports(self.setup.num_ports())
+        self.tree.set_results(self.results.results_list())
         print("Loaded {}".format(filename))
 
     def save_file(self):
@@ -182,8 +185,7 @@ class main_window(MainWindow):
         while dialog.exec():
             if not self.setup.contains_material(dialog.get_result()["name"]):
                 self.setup.add_material(dialog.get_result())
-                self.tree.clear_materials()
-                self.tree.add_materials(self.setup.get_materials())
+                self.tree.set_materials(self.setup.get_materials())
                 break
             else:
                 warning = warning_dialog("Warning!", "Material with same name already exists.", dialog)
@@ -208,8 +210,7 @@ class main_window(MainWindow):
                 warning.exec()
 
         if new_name is not None:
-            self.tree.clear_materials()
-            self.tree.add_materials(self.setup.get_materials())
+            self.tree.set_materials(self.setup.get_materials())
             self.remove_splitter_focus()            
 
             self.focused_material = new_name
@@ -219,8 +220,7 @@ class main_window(MainWindow):
     def delete_material(self):
         self.setup.remove_material(self.focused_material)
         self.setup.update_material_assignment(self.focused_material, "")
-        self.tree.clear_materials()
-        self.tree.add_materials(self.setup.get_materials())
+        self.tree.set_materials(self.setup.get_materials())
         self.remove_splitter_focus()
         self.tree.set_solids(self.setup.get_part_ids())
 

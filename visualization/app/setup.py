@@ -124,3 +124,6 @@ class setup:
             else:
                 ids.append("Body_{} [{}]".format(i, material))
         return ids
+    
+    def results_directory(self):
+        return self.filename.split(".")[0] + "_outputs/"

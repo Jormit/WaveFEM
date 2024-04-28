@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 
 	result_writer::write_2d_field(outputs_dir + "Port Field.txt", port_1_excitation);
 	//result_writer::write_2d_field(outputs_dir + "Slice Solution 2d.txt", face_sol);
-	result_writer::write_3d_field(outputs_dir + "Full Field.txt", full_sol);
+	result_writer::write_3d_field(outputs_dir + "Full Field.3d", full_sol);
 
 	auto s_params = post::eval_s_parameters(current_sim, 30, 30);
 	std::cout << s_params << std::endl;

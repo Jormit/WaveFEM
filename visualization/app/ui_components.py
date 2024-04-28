@@ -172,7 +172,8 @@ class model_tree:
         for i in reversed(range(self.tree_materials.childCount())):
             self.tree_materials.removeChild(self.tree_materials.child(i))
 
-    def add_materials(self, materials):
+    def set_materials(self, materials):
+        self.clear_materials()
         widget_items = []
         for mat in materials:
             widget_items.append(QtWidgets.QTreeWidgetItem([mat]))
@@ -188,6 +189,17 @@ class model_tree:
         for i in range(num):
             widget_items.append(QtWidgets.QTreeWidgetItem(["Port_" + str(i)]))
         self.tree_ports.insertChildren(0, widget_items)
+
+    def clear_results(self):
+        for i in reversed(range(self.tree_results.childCount())):
+            self.tree_results.removeChild(self.tree_results.child(i))
+
+    def set_results(self, results):
+        self.clear_results()
+        widget_items = []
+        for set in results:
+            widget_items.append(QtWidgets.QTreeWidgetItem([set]))
+        self.tree_results.insertChildren(0, widget_items)
 
     def widget_handle(self):
         return self.tree
