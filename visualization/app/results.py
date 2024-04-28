@@ -10,12 +10,12 @@ class dataset_3d:
         self.x, self.y, self.z, self.vec = data_loader.import_3d_field(filename)    
 
     def countour_plot(self, plotter):
-        vec_real = np.real(self.full_field_solution.vec)
+        vec_real = np.real(self.vec)
         vec_real_mag = np.linalg.norm(vec_real, axis=3)
         mesh = pv.StructuredGrid(self.x, self.y, self.z)
         mesh.point_data['values'] = vec_real_mag.ravel(order='F')
         isos = mesh.contour()
-        return plotter.add_mesh(isos)        
+        return plotter.add_mesh(isos, opacity=0.7)
 
 class results:
     def __init__(self, directory):
@@ -30,7 +30,6 @@ class results:
             filename = os.fsdecode(file)
             if filename.endswith(".3d"):
                 self.datasets[filename] = dataset_3d(self.directory + filename)
-                print(filename)
 
     def results_list(self):
         list = []
@@ -40,6 +39,11 @@ class results:
 
     def activate_dataset(self, name, plotter):
         self.active_dataset = self.datasets[name].countour_plot(plotter)
+
+    def deactivate_dataset(self, plotter):
+        if (self.active_dataset is not None):
+            plotter.remove_actor(self.active_dataset)
+            self.active_dataset = None
 
         
         

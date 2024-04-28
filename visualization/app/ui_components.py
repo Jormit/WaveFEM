@@ -135,7 +135,7 @@ class model_tree:
         self.tree = DeselectableTreeWidget(deselected_func)
         self.tree.setColumnCount(2)
         self.tree.setHeaderHidden(True)
-        self.tree.setColumnWidth(0, 200)
+        self.tree.setColumnWidth(0, 150)
 
         self.tree_solids = QtWidgets.QTreeWidgetItem(["Solids"])
         self.tree_ports = QtWidgets.QTreeWidgetItem(["Ports"])
@@ -212,6 +212,9 @@ class model_tree:
     
     def get_port_index(self, it):
         return self.tree_ports.indexOfChild(it)
+    
+    def get_result_index(self, it):
+        return self.tree_results.indexOfChild(it)
     
     def is_setup(self, it):
         return self.tree_setup is it

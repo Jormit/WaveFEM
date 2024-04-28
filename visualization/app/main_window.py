@@ -71,9 +71,10 @@ class main_window(MainWindow):
         self.horizontal_splitter.addWidget(self.left_vertical_splitter)
         self.horizontal_splitter.addWidget(self.right_vertical_splitter)
         
-        self.horizontal_splitter.setSizes([int(self.frameGeometry().width() * 0.2), int(self.frameGeometry().width() * 0.8)])
+        self.horizontal_splitter.setSizes([int(self.frameGeometry().width() * 0.15), int(self.frameGeometry().width() * 0.85)])
+        self.right_vertical_splitter.setSizes([int(self.frameGeometry().width() * 0.8), int(self.frameGeometry().width() * 0.2)])
             
-        self.show()
+        self.showMaximized()
 
     def load_step(self, filename, new_project):
         self.plotter.clear_actors()
@@ -132,6 +133,7 @@ class main_window(MainWindow):
         solid_index = self.tree.get_solid_index(it)
         material_index = self.tree.get_material_index(it)
         port_index = self.tree.get_port_index(it)
+        result_index = self.tree.get_result_index(it)
         is_setup = self.tree.is_setup(it)
 
         if (solid_index > -1):
@@ -151,10 +153,16 @@ class main_window(MainWindow):
             table = value_table_with_edit_and_delete_button(self.setup.get_misc_params(), self.edit_setup, None)
             self.left_vertical_splitter.addWidget(table.widget_handle())
 
+        elif (result_index > -1):
+            self.model.reset_shading(0.3)
+            self.results.activate_dataset(it.text(0), self.plotter)            
+
     def tree_deselected(self):
         self.remove_splitter_focus()
         if (self.model is not None):
             self.model.remove_highlights()
+        if (self.results is not None):
+            self.results.deactivate_dataset(self.plotter)
         self.menubar.disable_assignment()
 
     def get_mouse_vector_and_position(self, point):
@@ -166,6 +174,8 @@ class main_window(MainWindow):
         if (self.surface_clicked is False):
             self.model.remove_highlights()
             self.menubar.disable_assignment()
+        if (self.results is not None):
+            self.results.deactivate_dataset(self.plotter)
         self.surface_clicked = False        
 
     def surface_selection_callback(self, point):
@@ -262,11 +272,12 @@ class main_window(MainWindow):
     def run_simulation(self):
         if (self.setup.validate()):
             print("Running!")        
-            subprocess.call([defaults.sim_location, self.setup.filename])            
+            subprocess.call([defaults.sim_location, self.setup.filename])
+            self.results = results(self.setup.results_directory())
+            self.tree.set_results(self.results.results_list())
+            
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = main_window()
-    window.resize(1200, 700)
-    window.show()
     sys.exit(app.exec_())
