@@ -48,9 +48,7 @@ box mesher_interface::get_bounding_box(int dim, int tag)
 	catch (...)
 	{
 	}
-	box new_box(xmin, ymin, zmin, xmax, ymax, zmax);
-	new_box.add_padding(0.00001, 0.00001, 0.00001);
-	return new_box;
+	return box(xmin, ymin, zmin, xmax, ymax, zmax);
 }
 
 std::vector<box> mesher_interface::get_bounding_box(int dim, std::vector<int> tags)
