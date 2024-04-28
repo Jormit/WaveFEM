@@ -1,16 +1,34 @@
 {
-  "model_file": "ridged waveguide.step",
-  "port_centres": [
-    [ 0, 1, 0 ],
-    [ 0, 99, 0 ]
-  ],
-  "bounding_box_padding": [ 10, 10, 10 ],
-  "pml_enable": false,
-  "pml_thickness": [ 20, 20, 20 ],
-  "frequency": 5000000000,
-  "target_elements_per_wavelength": 3,
-  "material_assignments": [ "conductor" ],
-  "material_definitions": {
-    "conductor": { "PEC": true }
-  }
+    "model_file": "ridged waveguide.step",
+    "port_bounding_boxes": [
+        [
+            -21.5000101,
+            21.5000101,
+            98.9999899,
+            99.0000101,
+            -9.000010099999999,
+            9.000010099999999
+        ],
+        [
+            -21.5000101,
+            21.5000101,
+            0.9999899000000001,
+            1.0000101000000001,
+            -9.000010099999999,
+            9.000010099999999
+        ]
+    ],
+    "bounding_box_padding": 1.0,
+    "pml_enable": false,
+    "pml_thickness": 1.0,
+    "frequency": 5000000000,
+    "target_elements_per_wavelength": 3,
+    "material_assignments": [
+        "conductor"
+    ],
+    "material_definitions": {
+        "conductor": {
+            "PEC": true
+        }
+    }
 }

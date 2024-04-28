@@ -1,22 +1,41 @@
 {
-  "model_file": "waveguide with obstacle.step",
-  "port_centres": [
-    [ 21.0, 0.0, 10.5 ],
-    [ 21.0, 99.0, 10.5 ]
-  ],
-  "bounding_box_padding": [ 10, 10, 10 ],
-  "pml_enable": false,
-  "pml_thickness": [ 20, 20, 20 ],
-  "frequency": 5000000000,
-  "target_elements_per_wavelength": 3,
-  "material_assignments": [ "conductor", "dielectric" ],
-  "material_definitions": {
-    "conductor": { "PEC": true },
-    "dielectric": {
-      "PEC": false,
-      "ep": 5,
-      "mu": 1,
-      "tand": 0.001
+    "model_file": "waveguide with obstacle.step",
+    "port_bounding_boxes": [
+        [
+            0.9999898999999971,
+            41.000010100000004,
+            98.99998989999999,
+            99.00001010000001,
+            0.9999898999999981,
+            20.0000101
+        ],
+        [
+            0.9999898999999971,
+            41.000010100000004,
+            -1.0100000001986028e-05,
+            1.0100000001986028e-05,
+            0.9999898999999981,
+            20.0000101
+        ]
+    ],
+    "bounding_box_padding": 10.0,
+    "pml_enable": false,
+    "pml_thickness": 20.0,
+    "frequency": 5000000000,
+    "target_elements_per_wavelength": 3,
+    "material_assignments": [
+        "conductor",
+        "dielectric"
+    ],
+    "material_definitions": {
+        "conductor": {
+            "PEC": true
+        },
+        "dielectric": {
+            "PEC": false,
+            "ep": 5,
+            "mu": 1,
+            "tand": 0.001
+        }
     }
-  }
 }

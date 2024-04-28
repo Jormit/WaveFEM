@@ -1,15 +1,37 @@
 {
-  "model_file": "microstrip without substrate.step",
-  "port_centres": [
-    [ 0.25, 0, 0.275 ]
-  ],
-  "bounding_box_padding": [ 0.1, 0.1, 0.1 ],
-  "pml_enable": false,
-  "pml_thickness": [ 1, 1, 1 ],
-  "frequency": 28000000000,
-  "target_elements_per_wavelength": 10,
-  "material_assignments": [ "conductor", "conductor", "conductor", "conductor" ],
-  "material_definitions": {
-    "conductor": { "PEC": true }
-  }
+    "model_file": "microstrip without substrate.step",
+    "port_bounding_boxes": [
+        [
+            -1.0000100776482583,
+            1.5000100664723903,
+            -1.0100000000228878e-05,
+            1.0100000000228878e-05,
+            -0.3500100921768902,
+            0.9000100798834323
+        ],
+        [
+            -1.0000100776482583,
+            1.5000100664723903,
+            4.9999899,
+            5.0000101,
+            -0.35001010000000016,
+            0.9000100798834322
+        ]
+    ],
+    "bounding_box_padding": 0.1,
+    "pml_enable": false,
+    "pml_thickness": 1.0,
+    "frequency": 28000000000,
+    "target_elements_per_wavelength": 10,
+    "material_assignments": [
+        "conductor",
+        "conductor",
+        "conductor",
+        "conductor"
+    ],
+    "material_definitions": {
+        "conductor": {
+            "PEC": true
+        }
+    }
 }
