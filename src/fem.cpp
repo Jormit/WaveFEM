@@ -35,8 +35,9 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> fem::solve_eigenproblem(const Eigen:
 	i = 0;
 	for (auto const& [key, val] : eigen_map)
 	{
-		eVecs_sorted.col(i) = val;
-		eVals_sorted(i++) = key;
+		auto reversed_index = eigen_map.size() - i - 1;
+		eVecs_sorted.col(reversed_index) = val;
+		eVals_sorted(reversed_index) = key;
 	}
 
 	return { eVals_sorted, eVecs_sorted };
