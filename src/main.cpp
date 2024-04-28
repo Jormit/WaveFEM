@@ -27,9 +27,9 @@ int main(int argc, char* argv[])
 	std::string outputs_dir = args.data_path + args.raw_config_filename + "_outputs/";
 	std::filesystem::create_directory(outputs_dir);
 
-	result_writer::write_2d_field(outputs_dir + "Port Solution 2d.txt", port_1_excitation);
-	result_writer::write_2d_field(outputs_dir + "Slice Solution 2d.txt", face_sol);
-	result_writer::write_3d_field(outputs_dir + "Full Solution.txt", full_sol);
+	result_writer::write_2d_field(outputs_dir + "Port Field.txt", port_1_excitation);
+	//result_writer::write_2d_field(outputs_dir + "Slice Solution 2d.txt", face_sol);
+	result_writer::write_3d_field(outputs_dir + "Full Field.txt", full_sol);
 
 	auto s_params = post::eval_s_parameters(current_sim, 30, 30);
 	std::cout << s_params << std::endl;
