@@ -29,13 +29,18 @@
     ],
     "material_definitions": {
         "conductor": {
+            "name": "conductor",
+            "ep": 1.0,
+            "mu": 1.0,
+            "tand": 0.0,
             "PEC": true
         },
         "dielectric": {
-            "PEC": false,
+            "name": "dielectric",
             "ep": 5,
             "mu": 1,
-            "tand": 0.001
+            "tand": 0.001,
+            "PEC": false
         }
     }
 }

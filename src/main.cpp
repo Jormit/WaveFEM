@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 
 	auto port_1_excitation = post::eval_port(current_sim, 0, 0, 30, 30);
 	auto face_sol = post::eval_slice(current_sim, slice_plane::XY, 0, 32, 32, current_sim.bbox.zmax);
-	auto full_sol = post::eval_full(current_sim, 0, 30, 30, 30);
+	auto full_sol = post::eval_full(current_sim, 0, 100, 100, 100);
 
 	std::string outputs_dir = args.data_path + args.raw_config_filename + "_outputs/";
 	std::filesystem::create_directory(outputs_dir);

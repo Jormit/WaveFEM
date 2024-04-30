@@ -15,7 +15,7 @@ class dataset_3d:
         mesh = pv.StructuredGrid(self.x, self.y, self.z)
         mesh.point_data['values'] = vec_real_mag.ravel(order='F')
         isos = mesh.contour()
-        return plotter.add_mesh(isos, opacity=0.7)
+        return plotter.add_mesh(isos)
 
 class results:
     def __init__(self, directory):
