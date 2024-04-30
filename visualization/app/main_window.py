@@ -270,11 +270,12 @@ class main_window(MainWindow):
         
     def run_simulation(self):
         if (self.setup.validate()):
-            print("Running!")        
+            print("Running!")
+            if (self.results is not None):
+                self.results.deactivate_dataset(self.plotter)
             subprocess.call([defaults.sim_location, self.setup.filename])
             self.results = results(self.setup.results_directory())
-            self.tree.set_results(self.results.results_list())
-            
+            self.tree.set_results(self.results.results_list())           
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
