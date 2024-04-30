@@ -18,7 +18,6 @@ class main_window(MainWindow):
     def __init__(self, parent=None):
         QtWidgets.QMainWindow.__init__(self, parent)
         self.model = None
-        self.filename = None
         self.setup = setup()
         self.results = None
         self.surface_clicked = False
