@@ -32,7 +32,7 @@
             "name": "conductor",
             "ep": 1.0,
             "mu": 1.0,
-            "tand": 0.00,
+            "tand": 0.0,
             "PEC": true
         },
         "dielectric": {

@@ -19,8 +19,8 @@
         "Conductor"
     ],
     "material_definitions": {
-        "conductor": {
-            "name": "conductor",
+        "Conductor": {
+            "name": "Conductor",
             "ep": 1.0,
             "mu": 1.0,
             "tand": 0.0,

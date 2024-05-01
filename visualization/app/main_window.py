@@ -277,7 +277,8 @@ class main_window(MainWindow):
                 self.results.deactivate_dataset(self.plotter)
             subprocess.call([defaults.sim_location, self.setup.filename])
             self.results = results(self.setup.results_directory())
-            self.tree.set_results(self.results.results_list())           
+            self.tree.set_results(self.results.results_list()) 
+            print("Finished!")
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

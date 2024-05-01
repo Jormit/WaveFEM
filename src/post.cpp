@@ -64,7 +64,7 @@ structured_3d_field_data post::eval_full(const sim& sim_instance, size_t port_nu
 
 		if (!e.has_value())
 		{
-			field.row(i) << NAN, NAN, NAN;
+			field.row(i) << 0, 0, 0;
 			continue;
 		}
 

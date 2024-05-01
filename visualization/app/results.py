@@ -2,7 +2,6 @@ import os
 import numpy as np
 import pyvista as pv
 
-import defaults
 import data_loader
 
 class dataset_3d:
@@ -15,8 +14,8 @@ class dataset_3d:
         mesh = pv.StructuredGrid(self.x, self.y, self.z)
         mesh.point_data['values'] = vec_real_mag.ravel(order='F')
         isos = mesh.contour()
-        return plotter.add_mesh(isos)
-
+        return plotter.add_mesh(isos, opacity=0.7, cmap='jet')
+    
 class results:
     def __init__(self, directory):
         self.directory = directory

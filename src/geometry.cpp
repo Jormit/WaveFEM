@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "geometry.h"
 
 Eigen::Vector2d point_2d::to_Eigen() const
@@ -9,7 +11,6 @@ Eigen::Vector3d point_3d::to_Eigen() const
 {
 	return Eigen::Vector3d(x, y, z);
 }
-
 
 void rectangle::add_padding(double x, double y)
 {
@@ -42,6 +43,21 @@ void box::add_padding(point_3d padding)
 void box::add_padding(double padding)
 {
 	add_padding(padding, padding, padding);
+}
+
+double box::x_dim()
+{
+	return std::abs(xmax - xmin);
+}
+
+double box::y_dim()
+{
+	return std::abs(ymax - ymin);
+}
+
+double box::z_dim()
+{
+	return std::abs(zmax - zmin);
 }
 
 std::array<size_t, 2> tri::get_edge_nodes(size_t edge) const

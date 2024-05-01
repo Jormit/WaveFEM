@@ -37,6 +37,10 @@ struct box
 	void add_padding(double x, double y, double z);
 	void add_padding(point_3d padding);
 	void add_padding(double padding);
+
+	double x_dim();
+	double y_dim();
+	double z_dim();
 };
 
 struct node

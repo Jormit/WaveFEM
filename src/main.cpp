@@ -22,7 +22,10 @@ int main(int argc, char* argv[])
 
 	auto port_1_excitation = post::eval_port(current_sim, 0, 0, 30, 30);
 	auto face_sol = post::eval_slice(current_sim, slice_plane::XY, 0, 32, 32, current_sim.bbox.zmax);
-	auto full_sol = post::eval_full(current_sim, 0, 100, 100, 100);
+	auto full_sol = post::eval_full(current_sim, 0, 
+		static_cast<int> (current_sim.bbox.x_dim() / config.target_mesh_size * 5),
+		static_cast<int> (current_sim.bbox.y_dim() / config.target_mesh_size * 5),
+		static_cast<int> (current_sim.bbox.z_dim() / config.target_mesh_size * 5));
 
 	std::string outputs_dir = args.data_path + args.raw_config_filename + "_outputs/";
 	std::filesystem::create_directory(outputs_dir);
