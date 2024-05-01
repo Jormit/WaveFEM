@@ -275,7 +275,7 @@ class main_window(MainWindow):
             self.save_file()
             if (self.results is not None):
                 self.results.deactivate_dataset(self.plotter)
-            subprocess.call([defaults.sim_location, self.setup.filename])
+            subprocess.run([defaults.sim_location, self.setup.filename])
             self.results = results(self.setup.results_directory())
             self.tree.set_results(self.results.results_list()) 
             print("Finished!")

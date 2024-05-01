@@ -16,6 +16,16 @@ class dataset_3d:
         isos = mesh.contour()
         return plotter.add_mesh(isos, opacity=0.7, cmap='jet')
     
+    def vector_plot(self, plotter):
+        vec_real = np.real(self.vec)
+        vec_real_mag = np.linalg.norm(vec_real, axis=3)
+        print(vec_real.shape)
+        mesh = pv.StructuredGrid(self.x, self.y, self.z)
+        mesh['vectors'] =  np.column_stack((vec_real[:,:,:,0].ravel(order='F'), vec_real[:,:,:,1].ravel(order='F'), vec_real[:,:,:,2].ravel(order='F')))
+        mesh.set_active_vectors("vectors")
+        vector_mesh = mesh.glyph(orient="vectors", factor=200.0)
+        return plotter.add_mesh(vector_mesh)
+    
 class results:
     def __init__(self, directory):
         self.directory = directory
@@ -37,7 +47,7 @@ class results:
         return list
 
     def activate_dataset(self, name, plotter):
-        self.active_dataset = self.datasets[name].countour_plot(plotter)
+        self.active_dataset = self.datasets[name].vector_plot(plotter)
 
     def deactivate_dataset(self, plotter):
         if (self.active_dataset is not None):
