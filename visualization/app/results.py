@@ -18,10 +18,8 @@ class dataset_3d:
     
     def vector_plot(self, plotter):
         vec_real = np.real(self.vec)
-        vec_real_mag = np.linalg.norm(vec_real, axis=3)
-        print(vec_real.shape)
         mesh = pv.StructuredGrid(self.x, self.y, self.z)
-        mesh['vectors'] =  np.column_stack((vec_real[:,:,:,0].ravel(order='F'), vec_real[:,:,:,1].ravel(order='F'), vec_real[:,:,:,2].ravel(order='F')))
+        mesh['vectors'] = np.column_stack((vec_real[:,:,:,0].ravel(order='F'), vec_real[:,:,:,1].ravel(order='F'), vec_real[:,:,:,2].ravel(order='F')))
         mesh.set_active_vectors("vectors")
         vector_mesh = mesh.glyph(orient="vectors", factor=200.0)
         return plotter.add_mesh(vector_mesh)
