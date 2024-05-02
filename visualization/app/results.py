@@ -8,7 +8,7 @@ class dataset_3d:
     def __init__(self, filename):
         self.x, self.y, self.z, self.vec = data_loader.import_3d_field(filename)    
 
-    def countour_plot(self, plotter):
+    def contour_plot(self, plotter):
         vec_real = np.real(self.vec)
         vec_real_mag = np.linalg.norm(vec_real, axis=3)
         mesh = pv.StructuredGrid(self.x, self.y, self.z)
@@ -21,7 +21,7 @@ class dataset_3d:
         mesh = pv.StructuredGrid(self.x, self.y, self.z)
         mesh['vectors'] = np.column_stack((vec_real[:,:,:,0].ravel(order='F'), vec_real[:,:,:,1].ravel(order='F'), vec_real[:,:,:,2].ravel(order='F')))
         mesh.set_active_vectors("vectors")
-        vector_mesh = mesh.glyph(orient="vectors", factor=200.0)
+        vector_mesh = mesh.glyph(orient="vectors")
         return plotter.add_mesh(vector_mesh)
     
 class results:
@@ -45,7 +45,7 @@ class results:
         return list
 
     def activate_dataset(self, name, plotter):
-        self.active_dataset = self.datasets[name].vector_plot(plotter)
+        self.active_dataset = self.datasets[name].contour_plot(plotter)
 
     def deactivate_dataset(self, plotter):
         if (self.active_dataset is not None):
