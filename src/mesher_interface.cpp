@@ -557,3 +557,8 @@ std::vector <int> mesher_interface::get_boundary_surfaces()
 
 	return shared_surfaces;
 }
+
+void mesher_interface::write_vtk(std::string filename)
+{
+	gmsh::write(filename + ".vtk");
+}

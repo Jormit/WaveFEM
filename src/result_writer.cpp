@@ -17,7 +17,7 @@ void result_writer::write_2d_field(std::string filename, structured_2d_field_dat
 	auto grid = data.grid;
 	auto fields = data.field;
 
-	std::ofstream ofs(filename);
+	std::ofstream ofs(filename + ".2d");
 
 	ofs << std::format("{} {}\n", grid.start_point[0], grid.start_point[1]);
 	ofs << std::format("{} {}\n", grid.step_sizes[0], grid.step_sizes[1]);
@@ -35,7 +35,7 @@ void result_writer::write_3d_field(std::string filename, structured_3d_field_dat
 	auto grid = data.grid;
 	auto fields = data.field;
 
-	std::ofstream ofs(filename);	
+	std::ofstream ofs(filename + ".3d");
 
 	ofs << std::format("{} {} {}\n", grid.start_point[0], grid.start_point[1], grid.start_point[2]);
 	ofs << std::format("{} {} {}\n", grid.step_sizes[0], grid.step_sizes[1], grid.step_sizes[2]);

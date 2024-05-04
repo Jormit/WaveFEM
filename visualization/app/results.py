@@ -4,9 +4,22 @@ import pyvista as pv
 
 import data_loader
 
+class dataset_vtk:
+    def __init__(self, filename):
+        self.mesh = pv.read(filename)
+    
+    def plot(self, plotter):
+        return self.mesh_plot(plotter)
+
+    def mesh_plot(self, plotter):
+        return plotter.add_mesh(self.mesh, style="wireframe", opacity=0.5)
+
 class dataset_3d:
     def __init__(self, filename):
-        self.x, self.y, self.z, self.vec = data_loader.import_3d_field(filename)    
+        self.x, self.y, self.z, self.vec = data_loader.import_3d_field(filename)  
+
+    def plot(self, plotter):
+        return self.contour_plot(plotter)          
 
     def contour_plot(self, plotter):
         vec_real = np.real(self.vec)
@@ -38,6 +51,9 @@ class results:
             if filename.endswith(".3d"):
                 self.datasets[filename] = dataset_3d(self.directory + filename)
 
+            if filename.endswith(".vtk"):
+                self.datasets[filename] = dataset_vtk(self.directory + filename)
+
     def results_list(self):
         list = []
         for dataset in self.datasets:
@@ -45,7 +61,7 @@ class results:
         return list
 
     def activate_dataset(self, name, plotter):
-        self.active_dataset = self.datasets[name].contour_plot(plotter)
+        self.active_dataset = self.datasets[name].plot(plotter)
 
     def deactivate_dataset(self, plotter):
         if (self.active_dataset is not None):

@@ -153,7 +153,7 @@ class main_window(MainWindow):
             self.left_vertical_splitter.addWidget(table.widget_handle())
 
         elif (result_index > -1):
-            self.model.reset_shading(0.3)
+            self.model.reset_shading(0.1)
             self.results.activate_dataset(it.text(0), self.plotter)            
 
     def tree_deselected(self):

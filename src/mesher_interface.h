@@ -2,6 +2,7 @@
 #include <vector>
 #include <unordered_set>
 #include <utility>
+#include <string>
 
 #include "geometry.h"
 #include <gmsh/gmsh.h_cwrap>
@@ -78,6 +79,8 @@ namespace mesher_interface {
 	std::optional<tet> get_volume_element_by_coordinate(point_3d points);
 
 	std::vector <int> get_boundary_surfaces();
+
+	void write_vtk(std::string filename);
 }
 
 
