@@ -11,6 +11,8 @@ from results import results
 import defaults
 from ui_components import *
 
+import qdarkstyle
+
 os.environ["QT_API"] = "pyqt5"
 
 class main_window(MainWindow):
@@ -37,6 +39,7 @@ class main_window(MainWindow):
 
         # Initialize object view
         self.plotter = QtInteractor(self.right_vertical_splitter)
+        self.plotter.set_background("white")
         self.plotter.enable_surface_point_picking(callback=self.surface_selection_callback, show_point=False, show_message=False, tolerance=0.001)
         self.plotter.track_click_position(callback=self.plotter_click_callback)
 
@@ -282,5 +285,6 @@ class main_window(MainWindow):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
+    app.setStyleSheet(qdarkstyle.load_stylesheet(qdarkstyle.LightPalette))
     window = main_window()
     sys.exit(app.exec_())
