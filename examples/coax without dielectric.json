@@ -1,0 +1,41 @@
+{
+    "model_file": "coax without dielectric.step",
+    "port_bounding_boxes": [
+        [
+            -4.350010100000001,
+            4.350010100000001,
+            -1.0100000001776358e-05,
+            1.0100000001776358e-05,
+            -4.348658041703554,
+            4.348658041703553
+        ],
+        [
+            -4.350010002769921,
+            4.350010002769921,
+            39.999989899999996,
+            40.000010100000004,
+            -4.348657944503694,
+            4.348657944503695
+        ]
+    ],
+    "bounding_box_padding": 1.0,
+    "pml_enable": false,
+    "pml_thickness": 10.0,
+    "frequency": 10000000000.0,
+    "target_elements_per_wavelength": 10,
+    "material_assignments": [
+        "conductor",
+        "conductor",
+        "conductor",
+        "conductor"
+    ],
+    "material_definitions": {
+        "conductor": {
+            "name": "conductor",
+            "ep": 1.0,
+            "mu": 1.0,
+            "tand": 0.0,
+            "PEC": true
+        }
+    }
+}
