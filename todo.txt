@@ -1,4 +1,14 @@
+1.
+Evaluate H field instead of B field ("Requires scaling B field by permitivity")
+Evaluate fields on a per-volume basis
+Make field evaluation conformal with volume boundaries ("Make it look like HFSS")
+
+2.
+Antenna Radiation Pattern
+
+3.
 Frequency Swept Simulation
 Export s-parameters as snp file
-Antenna Radiation Pattern
+
+4.
 Mesh Refinement
