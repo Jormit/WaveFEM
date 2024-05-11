@@ -22,7 +22,11 @@ int main(int argc, char* argv[])
 
 	auto port_1_excitation = post::eval_port(current_sim, 0, 0, 30, 30);
 	auto face_sol = post::eval_slice(current_sim, slice_plane::XY, 0, 32, 32, current_sim.bbox.zmax);
-	auto full_sol = post::eval_full(current_sim, 0, 
+	auto e_field = post::eval_full_E(current_sim, 0,
+		static_cast<int> (current_sim.bbox.x_dim() / config.target_mesh_size * 5),
+		static_cast<int> (current_sim.bbox.y_dim() / config.target_mesh_size * 5),
+		static_cast<int> (current_sim.bbox.z_dim() / config.target_mesh_size * 5));
+	auto b_field = post::eval_full_B(current_sim, 0,
 		static_cast<int> (current_sim.bbox.x_dim() / config.target_mesh_size * 5),
 		static_cast<int> (current_sim.bbox.y_dim() / config.target_mesh_size * 5),
 		static_cast<int> (current_sim.bbox.z_dim() / config.target_mesh_size * 5));
@@ -32,7 +36,8 @@ int main(int argc, char* argv[])
 
 	result_writer::write_2d_field(outputs_dir + "Port Field", port_1_excitation);
 	//result_writer::write_2d_field(outputs_dir + "Slice Solution 2d.txt", face_sol);
-	result_writer::write_3d_field(outputs_dir + "Full Field", full_sol);
+	result_writer::write_3d_field(outputs_dir + "E Field", e_field);
+	result_writer::write_3d_field(outputs_dir + "B Field", b_field);
 	mesher_interface::write_vtk(outputs_dir + "mesh");
 
 	auto s_params = post::eval_s_parameters(current_sim, 30, 30);

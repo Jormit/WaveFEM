@@ -50,7 +50,7 @@ structured_2d_field_data post::eval_port_from_3d(const sim& sim_instance, size_t
 	return { grid, field };
 }
 
-structured_3d_field_data post::eval_full(const sim& sim_instance, size_t port_num, size_t num_x, size_t num_y, size_t num_z)
+structured_3d_field_data post::eval_full_E(const sim& sim_instance, size_t port_num, size_t num_x, size_t num_y, size_t num_z)
 {
 	auto points = generate_grid_points(sim_instance.bbox, num_x, num_y, num_z);
 
@@ -69,6 +69,33 @@ structured_3d_field_data post::eval_full(const sim& sim_instance, size_t port_nu
 		}
 
 		auto elem_field = fem::_3d::mixed_order::eval_elem(sim_instance.nodes,
+			e.value(), p, sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
+
+		field.row(i) << elem_field(0), elem_field(1), elem_field(2);
+	}
+
+	return { grid, field };
+}
+
+structured_3d_field_data post::eval_full_B(const sim& sim_instance, size_t port_num, size_t num_x, size_t num_y, size_t num_z)
+{
+	auto points = generate_grid_points(sim_instance.bbox, num_x, num_y, num_z);
+
+	structured_grid_3d grid(sim_instance.bbox, num_x, num_y, num_z);
+	Eigen::MatrixX3cd field(points.size(), 3);
+
+	for (size_t i = 0; i < points.size(); i++)
+	{
+		const auto p = points[i];
+		auto e = mesher_interface::get_volume_element_by_coordinate(p);
+
+		if (!e.has_value())
+		{
+			field.row(i) << 0, 0, 0;
+			continue;
+		}
+
+		auto elem_field = std::complex<double>{ 0, 1 } * fem::_3d::mixed_order::eval_elem_curl(sim_instance.nodes,
 			e.value(), p, sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
 
 		field.row(i) << elem_field(0), elem_field(1), elem_field(2);

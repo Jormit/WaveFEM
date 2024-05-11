@@ -93,6 +93,9 @@ namespace fem
 			Eigen::Vector3cd eval_elem(const std::vector<node>& nodes, const tet& e, const point_3d& eval_point,
 				const dof_map& dof_map, const Eigen::VectorXcd& solution);
 
+			Eigen::Vector3cd eval_elem_curl(const std::vector<node>& nodes, const tet& e, const point_3d& eval_point,
+				const dof_map& dof_map, const Eigen::VectorXcd& solution);
+
 		}
 	}
 }

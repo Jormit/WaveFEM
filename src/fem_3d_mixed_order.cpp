@@ -339,3 +339,28 @@ Eigen::Vector3cd fem::_3d::mixed_order::eval_elem(const std::vector<node>& nodes
 
 	return value;
 }
+
+Eigen::Vector3cd fem::_3d::mixed_order::eval_elem_curl(const std::vector<node>& nodes, const tet& e,
+	const point_3d& eval_point, const dof_map& dof_map, const Eigen::VectorXcd& solution)
+{
+	Eigen::Matrix<double, 4, 3> coords = e.coordinate_matrix(nodes);
+	Eigen::Vector3d modified_eval_point = eval_point.to_Eigen();
+
+	auto simplex_coeff = fem::_3d::simplex_coefficients(coords);
+	auto nabla_lambda = fem::_3d::nabla_lambda(simplex_coeff);
+	auto lambda = fem::_3d::lambda(modified_eval_point, simplex_coeff);
+
+	auto func = basis_curl(lambda, nabla_lambda);
+
+	Eigen::Vector3cd value = Eigen::Vector3cd::Zero();
+	for (size_t i = 0; i < 20; i++)
+	{
+		auto dof_pair = global_dof_pair(e, i);
+		if (dof_map.contains(dof_pair))
+		{
+			value += func.row(i) * solution(dof_map.at(dof_pair));
+		}
+	}
+
+	return value;
+}
