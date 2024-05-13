@@ -14,11 +14,11 @@ void mesher_interface::initialize() {
 
 std::vector<int> mesher_interface::import_model(const std::string& filename)
 {
-	std::vector<std::pair<int, int> > v;
-	gmsh::model::occ::importShapes(filename, v);
+	gmsh::vectorpair imported_dim_tags;
+	gmsh::model::occ::importShapes(filename, imported_dim_tags);
 	gmsh::model::occ::synchronize();
 	std::vector<int> ret;
-	std::transform(v.cbegin(), v.cend(), std::back_inserter(ret), [](std::pair<int, int> c) { return c.second; });
+	std::transform(imported_dim_tags.cbegin(), imported_dim_tags.cend(), std::back_inserter(ret), [](std::pair<int, int> c) { return c.second; });
 	return ret;
 }
 
@@ -63,10 +63,10 @@ std::vector<box> mesher_interface::get_bounding_box(int dim, std::vector<int> ta
 
 std::vector<int> mesher_interface::get_entities_in_bounding_box(int dim, box box)
 {
-	std::vector<std::pair<int, int>> entities;
-	gmsh::model::getEntitiesInBoundingBox(box.xmin, box.ymin, box.zmin, box.xmax, box.ymax, box.zmax, entities, dim);
+	gmsh::vectorpair obj_dim_tags;
+	gmsh::model::getEntitiesInBoundingBox(box.xmin, box.ymin, box.zmin, box.xmax, box.ymax, box.zmax, obj_dim_tags, dim);
 	std::vector<int> ids;
-	std::transform(entities.cbegin(), entities.cend(), std::back_inserter(ids), [](std::pair<int, int> o) { return o.second; });
+	std::transform(obj_dim_tags.cbegin(), obj_dim_tags.cend(), std::back_inserter(ids), [](std::pair<int, int> o) { return o.second; });
 	return ids;
 }
 
@@ -117,37 +117,37 @@ std::vector<int> mesher_interface::subtract(int obj, int tool, bool remove_tool)
 
 std::vector<int> mesher_interface::subtract(std::vector<int> obj, int tool, bool remove_tool)
 {
-	std::vector<std::pair<int, int>> ov;
-	std::vector<std::vector<std::pair<int, int>>> ovv;
-	std::vector<std::pair<int, int>> objs;
-	std::transform(obj.cbegin(), obj.cend(), std::back_inserter(objs), [](int o) { return std::pair<int, int>{ 3, o }; });
+	gmsh::vectorpair out_dim_tags;
+	std::vector<gmsh::vectorpair> out_dim_tags_map;
+	gmsh::vectorpair in_dim_tags;
+	std::transform(obj.cbegin(), obj.cend(), std::back_inserter(in_dim_tags), [](int o) { return std::pair<int, int>{ 3, o }; });
 
-	gmsh::model::occ::cut(objs, { {3, tool} }, ov, ovv, -1, true, remove_tool);
+	gmsh::model::occ::cut(in_dim_tags, { {3, tool} }, out_dim_tags, out_dim_tags_map, -1, true, remove_tool);
 	gmsh::model::occ::synchronize();
 
 	std::vector<int> new_ids;
-	std::transform(ov.cbegin(), ov.cend(), std::back_inserter(new_ids), [](std::pair<int, int> o) { return o.second; });
+	std::transform(out_dim_tags.cbegin(), out_dim_tags.cend(), std::back_inserter(new_ids), [](std::pair<int, int> o) { return o.second; });
 
 	return new_ids;
 }
 
 int mesher_interface::fuse_surfaces(std::vector<int> obj, bool remove_obj)
 {
-	std::vector<std::pair<int, int>> objs;
+	gmsh::vectorpair objs;
 	std::transform(obj.cbegin(), obj.cend(), std::back_inserter(objs), [](int o) { return std::pair<int, int>{ 2, o }; });
 
-	std::vector<std::pair<int, int>> objs_out;
-	std::vector<std::vector<std::pair<int, int>>> objs_out_map;
-	gmsh::model::occ::fuse(objs, objs, objs_out, objs_out_map, -1, false, false);
+	gmsh::vectorpair out_dim_tags;
+	std::vector<gmsh::vectorpair> out_dim_tags_map;
+	gmsh::model::occ::fuse(objs, objs, out_dim_tags, out_dim_tags_map, -1, false, false);
 	gmsh::model::occ::synchronize();
 
-	if (objs_out.size() > 1)
+	if (out_dim_tags.size() > 1)
 	{
 		std::cerr << "Requested fuse operation failed because objects were not touching!" << std::endl;
 		exit(1);
 	}
 
-	return objs_out[0].second;
+	return out_dim_tags[0].second;
 }
 
 std::vector<int> mesher_interface::fuse_surfaces(std::vector <std::vector<int>> obj, bool remove_obj)
@@ -339,38 +339,6 @@ std::vector<std::vector<tet>> mesher_interface::get_volume_elems(std::vector<int
 	return elems_to_return;
 }
 
-int mesher_interface::get_surface_from_com(point_3d p)
-{
-	std::vector<std::pair<int, int>> entities;
-	gmsh::model::occ::getEntities(entities, 2);
-
-	for (auto e : entities)
-	{
-		double x, y, z;
-		gmsh::model::occ::getCenterOfMass(e.first, e.second, x, y, z);
-		if (helpers::is_approx_equal(p.x, x) && helpers::is_approx_equal(p.y, y) && helpers::is_approx_equal(p.z, z))
-		{
-			return e.second;
-		}
-	}
-	return -1;
-}
-
-std::vector<int> mesher_interface::get_surface_from_com(std::vector<point_3d> coms)
-{
-	std::vector<int> ids;
-
-	for (const auto& p : coms)
-	{
-		auto id = get_surface_from_com(p);
-		if (id != -1)
-		{
-			ids.push_back(id);
-		}
-	}
-	return ids;
-}
-
 tri mesher_interface::assemble_tri(size_t n1, size_t n2, size_t n3)
 {
 	std::array<size_t, 3> nodes{ n1, n2, n3 };
@@ -541,12 +509,29 @@ std::optional<tet> mesher_interface::get_volume_element_by_coordinate(point_3d p
 	return assemble_tet(n1, n2, n3, n4);
 }
 
+std::optional<size_t> mesher_interface::get_volume_entity_by_coordinate(point_3d point)
+{
+	gmsh::vectorpair dim_tags;
+	gmsh::model::getEntities(dim_tags, 3);
+
+	for (const auto& obj : dim_tags)
+	{
+		if (gmsh::model::isInside(3, obj.second, { point.x, point.y, point.z }, false))
+		{
+			return obj.second;
+		}
+	}
+
+	return {};
+
+}
+
 std::vector <int> mesher_interface::get_boundary_surfaces()
 {
-	std::vector<std::pair<int, int> > all_3d_dim_tags;
+	gmsh::vectorpair all_3d_dim_tags;
 	gmsh::model::getEntities(all_3d_dim_tags, 3);
 
-	std::vector<std::pair<int, int> > shared_dim_tags;
+	gmsh::vectorpair shared_dim_tags;
 	gmsh::model::getBoundary(all_3d_dim_tags, shared_dim_tags, true, false, false);
 	
 	std::vector <int> shared_surfaces;

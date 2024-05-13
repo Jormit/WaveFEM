@@ -15,33 +15,14 @@ int main(int argc, char* argv[])
 
 	auto current_sim = sim::create (config, args.data_path);
 
-	mesher_interface::view_model();
+	// mesher_interface::view_model();
 
 	current_sim.solve_ports(config.simulation_wavenumber);
 	current_sim.solve_full(config.simulation_wavenumber);
 
-	auto port_1_excitation = post::eval_port(current_sim, 0, 0, 30, 30);
-	auto face_sol = post::eval_slice(current_sim, slice_plane::XY, 0, 32, 32, current_sim.bbox.zmax);
-	auto e_field = post::eval_full_E(current_sim, 0,
-		static_cast<int> (current_sim.bbox.x_dim() / config.target_mesh_size * 5),
-		static_cast<int> (current_sim.bbox.y_dim() / config.target_mesh_size * 5),
-		static_cast<int> (current_sim.bbox.z_dim() / config.target_mesh_size * 5));
-	auto b_field = post::eval_full_B(current_sim, 0,
-		static_cast<int> (current_sim.bbox.x_dim() / config.target_mesh_size * 5),
-		static_cast<int> (current_sim.bbox.y_dim() / config.target_mesh_size * 5),
-		static_cast<int> (current_sim.bbox.z_dim() / config.target_mesh_size * 5));
-
 	std::string outputs_dir = args.data_path + args.raw_config_filename + "_outputs/";
 	std::filesystem::create_directory(outputs_dir);
-
-	result_writer::write_2d_field(outputs_dir + "Port Field", port_1_excitation);
-	//result_writer::write_2d_field(outputs_dir + "Slice Solution 2d.txt", face_sol);
-	result_writer::write_3d_field(outputs_dir + "E Field", e_field);
-	result_writer::write_3d_field(outputs_dir + "B Field", b_field);
-	mesher_interface::write_vtk(outputs_dir + "mesh");
-
-	auto s_params = post::eval_s_parameters(current_sim, 30, 30);
-	std::cout << s_params << std::endl;
+	current_sim.generate_outputs(outputs_dir, config.simulation_wavenumber, config);
 
 	return 0;
 }

@@ -1,11 +1,15 @@
+#pragma once
+
 #include <complex>
 #include <iostream>
 #include <unordered_map>
+#include <format>
 
 #include "sim.h"
 #include "mesher_interface.h"
 #include "helpers.h"
 #include "pml.h"
+#include "result_writer.h"
 
 sim::sim(box bbox, std::vector<material> materials, std::vector<node> nodes, std::vector<tet> volume_elems,
 	std::unordered_map<size_t, int> boundary_edge_map, std::unordered_map<size_t, int> boundary_face_map, ports ports) :
@@ -164,4 +168,37 @@ void sim::solve_full(double k)
 		);		
 		full_solutions.push_back(solver.solve(-b));
 	}
+}
+
+void sim::generate_outputs(std::string directory, sim_config config)
+{
+	for (int p = 0; p < sim_ports.elements.size(); p++)
+	{
+		// Save port fields
+		auto filename = std::format("Port {} Field", p);
+
+		auto port_excitation = post::eval_port(*this, p, 0, 30, 30);
+		
+		result_writer::write_2d_field(directory + filename, port_excitation);
+
+		// Save 3d fields
+		auto E_filename = std::format("E Field [Port {}]", p);
+		auto B_filename = std::format("H Field [Port {}]", p);
+
+		auto e_field = post::eval_full_E(*this, p,
+			static_cast<int> (bbox.x_dim() / config.target_mesh_size * 5),
+			static_cast<int> (bbox.y_dim() / config.target_mesh_size * 5),
+			static_cast<int> (bbox.z_dim() / config.target_mesh_size * 5));
+
+		auto b_field = post::eval_full_B(*this, p,
+			static_cast<int> (bbox.x_dim() / config.target_mesh_size * 5),
+			static_cast<int> (bbox.y_dim() / config.target_mesh_size * 5),
+			static_cast<int> (bbox.z_dim() / config.target_mesh_size * 5));
+
+		result_writer::write_3d_field(directory + E_filename, e_field);
+		result_writer::write_3d_field(directory + B_filename, b_field);
+	}
+
+	auto s_params = post::eval_s_parameters(*this, 30, 30);
+	std::cout << s_params << std::endl;
 }

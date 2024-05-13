@@ -88,6 +88,8 @@ structured_3d_field_data post::eval_full_B(const sim& sim_instance, size_t port_
 	{
 		const auto p = points[i];
 		auto e = mesher_interface::get_volume_element_by_coordinate(p);
+		auto obj = mesher_interface::get_volume_entity_by_coordinate(p);
+
 
 		if (!e.has_value())
 		{

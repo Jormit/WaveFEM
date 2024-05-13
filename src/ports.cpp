@@ -4,12 +4,6 @@
 
 #include <iostream>
 
-std::vector<box> ports::get_port_bounding_boxes(std::vector<point_3d> points)
-{
-	auto ids = mesher_interface::get_surface_from_com(points);
-	return mesher_interface::get_bounding_box(2, ids);
-}
-
 ports::ports(std::vector<box> boxes, std::unordered_map<size_t, size_t> volume_material_map)
 {
 	entity_ids = mesher_interface::get_entities_in_bounding_box(2, boxes);

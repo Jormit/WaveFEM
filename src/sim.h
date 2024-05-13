@@ -20,10 +20,12 @@ struct sim
 
 	void solve_ports(double k);
 	void solve_full(double k);
+	void generate_outputs(std::string directory, sim_config config);
 
 	// Input
 	box bbox;
 	std::vector<material> materials;
+	std::unordered_map<size_t, size_t> volume_material_map;
 	std::vector<node> nodes;
 	std::vector<tet> volume_elems;
 	std::unordered_map<size_t, int> boundary_edge_map;

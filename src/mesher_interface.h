@@ -56,9 +56,6 @@ namespace mesher_interface {
 	std::vector<tet> get_volume_elems(int id);
 	std::vector<std::vector<tet>> get_volume_elems(std::vector<int> id);
 
-	int get_surface_from_com(point_3d);
-	std::vector<int> get_surface_from_com(std::vector<point_3d> coms);
-
 	tri assemble_tri(size_t n1, size_t n2, size_t n3);
 	std::vector<tri> get_surface_elems(int id);
 	std::vector<std::vector<tri>> get_surface_elems(std::vector<int> ids);
@@ -77,6 +74,8 @@ namespace mesher_interface {
 	void parameterize_surface_nodes(std::vector<node>& nodes, std::vector <int> surface_id, const std::vector<std::vector<tri>> elements);
 
 	std::optional<tet> get_volume_element_by_coordinate(point_3d points);
+
+	std::optional <size_t> get_volume_entity_by_coordinate(point_3d point);
 
 	std::vector <int> get_boundary_surfaces();
 
