@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 
 	std::string outputs_dir = args.data_path + args.raw_config_filename + "_outputs/";
 	std::filesystem::create_directory(outputs_dir);
-	current_sim.generate_outputs(outputs_dir, config.simulation_wavenumber, config);
+	current_sim.generate_outputs(outputs_dir, config);
 
 	return 0;
 }
