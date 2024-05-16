@@ -11,9 +11,9 @@
 #include "pml.h"
 #include "result_writer.h"
 
-sim::sim(box bbox, std::vector<material> materials, std::vector<node> nodes, std::vector<tet> volume_elems,
+sim::sim(box bbox, double wavenumber, std::vector<material> materials, std::vector<node> nodes, std::vector<tet> volume_elems,
 	std::unordered_map<size_t, int> boundary_edge_map, std::unordered_map<size_t, int> boundary_face_map, ports ports) :
-	bbox(bbox), materials(materials), nodes(nodes), volume_elems(volume_elems),
+	bbox(bbox), wavenumber(wavenumber), materials(materials), nodes(nodes), volume_elems(volume_elems),
 	boundary_edge_map(boundary_edge_map), boundary_face_map(boundary_face_map), sim_ports(ports),
 	port_eigen_vectors(), port_eigen_wave_numbers(), port_dof_maps(),
 	full_solutions(), full_dof_map()
@@ -101,6 +101,7 @@ sim sim::create(sim_config config, std::string data_path)
 
 	return {
 		std::move(boundary),
+		config.simulation_wavenumber,
 		std::move(base_materials),
 		std::move(nodes),
 		std::move(elements),
@@ -110,7 +111,7 @@ sim sim::create(sim_config config, std::string data_path)
 	};
 }
 
-void sim::solve_ports(double k)
+void sim::solve_ports()
 {
 	port_eigen_vectors.clear();
 	port_eigen_wave_numbers.clear();
@@ -122,7 +123,7 @@ void sim::solve_ports(double k)
 
 		Eigen::SparseMatrix<double> A;
 		Eigen::SparseMatrix<double> B;
-		std::tie(A, B) = fem::_2d::mixed_order::assemble_A_B(nodes, sim_ports.elements[p], materials, dof_map, k);
+		std::tie(A, B) = fem::_2d::mixed_order::assemble_A_B(nodes, sim_ports.elements[p], materials, dof_map, wavenumber);
 
 		Eigen::VectorXd values;
 		Eigen::MatrixXd vecs;
@@ -135,7 +136,7 @@ void sim::solve_ports(double k)
 	}
 }
 
-void sim::solve_full(double k)
+void sim::solve_full()
 {
 	full_solutions.clear();
 	full_dof_map.clear();
@@ -151,7 +152,7 @@ void sim::solve_full(double k)
 			materials,
 			surface_elems,
 			full_dof_map,
-			k,
+			wavenumber,
 			k_inc * std::complex<double>{0, 1}
 		);
 		Eigen::SparseLU<Eigen::SparseMatrix<std::complex<double>>, Eigen::COLAMDOrdering<int>> solver;
@@ -185,20 +186,25 @@ void sim::generate_outputs(std::string directory, sim_config config)
 		auto E_filename = std::format("E Field [Port {}]", p);
 		auto B_filename = std::format("H Field [Port {}]", p);
 
-		auto e_field = post::eval_full_E(*this, p,
+		auto e_field = post::eval_full(*this, wavenumber, p,
 			static_cast<int> (bbox.x_dim() / config.target_mesh_size * 5),
 			static_cast<int> (bbox.y_dim() / config.target_mesh_size * 5),
-			static_cast<int> (bbox.z_dim() / config.target_mesh_size * 5));
+			static_cast<int> (bbox.z_dim() / config.target_mesh_size * 5), field_type::E_FIELD);
 
-		auto b_field = post::eval_full_B(*this, p,
+		auto h_field = post::eval_full(*this, wavenumber, p,
 			static_cast<int> (bbox.x_dim() / config.target_mesh_size * 5),
 			static_cast<int> (bbox.y_dim() / config.target_mesh_size * 5),
-			static_cast<int> (bbox.z_dim() / config.target_mesh_size * 5));
+			static_cast<int> (bbox.z_dim() / config.target_mesh_size * 5), field_type::H_FIELD);
 
 		result_writer::write_3d_field(directory + E_filename, e_field);
-		result_writer::write_3d_field(directory + B_filename, b_field);
+		result_writer::write_3d_field(directory + B_filename, h_field);
 	}
 
 	auto s_params = post::eval_s_parameters(*this, 30, 30);
 	std::cout << s_params << std::endl;
+
+
+	//
+	//auto face_sol = post::eval_slice(*this, slice_plane::XY, 0, 32, 32, bbox.zmax);
+	//result_writer::write_2d_field(directory + "Slice Solution 2d.txt", face_sol);
 }

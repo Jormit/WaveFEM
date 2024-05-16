@@ -13,17 +13,18 @@
 
 struct sim
 {
-	sim(box bbox, std::vector<material> materials, std::vector<node> nodes, std::vector<tet> volume_elems,
+	sim(box bbox, double wavenumber, std::vector<material> materials, std::vector<node> nodes, std::vector<tet> volume_elems,
 		std::unordered_map<size_t, int> boundary_edge_map, std::unordered_map<size_t, int> boundary_face_map, ports ports);
 
 	static sim create(sim_config config, std::string data_path);
 
-	void solve_ports(double k);
-	void solve_full(double k);
+	void solve_ports();
+	void solve_full();
 	void generate_outputs(std::string directory, sim_config config);
 
 	// Input
 	box bbox;
+	double wavenumber;
 	std::vector<material> materials;
 	std::unordered_map<size_t, size_t> volume_material_map;
 	std::vector<node> nodes;

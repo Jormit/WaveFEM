@@ -17,8 +17,8 @@ int main(int argc, char* argv[])
 
 	// mesher_interface::view_model();
 
-	current_sim.solve_ports(config.simulation_wavenumber);
-	current_sim.solve_full(config.simulation_wavenumber);
+	current_sim.solve_ports();
+	current_sim.solve_full();
 
 	std::string outputs_dir = args.data_path + args.raw_config_filename + "_outputs/";
 	std::filesystem::create_directory(outputs_dir);

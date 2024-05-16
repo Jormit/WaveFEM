@@ -5,6 +5,7 @@
 #include "mesher_interface.h"
 #include "fem.h"
 #include "helpers.h"
+#include "constants.h"
 
 structured_2d_field_data post::eval_port(const sim& sim_instance, size_t port_num, size_t mode, size_t num_x, size_t num_y)
 {
@@ -50,7 +51,7 @@ structured_2d_field_data post::eval_port_from_3d(const sim& sim_instance, size_t
 	return { grid, field };
 }
 
-structured_3d_field_data post::eval_full_E(const sim& sim_instance, size_t port_num, size_t num_x, size_t num_y, size_t num_z)
+structured_3d_field_data post::eval_full(const sim& sim_instance, double wavenumber, size_t port_num, size_t num_x, size_t num_y, size_t num_z, field_type type)
 {
 	auto points = generate_grid_points(sim_instance.bbox, num_x, num_y, num_z);
 
@@ -68,37 +69,27 @@ structured_3d_field_data post::eval_full_E(const sim& sim_instance, size_t port_
 			continue;
 		}
 
-		auto elem_field = fem::_3d::mixed_order::eval_elem(sim_instance.nodes,
-			e.value(), p, sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
+		Eigen::Vector3cd elem_field;
 
-		field.row(i) << elem_field(0), elem_field(1), elem_field(2);
-	}
-
-	return { grid, field };
-}
-
-structured_3d_field_data post::eval_full_B(const sim& sim_instance, size_t port_num, size_t num_x, size_t num_y, size_t num_z)
-{
-	auto points = generate_grid_points(sim_instance.bbox, num_x, num_y, num_z);
-
-	structured_grid_3d grid(sim_instance.bbox, num_x, num_y, num_z);
-	Eigen::MatrixX3cd field(points.size(), 3);
-
-	for (size_t i = 0; i < points.size(); i++)
-	{
-		const auto p = points[i];
-		auto e = mesher_interface::get_volume_element_by_coordinate(p);
-		auto obj = mesher_interface::get_volume_entity_by_coordinate(p);
-
-
-		if (!e.has_value())
+		if (type == field_type::E_FIELD)
 		{
-			field.row(i) << 0, 0, 0;
-			continue;
+			elem_field = fem::_3d::mixed_order::eval_elem(sim_instance.nodes,
+				e.value(), p, sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
 		}
-
-		auto elem_field = std::complex<double>{ 0, 1 } * fem::_3d::mixed_order::eval_elem_curl(sim_instance.nodes,
-			e.value(), p, sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
+		else
+		{
+			auto obj = mesher_interface::get_volume_entity_by_coordinate(p).value();
+			auto material_id = 0;
+			if (sim_instance.volume_material_map.contains(obj))
+			{
+				material_id = sim_instance.volume_material_map.at(obj);
+			}			
+			auto mat = sim_instance.materials[material_id];
+			auto mu_inv = mat.permeability.inverse();
+			elem_field = std::complex<double>{ 0, 1 } * mu_inv * constants::k2omega * wavenumber *
+				fem::_3d::mixed_order::eval_elem_curl(sim_instance.nodes, e.value(), p, 
+					sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
+		}		
 
 		field.row(i) << elem_field(0), elem_field(1), elem_field(2);
 	}
@@ -136,7 +127,7 @@ Eigen::MatrixXcd post::eval_s_parameters(const sim& sim_instance, size_t num_x, 
 	return s_params;
 }
 
-structured_2d_field_data post::eval_slice(const sim& sim_instance, slice_plane slice, size_t port_num, size_t num_u, size_t num_v, double w)
+structured_2d_field_data eval_slice(const sim& sim_instance, slice_plane slice, size_t port_num, size_t num_u, size_t num_v, double w)
 {
 	rectangle plane;
 	if (slice == slice_plane::XY)

@@ -12,3 +12,6 @@ Export s-parameters as snp file
 
 4.
 Mesh Refinement
+
+5. 
+Normalize port power to 1 watt.
