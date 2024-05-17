@@ -86,7 +86,7 @@ structured_3d_field_data post::eval_full(const sim& sim_instance, double wavenum
 			}			
 			auto mat = sim_instance.materials[material_id];
 			auto mu_inv = mat.permeability.inverse();
-			elem_field = std::complex<double>{ 0, 1 } * mu_inv * constants::k2omega * wavenumber *
+			elem_field = std::complex<double>{ 0, 1 } * mu_inv / (constants::mu_0 * constants::k2omega * wavenumber) *
 				fem::_3d::mixed_order::eval_elem_curl(sim_instance.nodes, e.value(), p, 
 					sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
 		}		

@@ -203,6 +203,8 @@ void sim::generate_outputs(std::string directory, sim_config config)
 	auto s_params = post::eval_s_parameters(*this, 30, 30);
 	std::cout << s_params << std::endl;
 
+	mesher_interface::write_vtk(directory + "mesh");
+
 
 	//
 	//auto face_sol = post::eval_slice(*this, slice_plane::XY, 0, 32, 32, bbox.zmax);
