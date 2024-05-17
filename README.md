@@ -17,9 +17,13 @@ A 3d electromagnetic field solver in C++ with a Python frontend. Supports import
 
 ### Libraries
 GMSH - https://gmsh.info/
+
 Pyvista - https://pyvista.org/
+
 CadQuery - https://github.com/CadQuery/cadquery
+
 Eigen - https://eigen.tuxfamily.org/index.php?title=Main_Page
+
 PyQT - https://doc.qt.io/qtforpython-6/
 
 ### Icons
