@@ -1,6 +1,5 @@
 1.
-Evaluate fields on a per-volume basis
-Make field evaluation conformal with volume boundaries ("Make it look like HFSS")
+Display port excitations in gui
 
 2.
 Antenna Radiation Pattern
