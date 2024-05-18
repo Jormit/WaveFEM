@@ -1,15 +1,7 @@
-1.
 Display port excitations in gui
-
-2.
 Antenna Radiation Pattern
-
-3.
 Frequency Swept Simulation
 Export s-parameters as snp file
-
-4.
 Mesh Refinement
-
-5. 
-Normalize port power to 1 watt.
+Normalize port power to 1 watt
+Fix material map assignment bug (map sorts materials alphabetically or something).
