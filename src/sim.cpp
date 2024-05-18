@@ -186,12 +186,12 @@ void sim::generate_outputs(std::string directory, sim_config config)
 		auto E_filename = std::format("E Field [Port {}]", p);
 		auto B_filename = std::format("H Field [Port {}]", p);
 
-		auto e_field = post::eval_full(*this, wavenumber, p,
+		auto e_field = post::eval_full(*this, p,
 			static_cast<int> (bbox.x_dim() / config.target_mesh_size * 5),
 			static_cast<int> (bbox.y_dim() / config.target_mesh_size * 5),
 			static_cast<int> (bbox.z_dim() / config.target_mesh_size * 5), field_type::E_FIELD);
 
-		auto h_field = post::eval_full(*this, wavenumber, p,
+		auto h_field = post::eval_full(*this, p,
 			static_cast<int> (bbox.x_dim() / config.target_mesh_size * 5),
 			static_cast<int> (bbox.y_dim() / config.target_mesh_size * 5),
 			static_cast<int> (bbox.z_dim() / config.target_mesh_size * 5), field_type::H_FIELD);
