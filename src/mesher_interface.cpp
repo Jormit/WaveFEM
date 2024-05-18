@@ -485,7 +485,7 @@ void mesher_interface::parameterize_surface_nodes(std::vector<node>& nodes, std:
 	}
 }
 
-std::optional<tet> mesher_interface::get_volume_element_by_coordinate(point_3d points)
+std::optional<tet> mesher_interface::get_volume_element_by_coordinate(point_3d point)
 {
 	double u, v, w;
 	size_t element_tag;
@@ -494,7 +494,7 @@ std::optional<tet> mesher_interface::get_volume_element_by_coordinate(point_3d p
 
 	try
 	{
-		gmsh::model::mesh::getElementByCoordinates(points.x, points.y, points.z, element_tag, element_type, node_tags, u, v, w, 3, true);
+		gmsh::model::mesh::getElementByCoordinates(point.x, point.y, point.z, element_tag, element_type, node_tags, u, v, w, 3, true);
 	}
 	catch (...)
 	{
