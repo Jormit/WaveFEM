@@ -19,7 +19,7 @@ class dataset_3d:
         self.x, self.y, self.z, self.vec = data_loader.import_3d_field(filename)  
 
     def plot(self, plotter):
-        return self.contour_plot(plotter)          
+        return self.vector_plot(plotter)          
 
     def contour_plot(self, plotter):
         vec_real = np.real(self.vec)
@@ -31,10 +31,11 @@ class dataset_3d:
     
     def vector_plot(self, plotter):
         vec_real = np.real(self.vec)
+        max_mag = np.max(np.linalg.norm(vec_real, axis=3))
         mesh = pv.StructuredGrid(self.x, self.y, self.z)
         mesh['vectors'] = np.column_stack((vec_real[:,:,:,0].ravel(order='F'), vec_real[:,:,:,1].ravel(order='F'), vec_real[:,:,:,2].ravel(order='F')))
         mesh.set_active_vectors("vectors")
-        vector_mesh = mesh.glyph(orient="vectors")
+        vector_mesh = mesh.glyph(orient="vectors", factor=1/max_mag * 10)
         return plotter.add_mesh(vector_mesh)
     
 class results:

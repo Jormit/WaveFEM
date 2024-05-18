@@ -204,9 +204,4 @@ void sim::generate_outputs(std::string directory, sim_config config)
 	std::cout << s_params << std::endl;
 
 	mesher_interface::write_vtk(directory + "mesh");
-
-
-	//
-	//auto face_sol = post::eval_slice(*this, slice_plane::XY, 0, 32, 32, bbox.zmax);
-	//result_writer::write_2d_field(directory + "Slice Solution 2d.txt", face_sol);
 }
