@@ -99,6 +99,8 @@ sim sim::create(sim_config config, std::string data_path)
 	ports ports(config.port_bounding_boxes, volume_material_map);
 	ports.setup_port_nodes_faces_edges(nodes, boundary_edge_map, boundary_face_map);
 
+	auto bounding_box_surfaces = mesher_interface::get_bounding_box_surfaces(boundary);
+
 	return {
 		std::move(boundary),
 		config.simulation_wavenumber,

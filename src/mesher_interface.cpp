@@ -543,6 +543,26 @@ std::vector <int> mesher_interface::get_boundary_surfaces()
 	return shared_surfaces;
 }
 
+std::array<int, 6> mesher_interface::get_bounding_box_surfaces(box b)
+{
+	double tol = 1e-4;
+
+	box xy_bottom (b.xmin - tol, b.ymin - tol, b.zmin - tol, b.xmax + tol, b.ymax + tol, b.zmin + tol);
+	box xy_top (b.xmin - tol, b.ymin - tol, b.zmax - tol, b.xmax + tol, b.ymax + tol, b.zmax + tol);
+
+	box xz_bottom(b.xmin - tol, b.ymin - tol, b.zmin - tol, b.xmax + tol, b.ymin + tol, b.zmax + tol);
+	box xz_top(b.xmin - tol, b.ymax - tol, b.zmin - tol, b.xmax + tol, b.ymax + tol, b.zmax + tol);
+
+	box yz_bottom(b.xmin - tol, b.ymin - tol, b.zmin - tol, b.xmin + tol, b.ymax + tol, b.zmax + tol);
+	box yz_top(b.xmax - tol, b.ymin - tol, b.zmin - tol, b.xmax + tol, b.ymax + tol, b.zmax + tol);
+
+	auto ids = get_entities_in_bounding_box(2, { xy_bottom, xy_top, xz_bottom, xz_top, yz_bottom, yz_top});
+
+	auto flat_ids = helpers::flatten_vector(ids);
+
+	return std::array<int, 6> {flat_ids[0], flat_ids[1], flat_ids[2], flat_ids[3], flat_ids[4], flat_ids[5]};
+}
+
 void mesher_interface::write_vtk(std::string filename)
 {
 	gmsh::write(filename + ".vtk");
