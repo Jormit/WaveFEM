@@ -19,7 +19,7 @@ class dataset_3d:
         self.x, self.y, self.z, self.vec = data_loader.import_3d_field(filename)  
 
     def plot(self, plotter):
-        return self.vector_plot(plotter)          
+        return self.contour_plot(plotter)          
 
     def contour_plot(self, plotter):
         vec_real = np.real(self.vec)

@@ -189,14 +189,14 @@ void sim::generate_outputs(std::string directory, sim_config config)
 		auto B_filename = std::format("H Field [Port {}]", p);
 
 		auto e_field = post::eval_full(*this, p,
-			static_cast<int> (bbox.x_dim() / config.target_mesh_size * 5),
-			static_cast<int> (bbox.y_dim() / config.target_mesh_size * 5),
-			static_cast<int> (bbox.z_dim() / config.target_mesh_size * 5), field_type::E_FIELD);
+			static_cast<int> (bbox.x_dim() / config.target_mesh_size * 3),
+			static_cast<int> (bbox.y_dim() / config.target_mesh_size * 3),
+			static_cast<int> (bbox.z_dim() / config.target_mesh_size * 3), field_type::E_FIELD);
 
 		auto h_field = post::eval_full(*this, p,
-			static_cast<int> (bbox.x_dim() / config.target_mesh_size * 5),
-			static_cast<int> (bbox.y_dim() / config.target_mesh_size * 5),
-			static_cast<int> (bbox.z_dim() / config.target_mesh_size * 5), field_type::H_FIELD);
+			static_cast<int> (bbox.x_dim() / config.target_mesh_size * 3),
+			static_cast<int> (bbox.y_dim() / config.target_mesh_size * 3),
+			static_cast<int> (bbox.z_dim() / config.target_mesh_size * 3), field_type::H_FIELD);
 
 		result_writer::write_3d_field(directory + E_filename, e_field);
 		result_writer::write_3d_field(directory + B_filename, h_field);
