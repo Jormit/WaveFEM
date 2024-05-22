@@ -543,7 +543,7 @@ std::vector <int> mesher_interface::get_boundary_surfaces()
 	return shared_surfaces;
 }
 
-std::array<int, 6> mesher_interface::get_bounding_box_surfaces(box b)
+std::vector<int> mesher_interface::get_bounding_box_surfaces(box b)
 {
 	double tol = 1e-4;
 
@@ -560,7 +560,7 @@ std::array<int, 6> mesher_interface::get_bounding_box_surfaces(box b)
 
 	auto flat_ids = helpers::flatten_vector(ids);
 
-	return std::array<int, 6> {flat_ids[0], flat_ids[1], flat_ids[2], flat_ids[3], flat_ids[4], flat_ids[5]};
+	return {flat_ids[0], flat_ids[1], flat_ids[2], flat_ids[3], flat_ids[4], flat_ids[5]};
 }
 
 void mesher_interface::write_vtk(std::string filename)

@@ -80,7 +80,7 @@ namespace mesher_interface {
 
 	std::vector <int> get_boundary_surfaces();
 
-	std::array <int, 6> get_bounding_box_surfaces(box box);
+	std::vector<int> get_bounding_box_surfaces(box box);
 
 	void write_vtk(std::string filename);
 }
