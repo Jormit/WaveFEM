@@ -206,4 +206,6 @@ void sim::generate_outputs(std::string directory, sim_config config)
 	std::cout << s_params << std::endl;
 
 	mesher_interface::write_vtk(directory + "mesh");
+
+	post::eval_far_field_slice(*this, 0, 100);
 }

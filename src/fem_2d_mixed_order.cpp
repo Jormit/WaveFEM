@@ -264,3 +264,20 @@ Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(const tri& e, const Eigen::Vec
 	}
 	return value;
 }
+
+Eigen::Vector2cd fem::_2d::mixed_order::eval_elem_curl(const tri& e, const Eigen::Vector3d& lambda,
+	const Eigen::Matrix<double, 3, 2>& nabla_lambda, const fem::dof_map& dof_map, const Eigen::VectorXcd& solution)
+{
+	auto func = vector_basis_curl(lambda, nabla_lambda);
+
+	Eigen::Vector2cd value = Eigen::Vector2d::Zero();
+	for (size_t i = 0; i < 8; i++)
+	{
+		auto dof_pair = global_dof_pair(e, i);
+		if (dof_map.contains(dof_pair))
+		{
+			value += func.row(i) * solution(dof_map.at(dof_pair));
+		}
+	}
+	return value;
+}

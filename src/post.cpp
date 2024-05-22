@@ -6,6 +6,7 @@
 #include "fem.h"
 #include "helpers.h"
 #include "constants.h"
+#include "quad.h"
 
 Eigen::Vector3cd post::eval_field_at_point(const sim& sim_instance, point_3d point, size_t port_num, field_type type)
 {
@@ -140,4 +141,69 @@ Eigen::MatrixXcd post::eval_s_parameters(const sim& sim_instance, size_t num_x, 
 		}
 	}
 	return s_params;
+}
+
+polar_2d_field_data post::eval_far_field_slice(const sim& sim_instance, size_t port_num, size_t num)
+{
+	auto bounding_box_surface_ids = mesher_interface::get_bounding_box_surfaces(sim_instance.bbox);
+	auto surface_elems = mesher_interface::get_surface_elems(bounding_box_surface_ids);
+
+	structured_polar_2d sweep = { 0, 2.0 * constants::pi / (num - 1), num };
+	Eigen::MatrixX3cd far_field(sweep.num_steps, 2);
+
+	/*	Bbox plane ordering set by mesh_interface::get_bounding_box_surfaces()
+		xy_bottom
+		xy_top
+		xz_bottom
+		xz_top
+		yz_bottom
+		yz_top
+	*/
+
+	for (size_t n = 0; n < num; n++)
+	{
+		Eigen::Vector3d eval_point;
+		double angle = sweep.angle_step * num;
+		eval_point << 10000 * std::cos(angle), 10000 * std::sin(angle), 0;
+
+		Eigen::Vector3d field = Eigen::Vector3d::Zero();
+
+		// Surface loop
+		for (size_t face = 0; face < 6; face++)
+		{
+			// Elem loop
+			for (const auto& e : surface_elems[face])
+			{
+				Eigen::Matrix<double, 3, 2> coords = e.coordinate_matrix(sim_instance.nodes, box_surface_order[face]);
+				auto simplex_coeff = fem::_2d::simplex_coefficients(coords);
+				auto nabla_lambda = fem::_2d::nabla_lambda(simplex_coeff);
+
+				// Integration loop
+				for (size_t p = 0; p < 6; p++)
+				{
+					Eigen::Vector3d lambda;
+					lambda <<
+						quad::surface::gauss_6_point[p][1],
+						quad::surface::gauss_6_point[p][2],
+						quad::surface::gauss_6_point[p][3];
+					auto w = quad::surface::gauss_6_point[p][0];
+
+					auto H_surf = fem::_2d::mixed_order::eval_elem_curl(e, lambda, nabla_lambda,
+						sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
+					auto real_coord = e.lambda_to_coord(sim_instance.nodes, lambda);
+					auto dist = (eval_point - real_coord).norm();
+
+					auto inner_chu_term = normal_cross_on_box_face(face, H_surf) *
+						std::exp(std::complex<double>{ 0, -1 } * sim_instance.wavenumber * dist) / (4 * constants::pi * dist);
+					field += w * inner_chu_term;
+				}
+			}
+		}
+
+		far_field.row(n) = field;
+	}
+
+	std::cout << far_field;
+
+	return polar_2d_field_data();
 }

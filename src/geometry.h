@@ -9,6 +9,9 @@
 const int BOUNDARY = 0;
 const int PORT_OUTER_BOUNDARY = -1;
 
+enum slice_plane { XY, XZ, YZ };
+slice_plane box_surface_order[6]{ XY, XY, XZ, XZ, YZ, YZ};
+
 struct point_2d
 {
 	double u;
@@ -58,6 +61,8 @@ struct tri
 	size_t material_id;
 	std::array<size_t, 2> get_edge_nodes(size_t edge) const;
 	Eigen::Matrix<double, 3, 2> coordinate_matrix(const std::vector<node>& nodes) const;
+	Eigen::Matrix<double, 3, 2> coordinate_matrix(const std::vector<node>& nodes, slice_plane plane) const;
+	Eigen::Vector3d lambda_to_coord(const std::vector<node>& nodes, Eigen::Vector3d lambda) const;
 };
 
 struct tet
@@ -88,6 +93,13 @@ struct structured_grid_3d
 	structured_grid_3d(box box, size_t num_x, size_t num_y, size_t num_z);
 };
 
+struct structured_polar_2d
+{
+	double start_angle;
+	double angle_step;
+	size_t num_steps;
+};
+
 struct structured_2d_field_data
 {
 	structured_grid_2d grid;
@@ -100,6 +112,14 @@ struct structured_3d_field_data
 	Eigen::MatrixX3cd field;
 };
 
+struct polar_2d_field_data
+{
+	struct structured_polar_2d;
+	Eigen::MatrixX2cd field;
+};
+
 std::vector<point_3d> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z);
 std::vector<point_2d> generate_grid_points(rectangle rect, size_t num_x, size_t num_y);
+
+Eigen::Vector3cd normal_cross_on_box_face(size_t face_num, Eigen::Vector2cd surface_vec);
 

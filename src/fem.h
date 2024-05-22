@@ -55,6 +55,9 @@ namespace fem
 
 			Eigen::Vector2cd eval_elem(const tri& e, const Eigen::Vector3d& lambda,
 				const Eigen::Matrix<double, 3, 2>& nabla_lambda, const dof_map& dof_map, const Eigen::VectorXcd& solution);
+
+			Eigen::Vector2cd eval_elem_curl(const tri& e, const Eigen::Vector3d& lambda,
+				const Eigen::Matrix<double, 3, 2>& nabla_lambda, const dof_map& dof_map, const Eigen::VectorXcd& solution);
 		}
 	}
 

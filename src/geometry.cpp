@@ -80,6 +80,47 @@ Eigen::Matrix<double, 3, 2> tri::coordinate_matrix(const std::vector<node>& node
 	return coords;
 }
 
+Eigen::Matrix<double, 3, 2> tri::coordinate_matrix(const std::vector<node>& nodes, slice_plane plane) const
+{
+	Eigen::Matrix<double, 3, 2> coords;
+
+	if (plane == slice_plane::XY)
+	{
+		coords <<
+			nodes[this->nodes[0] - 1].coords.x, nodes[this->nodes[0] - 1].coords.y,
+			nodes[this->nodes[1] - 1].coords.x, nodes[this->nodes[1] - 1].coords.y,
+			nodes[this->nodes[2] - 1].coords.x, nodes[this->nodes[2] - 1].coords.y;
+	} 
+	else if (plane == slice_plane::XZ)
+	{
+		coords <<
+			nodes[this->nodes[0] - 1].coords.x, nodes[this->nodes[0] - 1].coords.z,
+			nodes[this->nodes[1] - 1].coords.x, nodes[this->nodes[1] - 1].coords.z,
+			nodes[this->nodes[2] - 1].coords.x, nodes[this->nodes[2] - 1].coords.z;
+	}
+	else
+	{
+		coords <<
+			nodes[this->nodes[0] - 1].coords.y, nodes[this->nodes[0] - 1].coords.z,
+			nodes[this->nodes[1] - 1].coords.y, nodes[this->nodes[1] - 1].coords.z,
+			nodes[this->nodes[2] - 1].coords.y, nodes[this->nodes[2] - 1].coords.z;
+	}	
+	
+	return coords;
+}
+
+Eigen::Vector3d tri::lambda_to_coord(const std::vector<node>& nodes, Eigen::Vector3d lambda) const
+{
+	Eigen::Matrix<double, 3, 3> coords;
+
+	coords <<
+		nodes[this->nodes[0] - 1].coords.x, nodes[this->nodes[0] - 1].coords.y, nodes[this->nodes[0] - 1].coords.z,
+		nodes[this->nodes[1] - 1].coords.x, nodes[this->nodes[1] - 1].coords.y, nodes[this->nodes[1] - 1].coords.z,
+		nodes[this->nodes[2] - 1].coords.x, nodes[this->nodes[2] - 1].coords.y, nodes[this->nodes[2] - 1].coords.z;
+
+	return coords * lambda;
+}
+
 std::vector<point_3d> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z)
 {
 	std::vector<point_3d> points;
@@ -180,4 +221,22 @@ structured_grid_3d::structured_grid_3d(box box, size_t num_x, size_t num_y, size
 		1 / static_cast<double>(num_y - 1) * (box.ymax - box.ymin),
 		1 / static_cast<double>(num_z - 1) * (box.zmax - box.zmin)
 	};
+}
+
+Eigen::Vector3cd normal_cross_on_box_face(size_t face_num, Eigen::Vector2cd surface_vec)
+{
+	Eigen::Vector3cd result;
+	if (face_num == 0 || face_num == 1)
+	{
+		result << surface_vec(1), -surface_vec(0), 0;
+	}
+	else if (face_num == 2 || face_num == 3)
+	{
+		result << surface_vec(2), 0, -surface_vec(0);
+	}
+	else
+	{
+		result << 0, surface_vec(2), -surface_vec(1);
+	}
+	return result;
 }
