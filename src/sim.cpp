@@ -180,7 +180,7 @@ void sim::generate_outputs(std::string directory, sim_config config)
 		// Save port fields
 		auto filename = std::format("Port {} Field", p);
 
-		auto port_excitation = post::eval_port(*this, p, 0, 10, 10);
+		auto port_excitation = post::eval_port(*this, p, 0, 20, 20);
 		auto port_excitation_3d = 
 			post::project_2d_structured_surface_field_into_3d(port_excitation, sim_ports.dummy_ids[p]);
 		result_writer::write_unstructured_3d_field(directory + filename, port_excitation_3d);
