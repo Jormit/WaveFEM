@@ -4,6 +4,7 @@
 #include <utility>
 #include <string>
 #include <array>
+#include <Eigen/dense>
 
 #include "geometry.h"
 #include <gmsh/gmsh.h_cwrap>
@@ -38,6 +39,10 @@ namespace mesher_interface {
 
 	void remove_duplicates();
 
+	point_3d evaluate_surface_parameterization(int surface_id, point_2d point);
+
+	Eigen::Matrix<double, 3, 2> evaluate_surface_derivative(int surface_id, point_2d point);
+
 	// Vector is indexed by node number - 1 !!!!!
 	std::vector<node> get_all_nodes();
 	std::vector<size_t> get_node_ids_in_line(int id);
@@ -45,7 +50,6 @@ namespace mesher_interface {
 
 	std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> get_surface_edges_and_faces(int surface_id);
 	std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>> get_surface_edges_and_faces(std::vector <int> surface_ids);
-
 
 	std::vector<int> get_surface_boundary_entities(int surface_id);
 	std::vector<int> get_surface_boundary_entities(std::vector <int> surface_ids);
@@ -83,6 +87,8 @@ namespace mesher_interface {
 	std::vector<int> get_bounding_box_surfaces(box box);
 
 	void write_vtk(std::string filename);
+
+
 }
 
 

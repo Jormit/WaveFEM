@@ -1,6 +1,6 @@
 import numpy as np
 
-def import_3d_field(filename):
+def import_structured_3d_field(filename):
     f=open(filename,"r+")
     lines = f.readlines()
 
@@ -34,32 +34,37 @@ def import_3d_field(filename):
 
     return x, y, z, vec
 
-def import_2d_field(filename):
+def import_unstructured_3d_field(filename):
     f=open(filename,"r+")
     lines = f.readlines()
 
+    x = []
+    y = []
+    z = []
+
     u = []
     v = []
+    w = []
 
-    line0=lines[0].split()
-    line1=lines[1].split()
-    line2=lines[2].split()
-
-    start = (float(line0[0]), float(line0[1]))
-    step = (float(line1[0]), float(line1[1]))
-    steps = (int(line2[0]), int(line2[1]))
-
-    for line in lines[3:]:
+    for line in lines:
         line=line.split()
         if line: 
-                u.append(complex(line[0]))
-                v.append(complex(line[1]))
+                x.append(complex(line[0]))
+                y.append(complex(line[1]))
+                z.append(complex(line[2]))
+
+                u.append(complex(line[3]))
+                v.append(complex(line[4]))
+                w.append(complex(line[5]))
 
     u = np.array(u, dtype=complex)
     v = np.array(v, dtype=complex)
-    vec = np.stack((u,v), axis=1).reshape(steps + (2,))
+    w = np.array(w, dtype=complex)
 
-    x, y = np.mgrid[start[0]:start[0] + step[0]*(steps[0]-1):steps[0]*1j,
-                    start[1]:start[1] + step[1]*(steps[1]-1):steps[1]*1j]
+    vec = np.stack((u,v,w), axis=1)
 
-    return x, y, vec
+    x = np.array(x)
+    y = np.array(y)
+    z = np.array(z)
+
+    return x, y, z, vec

@@ -166,6 +166,27 @@ void mesher_interface::remove_duplicates()
 	gmsh::model::occ::synchronize();
 }
 
+point_3d mesher_interface::evaluate_surface_parameterization(int surface_id, point_2d point)
+{
+	std::vector<double> coord;
+	gmsh::model::getValue(2, surface_id, { point.u, point.v }, coord);
+	return { coord[0], coord[1], coord[2] };
+}
+
+Eigen::Matrix<double, 3, 2> mesher_interface::evaluate_surface_derivative(int surface_id, point_2d point)
+{
+	std::vector<double> result;
+	gmsh::model::getDerivative(2, surface_id, { point.u, point.v }, result);
+
+	Eigen::Matrix<double, 3, 2> deriv_matrix;
+	deriv_matrix <<
+		result[0], result[3],
+		result[1], result[4],
+		result[2], result[5];
+
+	return deriv_matrix;
+}
+
 std::vector<node> mesher_interface::get_all_nodes()
 {
 	std::vector<size_t> nodeTags;
@@ -422,9 +443,7 @@ std::vector<tri> mesher_interface::get_surface_element_by_coordinate(std::vector
 
 tri mesher_interface::get_surface_element_by_parametric_coordinate(point_2d point, int id)
 {
-	std::vector<double> coord;
-	gmsh::model::getValue(2, id, { point.u, point.v }, coord);
-	return get_surface_element_by_coordinate({ coord[0], coord[1], coord[2] });
+	return get_surface_element_by_coordinate(evaluate_surface_parameterization(id, point));
 }
 
 rectangle mesher_interface::get_surface_parametric_bounds(int id)

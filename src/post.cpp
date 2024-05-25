@@ -53,7 +53,7 @@ Eigen::Vector3cd post::eval_field_at_point(const sim& sim_instance, point_3d poi
 	return e_field.cross(h_field.conjugate());
 }
 
-Eigen::Vector2cd eval_surface_field_at_parametric_point(Eigen::VectorXcd solution,
+Eigen::Vector2cd post::eval_surface_field_at_parametric_point(Eigen::VectorXcd solution,
 	fem::dof_map dof_map, std::vector<node> nodes, int surface_id, point_2d point)
 {
 	auto e = mesher_interface::get_surface_element_by_parametric_coordinate(point, surface_id);
@@ -147,4 +147,24 @@ Eigen::MatrixXcd post::eval_s_parameters(const sim& sim_instance, size_t num_x, 
 		}
 	}
 	return s_params;
+}
+
+unstructured_3d_field_data post::project_2d_structured_surface_field_into_3d(structured_2d_field_data data, int surface_id)
+{
+	auto points = generate_grid_points(data.grid);
+
+	Eigen::MatrixX3d out_points(points.size(), 3);
+	Eigen::MatrixX3cd out_field(points.size(), 3);	
+
+	for (size_t i = 0; i < points.size(); i++)
+	{
+		auto point = mesher_interface::evaluate_surface_parameterization(surface_id, points[i]);
+		auto deriv = mesher_interface::evaluate_surface_derivative(surface_id, points[i]);
+
+		out_points.row(i) = point.to_Eigen();
+
+		Eigen::Vector2cd field_vec{ data.field.row(i) };
+		out_field.row(i) = deriv * field_vec;
+	}
+	return { out_points, out_field };
 }

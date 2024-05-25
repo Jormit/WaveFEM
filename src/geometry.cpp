@@ -80,42 +80,6 @@ Eigen::Matrix<double, 3, 2> tri::coordinate_matrix(const std::vector<node>& node
 	return coords;
 }
 
-std::vector<point_3d> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z)
-{
-	std::vector<point_3d> points;
-	points.reserve(num_x * num_y * num_z);
-	for (int x = 0; x < num_x; x++)
-	{
-		for (int y = 0; y < num_y; y++)
-		{
-			for (int z = 0; z < num_z; z++)
-			{
-				double point_x = static_cast<double>(x) / static_cast<double>(num_x - 1) * (box.xmax - box.xmin) + box.xmin;
-				double point_y = static_cast<double>(y) / static_cast<double>(num_y - 1) * (box.ymax - box.ymin) + box.ymin;
-				double point_z = static_cast<double>(z) / static_cast<double>(num_z - 1) * (box.zmax - box.zmin) + box.zmin;
-				points.push_back({ point_x, point_y, point_z });
-			}
-		}
-	}
-	return points;
-}
-
-std::vector<point_2d> generate_grid_points(rectangle rect, size_t num_x, size_t num_y)
-{
-	std::vector<point_2d> points;
-	points.reserve(num_x * num_y);
-	for (int x = 0; x < num_x; x++)
-	{
-		for (int y = 0; y < num_y; y++)
-		{
-			double point_x = static_cast<double>(x) / static_cast<double>(num_x - 1) * (rect.xmax - rect.xmin) + rect.xmin;
-			double point_y = static_cast<double>(y) / static_cast<double>(num_y - 1) * (rect.ymax - rect.ymin) + rect.ymin;
-			points.push_back({ point_x, point_y });
-		}
-	}
-	return points;
-}
-
 std::array<size_t, 2> tet::get_edge_nodes(size_t edge) const
 {
 	switch (edge)
@@ -180,4 +144,76 @@ structured_grid_3d::structured_grid_3d(box box, size_t num_x, size_t num_y, size
 		1 / static_cast<double>(num_y - 1) * (box.ymax - box.ymin),
 		1 / static_cast<double>(num_z - 1) * (box.zmax - box.zmin)
 	};
+}
+
+std::vector<point_3d> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z)
+{
+	std::vector<point_3d> points;
+	points.reserve(num_x * num_y * num_z);
+	for (int x = 0; x < num_x; x++)
+	{
+		for (int y = 0; y < num_y; y++)
+		{
+			for (int z = 0; z < num_z; z++)
+			{
+				double point_x = static_cast<double>(x) / static_cast<double>(num_x - 1) * (box.xmax - box.xmin) + box.xmin;
+				double point_y = static_cast<double>(y) / static_cast<double>(num_y - 1) * (box.ymax - box.ymin) + box.ymin;
+				double point_z = static_cast<double>(z) / static_cast<double>(num_z - 1) * (box.zmax - box.zmin) + box.zmin;
+				points.push_back({ point_x, point_y, point_z });
+			}
+		}
+	}
+	return points;
+}
+
+std::vector<point_2d> generate_grid_points(rectangle rect, size_t num_x, size_t num_y)
+{
+	std::vector<point_2d> points;
+	points.reserve(num_x * num_y);
+	for (int x = 0; x < num_x; x++)
+	{
+		for (int y = 0; y < num_y; y++)
+		{
+			double point_x = static_cast<double>(x) / static_cast<double>(num_x - 1) * (rect.xmax - rect.xmin) + rect.xmin;
+			double point_y = static_cast<double>(y) / static_cast<double>(num_y - 1) * (rect.ymax - rect.ymin) + rect.ymin;
+			points.push_back({ point_x, point_y });
+		}
+	}
+	return points;
+}
+
+std::vector<point_2d> generate_grid_points(structured_grid_2d grid)
+{
+	std::vector<point_2d> points;
+	points.reserve(grid.num_steps[0] * grid.num_steps[1]);
+	for (size_t i = 0; i < grid.num_steps[0]; i++)
+	{
+		for (size_t j = 0; j < grid.num_steps[1]; j++)
+		{
+			points.push_back({
+				grid.start_point[0] + i * grid.step_sizes[0],
+				grid.start_point[1] + j * grid.step_sizes[1] });
+		}
+	}
+	return points;
+}
+
+std::vector<point_3d> generate_grid_points(structured_grid_3d grid)
+{
+	std::vector<point_3d> points;
+	points.reserve(grid.num_steps[0] * grid.num_steps[1] * grid.num_steps[2]);
+	for (size_t i = 0; i < grid.num_steps[0]; i++)
+	{
+		for (size_t j = 0; j < grid.num_steps[1]; j++)
+		{
+			for (size_t k = 0; k < grid.num_steps[2]; k++)
+			{
+				points.push_back({
+					grid.start_point[0] + i * grid.step_sizes[0],
+					grid.start_point[1] + j * grid.step_sizes[1],
+					grid.start_point[2] + k * grid.step_sizes[2]});
+			}
+		}
+	}
+	return points;
 }

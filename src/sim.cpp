@@ -180,9 +180,10 @@ void sim::generate_outputs(std::string directory, sim_config config)
 		// Save port fields
 		auto filename = std::format("Port {} Field", p);
 
-		auto port_excitation = post::eval_port(*this, p, 0, 30, 30);
-		
-		result_writer::write_2d_field(directory + filename, port_excitation);
+		auto port_excitation = post::eval_port(*this, p, 0, 10, 10);
+		auto port_excitation_3d = 
+			post::project_2d_structured_surface_field_into_3d(port_excitation, sim_ports.dummy_ids[p]);
+		result_writer::write_unstructured_3d_field(directory + filename, port_excitation_3d);
 
 		// Save 3d fields
 		auto E_filename = std::format("E Field [Port {}]", p);
@@ -198,8 +199,8 @@ void sim::generate_outputs(std::string directory, sim_config config)
 			static_cast<int> (bbox.y_dim() / config.target_mesh_size * 3),
 			static_cast<int> (bbox.z_dim() / config.target_mesh_size * 3), field_type::H_FIELD);
 
-		result_writer::write_3d_field(directory + E_filename, e_field);
-		result_writer::write_3d_field(directory + B_filename, h_field);
+		result_writer::write_structured_3d_field(directory + E_filename, e_field);
+		result_writer::write_structured_3d_field(directory + B_filename, h_field);
 	}
 
 	auto s_params = post::eval_s_parameters(*this, 30, 30);
