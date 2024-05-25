@@ -12,7 +12,7 @@ class dataset_vtk:
         return self.mesh_plot(plotter)
 
     def mesh_plot(self, plotter):
-        return plotter.add_mesh(self.mesh, style="wireframe", opacity=0.5)
+        return plotter.add_mesh(self.mesh, style="wireframe", opacity=0.5, reset_camera=False)
 
 class dataset_3d:
     def __init__(self, filename):
@@ -27,7 +27,7 @@ class dataset_3d:
         mesh = pv.StructuredGrid(self.x, self.y, self.z)
         mesh.point_data['values'] = vec_real_mag.ravel(order='F')
         isos = mesh.contour()
-        return plotter.add_mesh(isos, opacity=0.7, cmap='jet')
+        return plotter.add_mesh(isos, opacity=0.7, cmap='jet', reset_camera=False)
     
     def vector_plot(self, plotter):
         vec_real = np.real(self.vec)
@@ -36,7 +36,7 @@ class dataset_3d:
         mesh['vectors'] = np.column_stack((vec_real[:,:,:,0].ravel(order='F'), vec_real[:,:,:,1].ravel(order='F'), vec_real[:,:,:,2].ravel(order='F')))
         mesh.set_active_vectors("vectors")
         vector_mesh = mesh.glyph(orient="vectors", factor=1/max_mag * 10)
-        return plotter.add_mesh(vector_mesh)
+        return plotter.add_mesh(vector_mesh, reset_camera=False)
     
 class dataset_3d_unstructured:
     def __init__(self, filename):
@@ -55,7 +55,7 @@ class dataset_3d_unstructured:
         grid = pv.UnstructuredGrid(cells, cell_type, points)
         grid['vectors'] = vec_real
 
-        return plotter.add_mesh(grid.glyph(orient='vectors', scale=True, factor=1/max_mag * 2))
+        return plotter.add_mesh(grid.glyph(orient='vectors', scale=True, factor=1/max_mag * 2), reset_camera=False)
     
 class results:
     def __init__(self, directory):
