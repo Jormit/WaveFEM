@@ -36,7 +36,7 @@ class dataset_3d:
         mesh['vectors'] = np.column_stack((vec_real[:,:,:,0].ravel(order='F'), vec_real[:,:,:,1].ravel(order='F'), vec_real[:,:,:,2].ravel(order='F')))
         mesh.set_active_vectors("vectors")
         vector_mesh = mesh.glyph(orient="vectors", factor=1/max_mag * 10)
-        return plotter.add_mesh(vector_mesh, reset_camera=False)
+        return plotter.add_mesh(vector_mesh, reset_camera=False, cmap='jet')
     
 class dataset_3d_unstructured:
     def __init__(self, filename):
@@ -55,7 +55,7 @@ class dataset_3d_unstructured:
         grid = pv.UnstructuredGrid(cells, cell_type, points)
         grid['vectors'] = vec_real
 
-        return plotter.add_mesh(grid.glyph(orient='vectors', scale=True, factor=1/max_mag * 2), reset_camera=False)
+        return plotter.add_mesh(grid.glyph(orient='vectors', scale=True, factor=1/max_mag * 2), reset_camera=False, cmap='jet')
     
 class results:
     def __init__(self, directory):
