@@ -53,6 +53,13 @@ Eigen::Vector3cd post::eval_field_at_point(const sim& sim_instance, point_3d poi
 	return e_field.cross(h_field.conjugate());
 }
 
+Eigen::Vector2cd eval_surface_field_at_parametric_point(Eigen::VectorXcd solution,
+	fem::dof_map dof_map, std::vector<node> nodes, int surface_id, point_2d point)
+{
+	auto e = mesher_interface::get_surface_element_by_parametric_coordinate(point, surface_id);
+	return fem::_2d::mixed_order::eval_elem(nodes, e, { point.u, point.v }, dof_map, solution);
+}
+
 structured_2d_field_data post::eval_port(const sim& sim_instance, size_t port_num, size_t mode, size_t num_x, size_t num_y)
 {
 	auto bounds = sim_instance.sim_ports.parametric_bounds[port_num];
@@ -64,12 +71,12 @@ structured_2d_field_data post::eval_port(const sim& sim_instance, size_t port_nu
 
 	for (size_t i = 0; i < points.size(); i++)
 	{
-		const auto p = points[i];
-		auto e = mesher_interface::get_surface_element_by_parametric_coordinate(p, sim_instance.sim_ports.dummy_ids[port_num]);
-		auto elem_field = fem::_2d::mixed_order::eval_elem(sim_instance.nodes,
-				e, { p.u, p.v }, sim_instance.port_dof_maps[port_num], sim_instance.port_eigen_vectors[port_num].col(mode));
-		
-		field.row(i) << elem_field(0), elem_field(1);
+		field.row(i) = eval_surface_field_at_parametric_point(
+			sim_instance.port_eigen_vectors[port_num].col(mode),
+			sim_instance.port_dof_maps[port_num],
+			sim_instance.nodes,
+			sim_instance.sim_ports.dummy_ids[port_num],
+			points[i]);
 	}
 
 	return { grid, field };
@@ -86,12 +93,12 @@ structured_2d_field_data post::eval_port_from_3d(const sim& sim_instance, size_t
 
 	for (size_t i = 0; i < points.size(); i++)
 	{
-		const auto p = points[i];
-		auto e = mesher_interface::get_surface_element_by_parametric_coordinate(p, sim_instance.sim_ports.dummy_ids[eval_port_num]);
-		auto elem_field = fem::_2d::mixed_order::eval_elem(sim_instance.nodes,
-			e, { p.u, p.v }, sim_instance.full_dof_map, sim_instance.full_solutions[driven_port_num]);
-
-		field.row(i) << elem_field(0), elem_field(1);
+		field.row(i) = eval_surface_field_at_parametric_point(
+			sim_instance.full_solutions[driven_port_num],
+			sim_instance.full_dof_map,
+			sim_instance.nodes,
+			sim_instance.sim_ports.dummy_ids[eval_port_num],
+			points[i]);
 	}
 
 	return { grid, field };
