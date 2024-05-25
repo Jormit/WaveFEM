@@ -16,7 +16,8 @@ Simulations of some basic geometries compared against HFSS.
 <img src='examples/photos/Dialectric Obstacle.png' height="250px"> <img src='examples/photos/Dialectric Obstacle HFSS.png' height="250px">
 
 ### Ridged Waveguide Port
-<img src='examples/photos/Ridged Waveguide Port.png' height="250px"> <img src='examples/photos/Ridged Waveguide Port HFSS.png' height="250px">
+<img src='examples/photos/Ridged Waveguide Port.png' width="700px">
+<img src='examples/photos/Ridged Waveguide Port HFSS.png' width="700px">
 
 ## Acknowledgements 
 
