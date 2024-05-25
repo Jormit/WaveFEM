@@ -4,14 +4,19 @@
 A 3d electromagnetic field solver in C++ with a Python frontend. Supports importing step files, setting materials, running simulations and visualizing results.
 
 ## Examples
+Simulations of some basic geometries compared against HFSS.
+
 ### Horn Antenna
-<img src='examples/photos/Horn Antenna.png' >
+<img src='examples/photos/Horn Antenna.png' height="250px"> <img src='examples/photos/Horn HFSS.png' height="250px">
 
 ### Waveguide with Dialectric Cross Section
-<img src='examples/photos/Dialectric Loaded Waveguide.png' >
+<img src='examples/photos/Dialectric Loaded Waveguide.png' height="250px"> <img src='examples/photos/Dialectric Loaded Waveguide HFSS.png' height="250px">
 
 ### Waveguide with Dialectric Obstacle
-<img src='examples/photos/Dialectric Obstacle.png' >
+<img src='examples/photos/Dialectric Obstacle.png' height="250px"> <img src='examples/photos/Dialectric Obstacle HFSS.png' height="250px">
+
+### Ridged Waveguide Port
+<img src='examples/photos/Ridged Waveguide Port.png' height="250px"> <img src='examples/photos/Ridged Waveguide Port HFSS.png' height="250px">
 
 ## Acknowledgements 
 
