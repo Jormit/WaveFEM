@@ -27,11 +27,17 @@ Eigen::Vector3cd post::eval_field_at_point(const sim& sim_instance, point_3d poi
 
 	if (type == field_type::H_FIELD || type == field_type::POYNTING)
 	{
-		auto obj = mesher_interface::get_volume_entity_by_coordinate(point).value();
-		auto material_id = 0;
-		if (sim_instance.volume_material_map.contains(obj))
+		auto obj = mesher_interface::get_volume_entity_by_coordinate(point);
+		if (!obj.has_value())
 		{
-			material_id = sim_instance.volume_material_map.at(obj);
+			e_field << 0, 0, 0;
+			return e_field;
+		}
+
+		auto material_id = 0;
+		if (sim_instance.volume_material_map.contains(obj.value()))
+		{
+			material_id = sim_instance.volume_material_map.at(obj.value());
 		}
 		auto mat = sim_instance.materials[material_id];
 		auto mu_inv = mat.permeability.inverse();
