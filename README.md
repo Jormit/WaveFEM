@@ -1,7 +1,19 @@
 <img src='design/Logo.png' width="300px">
 
 ## About
-A 3d electromagnetic field solver in C++ with a Python frontend. Supports importing step files, setting materials, running simulations and visualizing results.
+A 3d electromagnetic field solver in C++ with a Python frontend.
+
+## Current Functionality
+- Loading and meshing .step files with different materials assigned to each part. 
+- 2D Port solver for TEM and TE modes supporting inhomogenous cross-sections.
+- Multiport 3D Field solver.
+- S-parameter computation.
+- Domain truncation using PML.
+
+## Todo
+- Frequency sweeping
+- Radiation patterns
+- Automatic mesh refinement
 
 ## Examples
 Simulations of some basic geometries compared against HFSS.
@@ -14,10 +26,6 @@ Simulations of some basic geometries compared against HFSS.
 
 ### Waveguide with Dialectric Obstacle
 <img src='examples/photos/Dialectric Obstacle.png' height="250px"> <img src='examples/photos/Dialectric Obstacle HFSS.png' height="250px">
-
-### Ridged Waveguide Port
-<img src='examples/photos/Ridged Waveguide Port.png' width="700px">
-<img src='examples/photos/Ridged Waveguide Port HFSS.png' width="700px">
 
 ## Acknowledgements 
 
