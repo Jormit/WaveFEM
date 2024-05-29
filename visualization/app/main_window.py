@@ -80,6 +80,7 @@ class main_window(MainWindow):
 
     def load_step(self, filename, new_project):
         self.plotter.clear_actors()
+        self.plotter.clear_plane_widgets()
         self.tree.clear_ports()
 
         self.model = model(filename)
@@ -157,7 +158,10 @@ class main_window(MainWindow):
 
         elif (result_index > -1):
             self.model.reset_shading(0.1)
-            self.results.activate_dataset(it.text(0), self.plotter)            
+            self.results.activate_dataset(it.text(0), self.plotter)
+
+            table = value_table_with_edit_and_delete_button(self.results.dataset_parameters(), self.edit_results, None)
+            self.left_vertical_splitter.addWidget(table.widget_handle())
 
     def tree_deselected(self):
         self.remove_splitter_focus()
@@ -262,6 +266,15 @@ class main_window(MainWindow):
             self.remove_splitter_focus()
             table = value_table_with_edit_and_delete_button(self.setup.get_misc_params(), self.edit_setup, None)
             self.left_vertical_splitter.addWidget(table.widget_handle())
+
+    def edit_results(self):
+        dialog = table_create_dialog(self.results.dataset_parameters(), "Edit Setup", self)
+        if dialog.exec():
+            self.results.set_dataset_parameters(dialog.get_result())
+            self.remove_splitter_focus()
+            table = value_table_with_edit_and_delete_button(self.results.dataset_parameters(), self.edit_results, None)
+            self.left_vertical_splitter.addWidget(table.widget_handle())
+            self.results.refresh_dataset(self.plotter)
 
     def validate_simulation(self):
         print("\nValidation Result:")

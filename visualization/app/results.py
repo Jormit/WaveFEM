@@ -4,7 +4,20 @@ import pyvista as pv
 
 import data_loader
 
-class dataset_vtk:
+class dataset_base:
+    def __init__(self, filename):
+        return
+
+    def plot(self, plotter):
+        return None
+
+    def parameters(self):
+        return {}
+    
+    def set_parameters(self, params):
+        return
+
+class dataset_vtk (dataset_base):
     def __init__(self, filename):
         self.mesh = pv.read(filename)
     
@@ -14,12 +27,29 @@ class dataset_vtk:
     def mesh_plot(self, plotter):
         return plotter.add_mesh(self.mesh, style="wireframe", opacity=0.5, reset_camera=False)
 
-class dataset_3d:
+class dataset_3d (dataset_base):
     def __init__(self, filename):
         self.x, self.y, self.z, self.vec = data_loader.import_structured_3d_field(filename)
+        self.mode = "Contour"
 
     def plot(self, plotter):
-        return self.contour_plot(plotter)          
+        if self.mode == "Contour":
+            return self.contour_plot(plotter)
+        elif self.mode == "Vector":
+            return self.vector_plot(plotter)
+        else:
+            return self.clip_plane(plotter)
+
+    def parameters(self):
+        return {
+            "modes" : {
+                "options" : ["Contour", "Vector", "Plane"],
+                "selected" : self.mode
+            }
+        }
+    
+    def set_parameters(self, params):
+        self.mode = params["modes"]["selected"]
 
     def contour_plot(self, plotter):
         vec_real = np.real(self.vec)
@@ -43,9 +73,9 @@ class dataset_3d:
         vec_real_mag = np.linalg.norm(vec_real, axis=3)
         mesh = pv.StructuredGrid(self.x, self.y, self.z)
         mesh.point_data['values'] = vec_real_mag.ravel(order='F')
-        return plotter.add_mesh_slice(mesh, cmap='jet')
+        return plotter.add_mesh_slice(mesh, reset_camera=False, cmap='jet')
     
-class dataset_3d_unstructured:
+class dataset_3d_unstructured (dataset_base):
     def __init__(self, filename):
         self.x, self.y, self.z, self.vec = data_loader.import_unstructured_3d_field(filename)
 
@@ -68,7 +98,8 @@ class results:
     def __init__(self, directory):
         self.directory = directory
         self.datasets = {}
-        self.active_dataset = None
+        self.active_dataset_actor = None
+        self.active_dataset_name = None
 
         if not os.path.exists(self.directory):
             return
@@ -91,13 +122,29 @@ class results:
         return list
 
     def activate_dataset(self, name, plotter):
-        self.active_dataset = self.datasets[name].plot(plotter)
+        self.active_dataset_actor = self.datasets[name].plot(plotter)
+        self.active_dataset_name = name
 
     def deactivate_dataset(self, plotter):
-        if (self.active_dataset is not None):            
+        if (self.active_dataset_actor is not None):            
             plotter.clear_plane_widgets()
-            plotter.remove_actor(self.active_dataset)
-            self.active_dataset = None
+            plotter.remove_actor(self.active_dataset_actor)
+            self.active_dataset_actor = None
+
+    def refresh_dataset(self, plotter):
+        if (self.active_dataset_actor is not None):  
+            self.deactivate_dataset(plotter)
+            self.active_dataset_actor = self.datasets[self.active_dataset_name].plot(plotter)
+
+    def dataset_parameters(self):
+        if (self.active_dataset_name is not None):
+            return self.datasets[self.active_dataset_name].parameters()
+        return []
+    
+    def set_dataset_parameters(self, params):
+        if (self.active_dataset_name is not None):
+            return self.datasets[self.active_dataset_name].set_parameters(params)
+
 
         
         

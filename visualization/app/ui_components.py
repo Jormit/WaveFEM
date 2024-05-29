@@ -234,6 +234,9 @@ class value_table:
         for key, value in values.items():
             key_item = QtWidgets.QTableWidgetItem(str(key))
             val_item = QtWidgets.QTableWidgetItem(str(value))
+            if isinstance(value, dict):
+                val_item = QtWidgets.QTableWidgetItem(str(value["selected"]))
+
             key_item.setFlags(key_item.flags() ^ QtCore.Qt.ItemIsEditable)
             val_item.setFlags(val_item.flags() ^ QtCore.Qt.ItemIsEditable)
             self.table.setItem(i, 0, key_item)
@@ -290,15 +293,24 @@ class editable_value_table:
                 val_item.setValidator(QtGui.QDoubleValidator())
                 val_item.setText(str(value))
                 self.table.setCellWidget(i, 1, val_item)
+
             elif isinstance(value, bool):
                 val_item = QtWidgets.QComboBox()
                 val_item.addItem("True")
                 val_item.addItem("False")
-                if val_item is True:
+                if value is True:
                     val_item.setCurrentIndex(0)
                 else:
                     val_item.setCurrentIndex(1)
                 self.table.setCellWidget(i, 1, val_item)
+
+            elif isinstance(value, dict):
+                val_item = QtWidgets.QComboBox()
+                for item in value["options"]:
+                    val_item.addItem(item)
+                val_item.setCurrentIndex(value["options"].index(value["selected"]))
+                self.table.setCellWidget(i, 1, val_item)
+
             elif isinstance(value, str):
                 val_item = QtWidgets.QLineEdit()
                 val_item.setText(str(value))
@@ -325,6 +337,8 @@ class editable_value_table:
                     self.values[key] = True
                 else:
                     self.values[key] = False
+            elif isinstance(value, dict):
+                self.values[key]["selected"] = self.table.cellWidget(i, 1).currentText()
             elif isinstance(value, str):
                 self.values[key] = str(self.table.cellWidget(i, 1).text())
             elif isinstance(value, int):
