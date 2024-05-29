@@ -118,7 +118,7 @@ void sim::solve_ports()
 	port_eigen_vectors.clear();
 	port_eigen_wave_numbers.clear();
 	port_dof_maps.clear();
-	for (int p = 0; p < sim_ports.elements.size(); p++)
+	for (int p = 0; p < sim_ports.num_ports(); p++)
 	{
 		auto dof_map = fem::_2d::mixed_order::generate_dof_map(nodes, sim_ports.elements[p], boundary_edge_map);
 		port_dof_maps.push_back(dof_map);
@@ -143,23 +143,32 @@ void sim::solve_full()
 	full_solutions.clear();
 	full_dof_map.clear();
 
-	full_dof_map = fem::_3d::mixed_order::generate_dof_map(volume_elems, boundary_edge_map, boundary_face_map);
-	auto surface_elems = helpers::flatten_vector<tri>(sim_ports.elements);
-	for (int p = 0; p < sim_ports.elements.size(); p++)
+	// Assume first order mode termination
+	std::vector<std::complex<double>> boundary_k;
+	for (int p = 0; p < sim_ports.num_ports(); p++)
 	{
-		std::complex<double> k_inc = port_eigen_wave_numbers[p](0);
-		auto A = fem::_3d::mixed_order::assemble_A(
-			nodes,
-			volume_elems,
-			materials,
-			surface_elems,
-			full_dof_map,
-			wavenumber,
-			k_inc * std::complex<double>{0, 1}
-		);
-		Eigen::SparseLU<Eigen::SparseMatrix<std::complex<double>>, Eigen::COLAMDOrdering<int>> solver;
-		solver.analyzePattern(A);
-		solver.factorize(A);
+		boundary_k.push_back(port_eigen_wave_numbers[p](0));
+	}
+
+	// Generate system matrix and factorize
+	full_dof_map = fem::_3d::mixed_order::generate_dof_map(volume_elems, boundary_edge_map, boundary_face_map);
+	auto A = fem::_3d::mixed_order::assemble_A(
+		nodes,
+		volume_elems,
+		materials,
+		sim_ports.elements,
+		full_dof_map,
+		wavenumber,
+		boundary_k
+	);
+	Eigen::SparseLU<Eigen::SparseMatrix<std::complex<double>>, Eigen::COLAMDOrdering<int>> solver;
+	solver.analyzePattern(A);
+	solver.factorize(A);
+
+	// Solve for all port excitations
+	for (int p = 0; p < sim_ports.num_ports(); p++)
+	{
+		std::complex<double> k_inc = boundary_k[p];
 
 		auto b = fem::_3d::mixed_order::assemble_b(
 			nodes,

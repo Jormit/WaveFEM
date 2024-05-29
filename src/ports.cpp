@@ -67,3 +67,8 @@ void ports::setup_port_nodes_faces_edges(std::vector<node>& nodes, std::unordere
 		}
 	}
 }
+
+size_t ports::num_ports() const
+{
+	return elements.size();
+}

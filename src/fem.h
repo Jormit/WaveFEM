@@ -83,8 +83,8 @@ namespace fem
 			dof_pair global_dof_pair(const tet& elem, const size_t& dof_num);
 
 			Eigen::SparseMatrix<std::complex<double>> assemble_A(const std::vector<node>& nodes, const std::vector<tet>& elems,
-				std::vector<material> materials, const std::vector<tri>& surface_elems, const dof_map& dof_map,
-				std::complex<double> ki, std::complex<double> gamma);
+				std::vector<material> materials, const std::vector<std::vector<tri>>& boundary_elems, const dof_map& dof_map,
+				std::complex<double> ki, std::vector<std::complex<double>> boundary_k);
 
 			Eigen::VectorXcd assemble_b(const std::vector<node>& nodes, const std::vector<tri>& surface_elems,
 				const dof_map& solution_dof_map, const dof_map& excitation_dof_map,

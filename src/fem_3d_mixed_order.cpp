@@ -238,8 +238,8 @@ fem::dof_pair fem::_3d::mixed_order::global_dof_pair(const tet& elem, const size
 }
 
 Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(const std::vector<node>& nodes,
-	const std::vector<tet>& elems, std::vector<material> materials, const std::vector<tri>& surface_elems,
-	const dof_map& dof_map, std::complex<double> k0, std::complex<double> gamma)
+	const std::vector<tet>& elems, std::vector<material> materials, const std::vector<std::vector<tri>>& boundary_elems,
+	const dof_map& dof_map, std::complex<double> k0, std::vector<std::complex<double>> boundary_k)
 {
 	Eigen::SparseMatrix<std::complex<double>> A(dof_map.size(), dof_map.size());
 	A.reserve(Eigen::VectorXi::Constant(dof_map.size(), 100));
@@ -266,26 +266,30 @@ Eigen::SparseMatrix<std::complex<double>> fem::_3d::mixed_order::assemble_A(cons
 		}
 	}
 
-	for (const auto& e : surface_elems)
+	for (size_t i = 0; i < boundary_elems.size(); i++)
 	{
-		Eigen::Matrix<double, 3, 2> coords = e.coordinate_matrix(nodes);
-		auto B_local = B(coords);
-
-		for (int local_dof_i = 0; local_dof_i < 8; local_dof_i++)
+		for (const auto& e : boundary_elems[i])
 		{
-			auto global_dof_pair_i = fem::_2d::mixed_order::global_dof_pair(e, local_dof_i);
-			if (!dof_map.contains(global_dof_pair_i)) continue;
-			auto global_dof_i = dof_map.at(global_dof_pair_i);
-			for (size_t local_dof_j = 0; local_dof_j < 8; local_dof_j++)
-			{
-				auto global_dof_pair_j = fem::_2d::mixed_order::global_dof_pair(e, local_dof_j);
-				if (!dof_map.contains(global_dof_pair_j)) continue;
-				auto global_dof_j = dof_map.at(global_dof_pair_j);
+			Eigen::Matrix<double, 3, 2> coords = e.coordinate_matrix(nodes);
+			auto B_local = B(coords);
 
-				A.coeffRef(global_dof_i, global_dof_j) += gamma * B_local(local_dof_i, local_dof_j);
+			for (int local_dof_i = 0; local_dof_i < 8; local_dof_i++)
+			{
+				auto global_dof_pair_i = fem::_2d::mixed_order::global_dof_pair(e, local_dof_i);
+				if (!dof_map.contains(global_dof_pair_i)) continue;
+				auto global_dof_i = dof_map.at(global_dof_pair_i);
+				for (size_t local_dof_j = 0; local_dof_j < 8; local_dof_j++)
+				{
+					auto global_dof_pair_j = fem::_2d::mixed_order::global_dof_pair(e, local_dof_j);
+					if (!dof_map.contains(global_dof_pair_j)) continue;
+					auto global_dof_j = dof_map.at(global_dof_pair_j);
+
+					A.coeffRef(global_dof_i, global_dof_j) += boundary_k[i] * std::complex<double>{0, 1} * B_local(local_dof_i, local_dof_j);
+				}
 			}
 		}
 	}
+	
 
 	A.makeCompressed();
 
