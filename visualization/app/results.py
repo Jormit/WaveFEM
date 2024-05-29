@@ -38,6 +38,13 @@ class dataset_3d:
         vector_mesh = mesh.glyph(orient="vectors", factor=1/max_mag * 10)
         return plotter.add_mesh(vector_mesh, reset_camera=False, cmap='jet')
     
+    def clip_plane(self, plotter):
+        vec_real = np.real(self.vec)
+        vec_real_mag = np.linalg.norm(vec_real, axis=3)
+        mesh = pv.StructuredGrid(self.x, self.y, self.z)
+        mesh.point_data['values'] = vec_real_mag.ravel(order='F')
+        return plotter.add_mesh_slice(mesh, cmap='jet')
+    
 class dataset_3d_unstructured:
     def __init__(self, filename):
         self.x, self.y, self.z, self.vec = data_loader.import_unstructured_3d_field(filename)
@@ -87,7 +94,8 @@ class results:
         self.active_dataset = self.datasets[name].plot(plotter)
 
     def deactivate_dataset(self, plotter):
-        if (self.active_dataset is not None):
+        if (self.active_dataset is not None):            
+            plotter.clear_plane_widgets()
             plotter.remove_actor(self.active_dataset)
             self.active_dataset = None
 
