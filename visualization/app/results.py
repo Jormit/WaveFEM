@@ -30,29 +30,41 @@ class dataset_vtk (dataset_base):
 class dataset_3d (dataset_base):
     def __init__(self, filename):
         self.x, self.y, self.z, self.vec = data_loader.import_structured_3d_field(filename)
-        self.mode = "Contour"
+        self.style = "Contour"
+        self.quantity = "Real"
 
     def plot(self, plotter):
-        if self.mode == "Contour":
+        if self.style == "Contour":
             return self.contour_plot(plotter)
-        elif self.mode == "Vector":
+        elif self.style == "Vector":
             return self.vector_plot(plotter)
         else:
             return self.clip_plane(plotter)
 
     def parameters(self):
         return {
-            "modes" : {
+            "Plot Style" : {
                 "options" : ["Contour", "Vector", "Plane"],
-                "selected" : self.mode
+                "selected" : self.style
+            },
+            "Quantity" : {
+                "options" : ["Real", "Complex Magnitude"],
+                "selected" : self.quantity
             }
         }
     
     def set_parameters(self, params):
-        self.mode = params["modes"]["selected"]
+        self.style = params["Plot Style"]["selected"]
+        self.quantity = params["Quantity"]["selected"]
+
+    def plot_quantity(self):
+        if (self.quantity == "Complex Magnitude"):
+            return np.abs(self.vec)
+        else:
+            return np.real(self.vec)
 
     def contour_plot(self, plotter):
-        vec_real = np.real(self.vec)
+        vec_real = self.plot_quantity()
         vec_real_mag = np.linalg.norm(vec_real, axis=3)
         mesh = pv.StructuredGrid(self.x, self.y, self.z)
         mesh.point_data['values'] = vec_real_mag.ravel(order='F')
@@ -60,7 +72,7 @@ class dataset_3d (dataset_base):
         return plotter.add_mesh(isos, opacity=0.7, cmap='jet', reset_camera=False)
     
     def vector_plot(self, plotter):
-        vec_real = np.real(self.vec)
+        vec_real = self.plot_quantity()
         max_mag = np.max(np.linalg.norm(vec_real, axis=3))
         mesh = pv.StructuredGrid(self.x, self.y, self.z)
         mesh['vectors'] = np.column_stack((vec_real[:,:,:,0].ravel(order='F'), vec_real[:,:,:,1].ravel(order='F'), vec_real[:,:,:,2].ravel(order='F')))
@@ -69,7 +81,7 @@ class dataset_3d (dataset_base):
         return plotter.add_mesh(vector_mesh, reset_camera=False, cmap='jet')
     
     def clip_plane(self, plotter):
-        vec_real = np.real(self.vec)
+        vec_real = self.plot_quantity()
         vec_real_mag = np.linalg.norm(vec_real, axis=3)
         mesh = pv.StructuredGrid(self.x, self.y, self.z)
         mesh.point_data['values'] = vec_real_mag.ravel(order='F')
