@@ -23,7 +23,7 @@ sim sim::create(sim_config config, std::string data_path)
 {
 	// Import step file
 	mesher_interface::initialize();
-	auto model_ids = mesher_interface::import_model(data_path + config.model_file);
+	auto model_ids = mesher_interface::import_step(data_path + config.model_file);
 
 	// Create bounding box with user specified padding
 	auto boundary = mesher_interface::get_bounding_box();

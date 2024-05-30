@@ -12,7 +12,7 @@ void mesher_interface::initialize() {
 	gmsh::option::setNumber("General.Terminal", 0);
 }
 
-std::vector<int> mesher_interface::import_model(const std::string& filename)
+std::vector<int> mesher_interface::import_step(const std::string& filename)
 {
 	gmsh::vectorpair imported_dim_tags;
 	gmsh::model::occ::importShapes(filename, imported_dim_tags);
