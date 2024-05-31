@@ -1,20 +1,20 @@
 from qtpy import QtWidgets, QtGui, QtCore
 
-app_icon = "./visualization/app/assets/icons/application-wave.png"
-save_icon = "./visualization/app/assets/icons/disk.png"
-open_icon = "./visualization/app/assets/icons/folder.png"
-import_icon = "./visualization/app/assets/icons/application-import.png"
-close_icon = "./visualization/app/assets/icons/cross.png"
-select_behind_icon = "./visualization/app/assets/icons/arrow-return.png"
-warning_icon = "./visualization/app/assets/icons/exclamation.png"
-validate_icon = "./visualization/app/assets/icons/tick.png"
-run_icon = "./visualization/app/assets/icons/arrow.png"
+app_icon = "./visualization/assets/icons/application-wave.png"
+save_icon = "./visualization/assets/icons/disk.png"
+open_icon = "./visualization/assets/icons/folder.png"
+import_icon = "./visualization/assets/icons/application-import.png"
+close_icon = "./visualization/assets/icons/cross.png"
+select_behind_icon = "./visualization/assets/icons/arrow-return.png"
+warning_icon = "./visualization/assets/icons/exclamation.png"
+validate_icon = "./visualization/assets/icons/tick.png"
+run_icon = "./visualization/assets/icons/arrow.png"
 
-solids_icon = "./visualization/app/assets/icons/application-resize.png"
-ports_icon = "./visualization/app/assets/icons/slide.png"
-materials_icon = "./visualization/app/assets/icons/ice.png"
-setup_icon = "./visualization/app/assets/icons/gear.png"
-results_icon = "./visualization/app/assets/icons/document-table.png"
+solids_icon = "./visualization/assets/icons/application-resize.png"
+ports_icon = "./visualization/assets/icons/slide.png"
+materials_icon = "./visualization/assets/icons/ice.png"
+setup_icon = "./visualization/assets/icons/gear.png"
+results_icon = "./visualization/assets/icons/document-table.png"
 
 class menu:
     def __init__(self,
