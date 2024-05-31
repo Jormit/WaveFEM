@@ -23,3 +23,9 @@ setup = {
 }
 
 sim_location = "./out/build/x64-release/FEM3D.exe"
+
+regular_color = [0.5, 0.5, 0.5]
+
+highlight_color = [1, 0, 1]
+
+edge_color = [0, 0, 0]

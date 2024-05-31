@@ -4,9 +4,7 @@ import pyvista as pv
 import geo
 import shutil
 
-regular_color = [0.5, 0.5, 0.5]
-highlight_color = [1, 0, 1]
-edge_color = [0, 0, 0]
+import defaults
 
 class model:
     def __init__(self, filename):
@@ -37,8 +35,8 @@ class model:
             mesh = pv.PolyData(vertices, np.hstack((num_vertices, triangles)))
             feat_edges = mesh.extract_feature_edges()
             feat_edges.clear_data()
-            self.plot_handles.append(plotter.add_mesh(mesh, color=regular_color))
-            plotter.add_mesh(feat_edges, color=edge_color, render_lines_as_tubes=True, line_width=2)
+            self.plot_handles.append(plotter.add_mesh(mesh, color=defaults.regular_color))
+            plotter.add_mesh(feat_edges, color=defaults.edge_color, render_lines_as_tubes=True, line_width=2)
         plotter.add_axes()
         plotter.show()
     
@@ -47,7 +45,7 @@ class model:
     
     def reset_shading(self, opacity=1):
         for handle in self.plot_handles:
-            handle.GetProperty().SetColor(regular_color)
+            handle.GetProperty().SetColor(defaults.regular_color)
             handle.GetProperty().SetOpacity(opacity)
     
     def highlight_part(self, id):
@@ -56,7 +54,7 @@ class model:
         s = self.shape.solids().all()[id]
         for f in s.faces().vals():
             tag = self.face_2_tag[f]
-            self.plot_handles[tag].GetProperty().SetColor(highlight_color)
+            self.plot_handles[tag].GetProperty().SetColor(defaults.highlight_color)
             self.plot_handles[tag].GetProperty().SetOpacity(1)
 
         self.highlighted_parts.append(id)
@@ -84,7 +82,7 @@ class model:
             tag = self.face_2_tag[f]
             self.highlighted_surface = tag
 
-            self.plot_handles[tag].GetProperty().SetColor(highlight_color)
+            self.plot_handles[tag].GetProperty().SetColor(defaults.highlight_color)
             self.plot_handles[tag].GetProperty().SetOpacity(1)            
 
             self.selected_face_index = (self.selected_face_index + 1) % num_selected_faces
@@ -100,7 +98,7 @@ class model:
         self.reset_shading(0.3)
         for f in faces:
             tag = self.face_2_tag[f]
-            self.plot_handles[tag].GetProperty().SetColor(highlight_color)
+            self.plot_handles[tag].GetProperty().SetColor(defaults.highlight_color)
             self.plot_handles[tag].GetProperty().SetOpacity(1)
 
     def move_file_to(self, filename):
