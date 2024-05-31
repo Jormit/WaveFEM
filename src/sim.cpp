@@ -193,6 +193,8 @@ void sim::solve_full()
 		);		
 		full_solutions.push_back(solver.solve(-b));
 	}
+
+	// result_writer::write_mtx("mat.mtx", A);
 }
 
 void sim::generate_outputs(std::string directory, sim_config config)
