@@ -271,8 +271,8 @@ std::unordered_set<size_t> mesher_interface::get_edges_on_line(int line_id)
 {
 	std::unordered_set<size_t> edges;
 	std::vector<int> elementTypes;
-	std::vector<std::vector<std::size_t>> elementTags;
-	std::vector<std::vector<std::size_t>> nodeTags;
+	std::vector<std::vector<size_t>> elementTags;
+	std::vector<std::vector<size_t>> nodeTags;
 	gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 1, line_id);
 	std::vector<size_t> edge_tags;
 	std::vector<int> edge_orientations;
@@ -329,35 +329,67 @@ tet mesher_interface::assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4)
 			0 };
 }
 
-std::vector<tet> mesher_interface::get_volume_elems(int id)
+std::pair<std::vector<tet>, size_t> mesher_interface::get_all_volume_elems()
 {
 	std::vector<int> elementTypes;
-	std::vector<std::vector<std::size_t>> elementTags;
-	std::vector<std::vector<std::size_t>> nodeTags;
+	std::vector<std::vector<size_t>> elementTags;
+	std::vector<std::vector<size_t>> nodeTags;
+	gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 3, -1);
+
+	auto elementTags_flattened = helpers::flatten_vector(elementTags);
+	auto nodeTags_flattened = helpers::flatten_vector(nodeTags);
+	size_t num_elems = elementTags_flattened.size();
+	size_t offset = elementTags_flattened[0];
+
+	std::vector<tet> elems_to_return(num_elems);
+	size_t i = 0;
+	for (auto elem : elementTags_flattened)
+	{
+		size_t n1 = nodeTags_flattened[i * 4];
+		size_t n2 = nodeTags_flattened[i * 4 + 1];
+		size_t n3 = nodeTags_flattened[i * 4 + 2];
+		size_t n4 = nodeTags_flattened[i * 4 + 3];
+		elems_to_return[elem - elementTags_flattened[0]] = assemble_tet(n1, n2, n3, n4);
+		i++;
+	}
+	return { elems_to_return, offset };
+}
+
+std::vector<size_t> mesher_interface::get_volume_elem_ids(int id)
+{
+	std::vector<int> elementTypes;
+	std::vector<std::vector<size_t>> elementTags;
+	std::vector<std::vector<size_t>> nodeTags;
 	gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 3, id);
 
-	std::vector<tet> elems_to_return;
-	elems_to_return.reserve(elementTags[0].size());
-	for (int i = 0; i < elementTags[0].size(); i++)
-	{
-		size_t n1 = nodeTags[0][i * 4];
-		size_t n2 = nodeTags[0][i * 4 + 1];
-		size_t n3 = nodeTags[0][i * 4 + 2];
-		size_t n4 = nodeTags[0][i * 4 + 3];
-		elems_to_return.push_back(assemble_tet(n1, n2, n3, n4));
-	}
+	return elementTags[0];
+}
 
+std::vector<std::vector<size_t>> mesher_interface::get_volume_elem_ids(std::vector<int> id)
+{
+	std::vector<std::vector<size_t>> elems_to_return;
+	for (auto i : id)
+	{
+		elems_to_return.push_back(get_volume_elem_ids(i));
+	}
 	return elems_to_return;
 }
 
-std::vector<std::vector<tet>> mesher_interface::get_volume_elems(std::vector<int> id)
+void mesher_interface::label_elems_in_volume(int id, size_t offset, size_t label, std::vector<tet>& elems)
 {
-	std::vector<std::vector<tet>> elems_to_return;
-	for (auto i : id)
+	auto ids = get_volume_elem_ids(id);
+	for (auto id : ids)
 	{
-		elems_to_return.push_back(get_volume_elems(i));
+		elems[id - offset].material_id = label;
 	}
-	return elems_to_return;
+}
+
+void mesher_interface::label_elems_in_volume(std::vector<int> ids, size_t offset, size_t label, std::vector<tet>& elems)
+{
+	for (auto id : ids)
+	{
+		label_elems_in_volume(id, offset, label, elems);
+	}
 }
 
 tri mesher_interface::assemble_tri(size_t n1, size_t n2, size_t n3)
@@ -387,8 +419,8 @@ tri mesher_interface::assemble_tri(size_t n1, size_t n2, size_t n3)
 std::vector<tri> mesher_interface::get_surface_elems(int id)
 {
 	std::vector<int> elementTypes;
-	std::vector<std::vector<std::size_t>> elementTags;
-	std::vector<std::vector<std::size_t>> nodeTags;
+	std::vector<std::vector<size_t>> elementTags;
+	std::vector<std::vector<size_t>> nodeTags;
 	gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 2, id);
 
 	std::vector<tri> elems_to_return;

@@ -112,46 +112,66 @@ pml_boundary pml::create(double pml_box_padding)
 	return { x_ids, y_ids, z_ids, xy_ids, xz_ids, yz_ids, xyz_ids };
 }
 
-std::vector<tet> pml::get_elements(pml_boundary pml_volumes)
+void pml::label_elements(pml_boundary pml_volumes, size_t offset, std::vector<tet>& elems)
 {
-	std::vector<tet> elements;
+	mesher_interface::label_elems_in_volume(
+		{ 
+			pml_volumes.x_ids[0],
+			pml_volumes.x_ids[1]
+		},
+		offset,	mat::PML_X, elems);
 
-	auto x_elems = helpers::flatten_vector(
-		mesher_interface::get_volume_elems({ pml_volumes.x_ids[0], pml_volumes.x_ids[1] }));
-	mat::label_elems(x_elems, mat::PML_X);
-	elements.insert(elements.end(), x_elems.begin(), x_elems.end());
+	mesher_interface::label_elems_in_volume(
+		{
+			pml_volumes.y_ids[0],
+			pml_volumes.y_ids[1]
+		},
+		offset, mat::PML_Y, elems);
 
-	auto y_elems = helpers::flatten_vector(
-		mesher_interface::get_volume_elems({ pml_volumes.y_ids[0], pml_volumes.y_ids[1] }));
-	mat::label_elems(y_elems, mat::PML_Y);
-	elements.insert(elements.end(), y_elems.begin(), y_elems.end());
+	mesher_interface::label_elems_in_volume(
+		{
+			pml_volumes.z_ids[0],
+			pml_volumes.z_ids[1]
+		},
+		offset, mat::PML_Z, elems);
 
-	auto z_elems = helpers::flatten_vector(
-		mesher_interface::get_volume_elems({ pml_volumes.z_ids[0], pml_volumes.z_ids[1] }));
-	mat::label_elems(z_elems, mat::PML_Z);
-	elements.insert(elements.end(), z_elems.begin(), z_elems.end());
-	
-	auto xy_elems = helpers::flatten_vector(
-		mesher_interface::get_volume_elems({ pml_volumes.xy_ids[0], pml_volumes.xy_ids[1], pml_volumes.xy_ids[2], pml_volumes.xy_ids[3] }));
-	mat::label_elems(xy_elems, mat::PML_XY);
-	elements.insert(elements.end(), xy_elems.begin(), xy_elems.end());
+	mesher_interface::label_elems_in_volume(
+		{ 
+			pml_volumes.xy_ids[0],
+			pml_volumes.xy_ids[1],
+			pml_volumes.xy_ids[2],
+			pml_volumes.xy_ids[3] 
+		},
+		offset, mat::PML_XY, elems);
 
-	auto xz_elems = helpers::flatten_vector(
-		mesher_interface::get_volume_elems({ pml_volumes.xz_ids[0], pml_volumes.xz_ids[1], pml_volumes.xz_ids[2], pml_volumes.xz_ids[3] }));
-	mat::label_elems(xz_elems, mat::PML_XZ);
-	elements.insert(elements.end(), xz_elems.begin(), xz_elems.end());
+	mesher_interface::label_elems_in_volume(
+		{
+			pml_volumes.xz_ids[0],
+			pml_volumes.xz_ids[1],
+			pml_volumes.xz_ids[2],
+			pml_volumes.xz_ids[3]
+		},
+		offset, mat::PML_XZ, elems);
 
-	auto yz_elems = helpers::flatten_vector(
-		mesher_interface::get_volume_elems({ pml_volumes.yz_ids[0], pml_volumes.yz_ids[1], pml_volumes.yz_ids[2], pml_volumes.yz_ids[3] }));
-	mat::label_elems(yz_elems, mat::PML_YZ);
-	elements.insert(elements.end(), yz_elems.begin(), yz_elems.end());
+	mesher_interface::label_elems_in_volume(
+		{
+			pml_volumes.yz_ids[0],
+			pml_volumes.yz_ids[1],
+			pml_volumes.yz_ids[2],
+			pml_volumes.yz_ids[3]
+		},
+		offset, mat::PML_YZ, elems);
 
-	auto xyz_elems = helpers::flatten_vector(
-		mesher_interface::get_volume_elems({ 
-			pml_volumes.xyz_ids[0], pml_volumes.xyz_ids[1], pml_volumes.xyz_ids[2], pml_volumes.xyz_ids[3],
-			pml_volumes.xyz_ids[4], pml_volumes.xyz_ids[5], pml_volumes.xyz_ids[6], pml_volumes.xyz_ids[7] }));
-	mat::label_elems(xyz_elems, mat::PML_XYZ);
-	elements.insert(elements.end(), xyz_elems.begin(), xyz_elems.end());
-
-	return elements;
+	mesher_interface::label_elems_in_volume(
+		{
+			pml_volumes.xyz_ids[0],
+			pml_volumes.xyz_ids[1],
+			pml_volumes.xyz_ids[2],
+			pml_volumes.xyz_ids[3],
+			pml_volumes.xyz_ids[4],
+			pml_volumes.xyz_ids[5],
+			pml_volumes.xyz_ids[6],
+			pml_volumes.xyz_ids[7]
+		},
+		offset, mat::PML_XYZ, elems);
 }

@@ -58,8 +58,14 @@ namespace mesher_interface {
 	std::unordered_set<size_t> get_edges_on_line(std::vector <int> line_id);
 
 	tet assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4);
-	std::vector<tet> get_volume_elems(int id);
-	std::vector<std::vector<tet>> get_volume_elems(std::vector<int> id);
+	
+	// Vector indexed by volume id - offset
+	std::pair<std::vector<tet>, size_t> get_all_volume_elems();
+	std::vector<size_t> get_volume_elem_ids(int id);
+	std::vector<std::vector<size_t>> get_volume_elem_ids(std::vector<int> id);
+
+	void label_elems_in_volume(int id, size_t offset, size_t label, std::vector<tet>& elems);
+	void label_elems_in_volume(std::vector<int> ids, size_t offset, size_t label, std::vector<tet>& elems);
 
 	tri assemble_tri(size_t n1, size_t n2, size_t n3);
 	std::vector<tri> get_surface_elems(int id);
