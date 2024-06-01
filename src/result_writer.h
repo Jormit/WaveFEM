@@ -18,6 +18,6 @@ namespace result_writer
 	template <typename T>
 	void write_mtx(std::string filename, T A)
 	{
-		Eigen::saveMarket<T>(A, filename);
+		Eigen::saveMarket<T>(A, filename + ".mtx");
 	}
 }

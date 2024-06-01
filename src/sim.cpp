@@ -173,7 +173,7 @@ void sim::solve_full()
 		wavenumber,
 		boundary_k
 	);
-	// result_writer::write_mtx("A.mtx", A);
+	// result_writer::write_mtx("A", A);
 
 	Eigen::SparseLU<Eigen::SparseMatrix<std::complex<double>>, Eigen::COLAMDOrdering<int>> solver;
 	solver.analyzePattern(A);
@@ -192,7 +192,7 @@ void sim::solve_full()
 			port_eigen_vectors[p].col(0),
 			k_inc
 		);		
-		// result_writer::write_mtx("b.mtx", b);
+		// result_writer::write_mtx("b", b);
 
 		full_solutions.push_back(solver.solve(-b));
 	}
