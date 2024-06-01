@@ -217,3 +217,25 @@ std::vector<geo::point_3d> geo::generate_grid_points(structured_grid_3d grid)
 	}
 	return points;
 }
+
+std::map<size_t, std::pair<size_t, size_t>> geo::generate_face_to_element_map(const std::vector<geo::tet>& elems)
+{
+	std::map<size_t, std::pair<size_t, size_t>> map;
+	for (size_t i = 0; i < elems.size(); i++)
+	{
+		auto e = elems[i];
+		for (auto f : e.faces)
+		{
+			if (map.contains(f))
+			{
+				map[f].second = i;
+			}
+			else
+			{
+				map[f] = { i, i };
+			}
+		}
+	}
+
+	return map;
+}

@@ -43,7 +43,6 @@ namespace mesher_interface {
 
 	Eigen::Matrix<double, 3, 2> evaluate_surface_derivative(int surface_id, geo::point_2d point);
 
-	// Vector is indexed by node number - 1 !!!!!
 	std::vector<geo::node> get_all_nodes();
 	std::vector<size_t> get_node_ids_in_line(int id);
 	std::vector<size_t> get_node_ids_in_volume(int id);
@@ -59,7 +58,6 @@ namespace mesher_interface {
 
 	geo::tet assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4);
 	
-	// Vector indexed by volume id - offset
 	std::vector<geo::tet> get_all_volume_elems();
 	std::vector<size_t> get_volume_elem_ids(int id);
 	std::vector<std::vector<size_t>> get_volume_elem_ids(std::vector<int> id);

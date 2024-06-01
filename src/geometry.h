@@ -3,8 +3,8 @@
 #include <array>
 #include <vector>
 #include <optional>
-#include <list>
 #include <Eigen/dense>
+#include <map>
 
 namespace geo {
 	const int BOUNDARY = 0;
@@ -111,4 +111,6 @@ namespace geo {
 	std::vector<point_2d> generate_grid_points(rectangle rect, size_t num_x, size_t num_y);
 	std::vector<point_2d> generate_grid_points(structured_grid_2d grid);
 	std::vector<point_3d> generate_grid_points(structured_grid_3d grid);
+
+	std::map<size_t, std::pair<size_t, size_t>> generate_face_to_element_map(const std::vector<geo::tet>& elems);
 }

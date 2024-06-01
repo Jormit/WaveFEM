@@ -109,6 +109,8 @@ sim sim::create(sim_config config, std::string data_path)
 
 	auto bounding_box_surfaces = mesher_interface::get_bounding_box_surfaces(boundary);
 
+	// auto test = geo::generate_face_to_element_map(elements);
+
 	return {
 		std::move(boundary),
 		config.simulation_wavenumber,
