@@ -12,37 +12,28 @@ Eigen::Vector3cd post::eval_field_at_point(const sim& sim_instance, point_3d poi
 	Eigen::Vector3cd e_field;
 	Eigen::Vector3cd h_field;
 
-	auto e = mesher_interface::get_volume_element_by_coordinate(point);
-	if (!e.has_value())
+	auto element_id = mesher_interface::get_volume_element_by_coordinate(point);
+	
+	if (!element_id.has_value())
 	{
 		e_field << 0, 0, 0;
 		return e_field;
 	}
 
+	auto e = sim_instance.volume_elems[element_id.value()];
+
 	if (type == field_type::E_FIELD || type == field_type::POYNTING)
 	{
 		e_field = fem::_3d::mixed_order::eval_elem(sim_instance.nodes,
-			e.value(), point, sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
+			e, point, sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
 	}
 
 	if (type == field_type::H_FIELD || type == field_type::POYNTING)
 	{
-		auto obj = mesher_interface::get_volume_entity_by_coordinate(point);
-		if (!obj.has_value())
-		{
-			e_field << 0, 0, 0;
-			return e_field;
-		}
-
-		auto material_id = 0;
-		if (sim_instance.volume_material_map.contains(obj.value()))
-		{
-			material_id = sim_instance.volume_material_map.at(obj.value());
-		}
-		auto mat = sim_instance.materials[material_id];
+		auto mat = sim_instance.materials[e.material_id];
 		auto mu_inv = mat.permeability.inverse();
 		h_field = std::complex<double>{ 0, 1 } * mu_inv / (constants::mu_0 * constants::k2omega * sim_instance.wavenumber) *
-			fem::_3d::mixed_order::eval_elem_curl(sim_instance.nodes, e.value(), point,
+			fem::_3d::mixed_order::eval_elem_curl(sim_instance.nodes, e, point,
 				sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
 	}
 

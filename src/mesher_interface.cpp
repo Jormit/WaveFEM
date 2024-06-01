@@ -7,6 +7,8 @@
 #include "mesher_interface.h"
 #include "helpers.h"
 
+size_t volume_elem_offset = 0;
+
 void mesher_interface::initialize() {
 	gmsh::initialize();
 	gmsh::option::setNumber("General.Terminal", 0);
@@ -329,7 +331,7 @@ tet mesher_interface::assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4)
 			0 };
 }
 
-std::pair<std::vector<tet>, size_t> mesher_interface::get_all_volume_elems()
+std::vector<tet> mesher_interface::get_all_volume_elems()
 {
 	std::vector<int> elementTypes;
 	std::vector<std::vector<size_t>> elementTags;
@@ -352,7 +354,9 @@ std::pair<std::vector<tet>, size_t> mesher_interface::get_all_volume_elems()
 		elems_to_return[elem - elementTags_flattened[0]] = assemble_tet(n1, n2, n3, n4);
 		i++;
 	}
-	return { elems_to_return, offset };
+
+	volume_elem_offset = offset;
+	return elems_to_return;
 }
 
 std::vector<size_t> mesher_interface::get_volume_elem_ids(int id)
@@ -361,6 +365,11 @@ std::vector<size_t> mesher_interface::get_volume_elem_ids(int id)
 	std::vector<std::vector<size_t>> elementTags;
 	std::vector<std::vector<size_t>> nodeTags;
 	gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 3, id);
+
+	for (size_t i = 0; i < elementTags[0].size(); i++)
+	{
+		elementTags[0][i] -= volume_elem_offset;
+	}
 
 	return elementTags[0];
 }
@@ -375,20 +384,20 @@ std::vector<std::vector<size_t>> mesher_interface::get_volume_elem_ids(std::vect
 	return elems_to_return;
 }
 
-void mesher_interface::label_elems_in_volume(int id, size_t offset, size_t label, std::vector<tet>& elems)
+void mesher_interface::label_elems_in_volume(int id, size_t label, std::vector<tet>& elems)
 {
 	auto ids = get_volume_elem_ids(id);
 	for (auto id : ids)
 	{
-		elems[id - offset].material_id = label;
+		elems[id].material_id = label;
 	}
 }
 
-void mesher_interface::label_elems_in_volume(std::vector<int> ids, size_t offset, size_t label, std::vector<tet>& elems)
+void mesher_interface::label_elems_in_volume(std::vector<int> ids, size_t label, std::vector<tet>& elems)
 {
 	for (auto id : ids)
 	{
-		label_elems_in_volume(id, offset, label, elems);
+		label_elems_in_volume(id, label, elems);
 	}
 }
 
@@ -536,7 +545,7 @@ void mesher_interface::parameterize_surface_nodes(std::vector<node>& nodes, std:
 	}
 }
 
-std::optional<tet> mesher_interface::get_volume_element_by_coordinate(point_3d point)
+std::optional<size_t> mesher_interface::get_volume_element_by_coordinate(point_3d point)
 {
 	double u, v, w;
 	size_t element_tag;
@@ -552,12 +561,7 @@ std::optional<tet> mesher_interface::get_volume_element_by_coordinate(point_3d p
 		return {};
 	}
 
-	size_t n1 = node_tags[0];
-	size_t n2 = node_tags[1];
-	size_t n3 = node_tags[2];
-	size_t n4 = node_tags[3];
-
-	return assemble_tet(n1, n2, n3, n4);
+	return element_tag - volume_elem_offset;
 }
 
 std::optional<size_t> mesher_interface::get_volume_entity_by_coordinate(point_3d point)

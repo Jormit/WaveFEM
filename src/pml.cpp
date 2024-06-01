@@ -112,28 +112,28 @@ pml_boundary pml::create(double pml_box_padding)
 	return { x_ids, y_ids, z_ids, xy_ids, xz_ids, yz_ids, xyz_ids };
 }
 
-void pml::label_elements(pml_boundary pml_volumes, size_t offset, std::vector<tet>& elems)
+void pml::label_elements(pml_boundary pml_volumes, std::vector<tet>& elems)
 {
 	mesher_interface::label_elems_in_volume(
 		{ 
 			pml_volumes.x_ids[0],
 			pml_volumes.x_ids[1]
 		},
-		offset,	mat::PML_X, elems);
+		mat::PML_X, elems);
 
 	mesher_interface::label_elems_in_volume(
 		{
 			pml_volumes.y_ids[0],
 			pml_volumes.y_ids[1]
 		},
-		offset, mat::PML_Y, elems);
+		mat::PML_Y, elems);
 
 	mesher_interface::label_elems_in_volume(
 		{
 			pml_volumes.z_ids[0],
 			pml_volumes.z_ids[1]
 		},
-		offset, mat::PML_Z, elems);
+		mat::PML_Z, elems);
 
 	mesher_interface::label_elems_in_volume(
 		{ 
@@ -142,7 +142,7 @@ void pml::label_elements(pml_boundary pml_volumes, size_t offset, std::vector<te
 			pml_volumes.xy_ids[2],
 			pml_volumes.xy_ids[3] 
 		},
-		offset, mat::PML_XY, elems);
+		mat::PML_XY, elems);
 
 	mesher_interface::label_elems_in_volume(
 		{
@@ -151,7 +151,7 @@ void pml::label_elements(pml_boundary pml_volumes, size_t offset, std::vector<te
 			pml_volumes.xz_ids[2],
 			pml_volumes.xz_ids[3]
 		},
-		offset, mat::PML_XZ, elems);
+		mat::PML_XZ, elems);
 
 	mesher_interface::label_elems_in_volume(
 		{
@@ -160,7 +160,7 @@ void pml::label_elements(pml_boundary pml_volumes, size_t offset, std::vector<te
 			pml_volumes.yz_ids[2],
 			pml_volumes.yz_ids[3]
 		},
-		offset, mat::PML_YZ, elems);
+		mat::PML_YZ, elems);
 
 	mesher_interface::label_elems_in_volume(
 		{
@@ -173,5 +173,5 @@ void pml::label_elements(pml_boundary pml_volumes, size_t offset, std::vector<te
 			pml_volumes.xyz_ids[6],
 			pml_volumes.xyz_ids[7]
 		},
-		offset, mat::PML_XYZ, elems);
+		mat::PML_XYZ, elems);
 }

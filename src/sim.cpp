@@ -81,13 +81,11 @@ sim sim::create(sim_config config, std::string data_path)
 	auto boundary_face_map = helpers::set_to_map<size_t, int>(boundary_faces, BOUNDARY);
 
 	// Get all elements and label material
-	std::vector<tet> elements;
-	size_t offset;
-	std::tie(elements, offset) = mesher_interface::get_all_volume_elems();
+	auto elements = mesher_interface::get_all_volume_elems();
 
 	if (config.pml_enable)
 	{
-		pml::label_elements(pml, offset, elements);
+		pml::label_elements(pml, elements);
 	}
 
 	std::unordered_map<size_t, size_t> volume_material_map;
@@ -98,7 +96,7 @@ sim sim::create(sim_config config, std::string data_path)
 		{
 			size_t volume_id = i + 1;
 			material_id = base_materials.size() + material_id - 1;
-			mesher_interface::label_elems_in_volume(volume_id, offset, material_id, elements);
+			mesher_interface::label_elems_in_volume(volume_id, material_id, elements);
 			volume_material_map[volume_id] = material_id;
 		}
 	}
