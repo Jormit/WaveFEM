@@ -2,17 +2,17 @@
 
 #include "geometry.h"
 
-Eigen::Vector2d point_2d::to_Eigen() const
+Eigen::Vector2d geo::point_2d::to_Eigen() const
 {
 	return Eigen::Vector2d(u, v);
 }
 
-Eigen::Vector3d point_3d::to_Eigen() const
+Eigen::Vector3d geo::point_3d::to_Eigen() const
 {
 	return Eigen::Vector3d(x, y, z);
 }
 
-void rectangle::add_padding(double x, double y)
+void geo::rectangle::add_padding(double x, double y)
 {
 	xmin -= x;
 	ymin -= y;
@@ -20,12 +20,12 @@ void rectangle::add_padding(double x, double y)
 	ymax += y;
 }
 
-void rectangle::add_padding(point_2d padding)
+void geo::rectangle::add_padding(point_2d padding)
 {
 	add_padding(padding.u, padding.v);
 }
 
-void box::add_padding(double x, double y, double z)
+void geo::box::add_padding(double x, double y, double z)
 {
 	xmin -= x;
 	ymin -= y;
@@ -35,32 +35,32 @@ void box::add_padding(double x, double y, double z)
 	zmax += z;
 }
 
-void box::add_padding(point_3d padding)
+void geo::box::add_padding(point_3d padding)
 {
 	add_padding(padding.x, padding.y, padding.z);
 }
 
-void box::add_padding(double padding)
+void geo::box::add_padding(double padding)
 {
 	add_padding(padding, padding, padding);
 }
 
-double box::x_dim()
+double geo::box::x_dim()
 {
 	return std::abs(xmax - xmin);
 }
 
-double box::y_dim()
+double geo::box::y_dim()
 {
 	return std::abs(ymax - ymin);
 }
 
-double box::z_dim()
+double geo::box::z_dim()
 {
 	return std::abs(zmax - zmin);
 }
 
-std::array<size_t, 2> tri::get_edge_nodes(size_t edge) const
+std::array<size_t, 2> geo::tri::get_edge_nodes(size_t edge) const
 {
 	switch (edge) {
 	case 0: return { nodes[0], nodes[1] };
@@ -70,7 +70,7 @@ std::array<size_t, 2> tri::get_edge_nodes(size_t edge) const
 	return { 0, 0 };
 }
 
-Eigen::Matrix<double, 3, 2> tri::coordinate_matrix(const std::vector<node>& nodes) const
+Eigen::Matrix<double, 3, 2> geo::tri::coordinate_matrix(const std::vector<node>& nodes) const
 {
 	Eigen::Matrix<double, 3, 2> coords;
 	coords <<
@@ -80,7 +80,7 @@ Eigen::Matrix<double, 3, 2> tri::coordinate_matrix(const std::vector<node>& node
 	return coords;
 }
 
-std::array<size_t, 2> tet::get_edge_nodes(size_t edge) const
+std::array<size_t, 2> geo::tet::get_edge_nodes(size_t edge) const
 {
 	switch (edge)
 	{
@@ -94,7 +94,7 @@ std::array<size_t, 2> tet::get_edge_nodes(size_t edge) const
 	return { 0, 0 };
 }
 
-std::array<size_t, 3> tet::get_face_nodes(size_t face) const
+std::array<size_t, 3> geo::tet::get_face_nodes(size_t face) const
 {
 	switch (face) {
 	case 0: return { nodes[0], nodes[1], nodes[2] };
@@ -105,7 +105,7 @@ std::array<size_t, 3> tet::get_face_nodes(size_t face) const
 	return { 0, 0, 0 };
 }
 
-Eigen::Matrix<double, 4, 3> tet::coordinate_matrix(const std::vector<node>& nodes) const
+Eigen::Matrix<double, 4, 3> geo::tet::coordinate_matrix(const std::vector<node>& nodes) const
 {
 	Eigen::Matrix<double, 4, 3> coords;
 	coords <<
@@ -116,7 +116,7 @@ Eigen::Matrix<double, 4, 3> tet::coordinate_matrix(const std::vector<node>& node
 	return coords;
 }
 
-point_3d tet::get_center(const std::vector<node>& nodes) const
+geo::point_3d geo::tet::get_center(const std::vector<node>& nodes) const
 {
 	auto x_center = nodes[this->nodes[0] - 1].coords.x + nodes[this->nodes[1] - 1].coords.x + nodes[this->nodes[2] - 1].coords.x + nodes[this->nodes[3] - 1].coords.x;
 	auto y_center = nodes[this->nodes[0] - 1].coords.y + nodes[this->nodes[1] - 1].coords.y + nodes[this->nodes[2] - 1].coords.y + nodes[this->nodes[3] - 1].coords.y;
@@ -125,7 +125,7 @@ point_3d tet::get_center(const std::vector<node>& nodes) const
 	return { x_center/3, y_center/3, z_center/3 };
 }
 
-structured_grid_2d::structured_grid_2d(rectangle rect, size_t num_x, size_t num_y)
+geo::structured_grid_2d::structured_grid_2d(rectangle rect, size_t num_x, size_t num_y)
 {
 	this->start_point = { rect.xmin, rect.ymin };
 	this->num_steps = { num_x, num_y };
@@ -135,7 +135,7 @@ structured_grid_2d::structured_grid_2d(rectangle rect, size_t num_x, size_t num_
 	};	
 }
 
-structured_grid_3d::structured_grid_3d(box box, size_t num_x, size_t num_y, size_t num_z)
+geo::structured_grid_3d::structured_grid_3d(box box, size_t num_x, size_t num_y, size_t num_z)
 {
 	this->start_point = { box.xmin, box.ymin, box.zmin };
 	this->num_steps = { num_x, num_y, num_z };
@@ -146,7 +146,7 @@ structured_grid_3d::structured_grid_3d(box box, size_t num_x, size_t num_y, size
 	};
 }
 
-std::vector<point_3d> generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z)
+std::vector<geo::point_3d> geo::generate_grid_points(box box, size_t num_x, size_t num_y, size_t num_z)
 {
 	std::vector<point_3d> points;
 	points.reserve(num_x * num_y * num_z);
@@ -166,7 +166,7 @@ std::vector<point_3d> generate_grid_points(box box, size_t num_x, size_t num_y, 
 	return points;
 }
 
-std::vector<point_2d> generate_grid_points(rectangle rect, size_t num_x, size_t num_y)
+std::vector<geo::point_2d> geo::generate_grid_points(rectangle rect, size_t num_x, size_t num_y)
 {
 	std::vector<point_2d> points;
 	points.reserve(num_x * num_y);
@@ -182,7 +182,7 @@ std::vector<point_2d> generate_grid_points(rectangle rect, size_t num_x, size_t 
 	return points;
 }
 
-std::vector<point_2d> generate_grid_points(structured_grid_2d grid)
+std::vector<geo::point_2d> geo::generate_grid_points(structured_grid_2d grid)
 {
 	std::vector<point_2d> points;
 	points.reserve(grid.num_steps[0] * grid.num_steps[1]);
@@ -198,7 +198,7 @@ std::vector<point_2d> generate_grid_points(structured_grid_2d grid)
 	return points;
 }
 
-std::vector<point_3d> generate_grid_points(structured_grid_3d grid)
+std::vector<geo::point_3d> geo::generate_grid_points(structured_grid_3d grid)
 {
 	std::vector<point_3d> points;
 	points.reserve(grid.num_steps[0] * grid.num_steps[1] * grid.num_steps[2]);

@@ -12,7 +12,7 @@ std::string result_writer::complex_number(std::complex<double> num)
 	return std::format("{}{}j", num.real(), num.imag());
 }
 
-void result_writer::write_structured_2d_field(std::string filename, structured_2d_field_data data)
+void result_writer::write_structured_2d_field(std::string filename, geo::structured_2d_field_data data)
 {
 	auto grid = data.grid;
 	auto fields = data.field;
@@ -30,7 +30,7 @@ void result_writer::write_structured_2d_field(std::string filename, structured_2
 	ofs.close();
 }
 
-void result_writer::write_structured_3d_field(std::string filename, structured_3d_field_data data)
+void result_writer::write_structured_3d_field(std::string filename, geo::structured_3d_field_data data)
 {
 	auto grid = data.grid;
 	auto fields = data.field;
@@ -48,7 +48,7 @@ void result_writer::write_structured_3d_field(std::string filename, structured_3
 	ofs.close();
 }
 
-void result_writer::write_unstructured_3d_field(std::string filename, unstructured_3d_field_data data)
+void result_writer::write_unstructured_3d_field(std::string filename, geo::unstructured_3d_field_data data)
 {
 	auto points = data.points;
 	auto fields = data.field;

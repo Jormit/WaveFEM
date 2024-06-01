@@ -42,18 +42,18 @@ namespace fem
 			std::pair<Eigen::Matrix<double, 14, 14>, Eigen::Matrix<double, 14, 14>>
 				A_B(const Eigen::Matrix<double, 3, 2>& coords, material mat, double k0);
 
-			dof_map generate_dof_map(const std::vector<node>& nodes, 
-				const std::vector<tri>& elems, std::unordered_map<size_t, int> boundary_edge_map);
-			dof_pair global_dof_pair(const tri& elem, const size_t& dof_num);
+			dof_map generate_dof_map(const std::vector<geo::node>& nodes,
+				const std::vector<geo::tri>& elems, std::unordered_map<size_t, int> boundary_edge_map);
+			dof_pair global_dof_pair(const geo::tri& elem, const size_t& dof_num);
 
 			std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
-				assemble_A_B(const std::vector<node>& nodes, const std::vector<tri>& elems,
+				assemble_A_B(const std::vector<geo::node>& nodes, const std::vector<geo::tri>& elems,
 					std::vector<material> materials, const dof_map& dof_map, double k0);
 
-			Eigen::Vector2cd eval_elem(const std::vector<node>& nodes, const tri& e, 
-				const point_2d& eval_point, const dof_map& dof_map, const Eigen::VectorXcd& solution);
+			Eigen::Vector2cd eval_elem(const std::vector<geo::node>& nodes, const geo::tri& e,
+				const geo::point_2d& eval_point, const dof_map& dof_map, const Eigen::VectorXcd& solution);
 
-			Eigen::Vector2cd eval_elem(const tri& e, const Eigen::Vector3d& lambda,
+			Eigen::Vector2cd eval_elem(const geo::tri& e, const Eigen::Vector3d& lambda,
 				const Eigen::Matrix<double, 3, 2>& nabla_lambda, const dof_map& dof_map, const Eigen::VectorXcd& solution);
 		}
 	}
@@ -75,25 +75,25 @@ namespace fem
 
 			Eigen::Matrix<double, 8, 8> B(const Eigen::Matrix<double, 3, 2>& coords);
 
-			Eigen::Matrix<std::complex<double>, 8, 1> b(const tri& e, const Eigen::Matrix<double, 3, 2>& coords,
+			Eigen::Matrix<std::complex<double>, 8, 1> b(const geo::tri& e, const Eigen::Matrix<double, 3, 2>& coords,
 				const dof_map& dof_map, const Eigen::VectorXd& solution);
 
-			dof_map generate_dof_map(const std::vector<tet>& elems,
+			dof_map generate_dof_map(const std::vector<geo::tet>& elems,
 				std::unordered_map<size_t, int> boundary_edge_map, std::unordered_map<size_t, int> boundary_face_map);
-			dof_pair global_dof_pair(const tet& elem, const size_t& dof_num);
+			dof_pair global_dof_pair(const geo::tet& elem, const size_t& dof_num);
 
-			Eigen::SparseMatrix<std::complex<double>> assemble_A(const std::vector<node>& nodes, const std::vector<tet>& elems,
-				std::vector<material> materials, const std::vector<std::vector<tri>>& boundary_elems, const dof_map& dof_map,
+			Eigen::SparseMatrix<std::complex<double>> assemble_A(const std::vector<geo::node>& nodes, const std::vector<geo::tet>& elems,
+				std::vector<material> materials, const std::vector<std::vector<geo::tri>>& boundary_elems, const dof_map& dof_map,
 				std::complex<double> ki, std::vector<std::complex<double>> boundary_k);
 
-			Eigen::VectorXcd assemble_b(const std::vector<node>& nodes, const std::vector<tri>& surface_elems,
+			Eigen::VectorXcd assemble_b(const std::vector<geo::node>& nodes, const std::vector<geo::tri>& surface_elems,
 				const dof_map& solution_dof_map, const dof_map& excitation_dof_map,
 				const Eigen::VectorXd& excitation, std::complex<double> ki);
 
-			Eigen::Vector3cd eval_elem(const std::vector<node>& nodes, const tet& e, const point_3d& eval_point,
+			Eigen::Vector3cd eval_elem(const std::vector<geo::node>& nodes, const geo::tet& e, const geo::point_3d& eval_point,
 				const dof_map& dof_map, const Eigen::VectorXcd& solution);
 
-			Eigen::Vector3cd eval_elem_curl(const std::vector<node>& nodes, const tet& e, const point_3d& eval_point,
+			Eigen::Vector3cd eval_elem_curl(const std::vector<geo::node>& nodes, const geo::tet& e, const geo::point_3d& eval_point,
 				const dof_map& dof_map, const Eigen::VectorXcd& solution);
 
 		}

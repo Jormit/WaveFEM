@@ -7,7 +7,7 @@
 #include "helpers.h"
 #include "constants.h"
 
-Eigen::Vector3cd post::eval_field_at_point(const sim& sim_instance, point_3d point, size_t port_num, field_type type)
+Eigen::Vector3cd post::eval_field_at_point(const sim& sim_instance, geo::point_3d point, size_t port_num, field_type type)
 {
 	Eigen::Vector3cd e_field;
 	Eigen::Vector3cd h_field;
@@ -51,19 +51,19 @@ Eigen::Vector3cd post::eval_field_at_point(const sim& sim_instance, point_3d poi
 }
 
 Eigen::Vector2cd post::eval_surface_field_at_parametric_point(Eigen::VectorXcd solution,
-	fem::dof_map dof_map, std::vector<node> nodes, int surface_id, point_2d point)
+	fem::dof_map dof_map, std::vector<geo::node> nodes, int surface_id, geo::point_2d point)
 {
 	auto e = mesher_interface::get_surface_element_by_parametric_coordinate(point, surface_id);
 	return fem::_2d::mixed_order::eval_elem(nodes, e, { point.u, point.v }, dof_map, solution);
 }
 
-structured_2d_field_data post::eval_port(const sim& sim_instance, size_t port_num, size_t mode, size_t num_x, size_t num_y)
+geo::structured_2d_field_data post::eval_port(const sim& sim_instance, size_t port_num, size_t mode, size_t num_x, size_t num_y)
 {
 	auto bounds = sim_instance.sim_ports.parametric_bounds[port_num];
 	bounds.add_padding(-1, -1);
 	auto points = generate_grid_points(bounds, num_x, num_y);
 
-	structured_grid_2d grid(bounds, num_x, num_y);
+	geo::structured_grid_2d grid(bounds, num_x, num_y);
 	Eigen::MatrixX2cd field (points.size(), 2);
 
 	for (size_t i = 0; i < points.size(); i++)
@@ -79,13 +79,14 @@ structured_2d_field_data post::eval_port(const sim& sim_instance, size_t port_nu
 	return { grid, field };
 }
 
-structured_2d_field_data post::eval_port_from_3d(const sim& sim_instance, size_t eval_port_num, size_t driven_port_num, size_t num_x, size_t num_y)
+geo::structured_2d_field_data post::eval_port_from_3d(const sim& sim_instance, size_t eval_port_num,
+	size_t driven_port_num, size_t num_x, size_t num_y)
 {
 	auto bounds = sim_instance.sim_ports.parametric_bounds[eval_port_num];
 	bounds.add_padding(-1, -1);
 	auto points = generate_grid_points(bounds, num_x, num_y);
 
-	structured_grid_2d grid(bounds, num_x, num_y);
+	geo::structured_grid_2d grid(bounds, num_x, num_y);
 	Eigen::MatrixX2cd field(points.size(), 2);
 
 	for (size_t i = 0; i < points.size(); i++)
@@ -101,11 +102,12 @@ structured_2d_field_data post::eval_port_from_3d(const sim& sim_instance, size_t
 	return { grid, field };
 }
 
-structured_3d_field_data post::eval_full(const sim& sim_instance, size_t port_num, size_t num_x, size_t num_y, size_t num_z, field_type type)
+geo::structured_3d_field_data post::eval_full(const sim& sim_instance, size_t port_num,
+	size_t num_x, size_t num_y, size_t num_z, field_type type)
 {
-	auto points = generate_grid_points(sim_instance.bbox, num_x, num_y, num_z);
+	auto points = geo::generate_grid_points(sim_instance.bbox, num_x, num_y, num_z);
 
-	structured_grid_3d grid(sim_instance.bbox, num_x, num_y, num_z);
+	geo::structured_grid_3d grid(sim_instance.bbox, num_x, num_y, num_z);
 	Eigen::MatrixX3cd field(points.size(), 3);
 
 	for (size_t i = 0; i < points.size(); i++)
@@ -146,7 +148,8 @@ Eigen::MatrixXcd post::eval_s_parameters(const sim& sim_instance, size_t num_x, 
 	return s_params;
 }
 
-unstructured_3d_field_data post::project_2d_structured_surface_field_into_3d(structured_2d_field_data data, int surface_id)
+geo::unstructured_3d_field_data post::project_2d_structured_surface_field_into_3d(
+	geo::structured_2d_field_data data, int surface_id)
 {
 	auto points = generate_grid_points(data.grid);
 

@@ -20,6 +20,6 @@ struct pml_boundary
 namespace pml
 {
 	pml_boundary create(double pml_box_padding);
-	void label_elements(pml_boundary pml_volumes, std::vector<tet>& elems);
+	void label_elements(pml_boundary pml_volumes, std::vector<geo::tet>& elems);
 }
 

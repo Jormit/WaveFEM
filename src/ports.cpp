@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-ports::ports(std::vector<box> boxes, std::unordered_map<size_t, size_t> volume_material_map)
+ports::ports(std::vector<geo::box> boxes, std::unordered_map<size_t, size_t> volume_material_map)
 {
 	entity_ids = mesher_interface::get_entities_in_bounding_box(2, boxes);
 	dummy_ids = mesher_interface::fuse_surfaces(entity_ids, false);
@@ -28,7 +28,8 @@ ports::ports(std::vector<box> boxes, std::unordered_map<size_t, size_t> volume_m
 	}
 }
 
-void ports::setup_port_nodes_faces_edges(std::vector<node>& nodes, std::unordered_map<size_t, int>& boundary_edge_map, std::unordered_map<size_t, int>& boundary_face_map)
+void ports::setup_port_nodes_faces_edges(std::vector<geo::node>& nodes, std::unordered_map<size_t,
+	int>& boundary_edge_map, std::unordered_map<size_t, int>& boundary_face_map)
 {
 	mesher_interface::parameterize_surface_nodes(nodes, dummy_ids, elements);
 
@@ -56,7 +57,7 @@ void ports::setup_port_nodes_faces_edges(std::vector<node>& nodes, std::unordere
 			auto edges = mesher_interface::get_edges_on_line(e);
 			for (auto edge : edges)
 			{
-				boundary_edge_map[edge] = PORT_OUTER_BOUNDARY;
+				boundary_edge_map[edge] = geo::PORT_OUTER_BOUNDARY;
 			}			
 
 			auto edge_nodes = mesher_interface::get_node_ids_in_line(e);

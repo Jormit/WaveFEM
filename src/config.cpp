@@ -18,7 +18,7 @@ sim_config::sim_config(std::string filename)
 	{
 		f.open(filename);
 	}
-	catch (std::system_error& e) 
+	catch (...)
 	{
 		std::cerr << std::format("Could not open \"{}\"", filename) << std::endl;
 		exit(1);

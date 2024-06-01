@@ -39,7 +39,7 @@ std::vector<material> mat::load_user_materials(std::vector<material_config> mate
 	return user_materials;
 }
 
-void mat::label_elems(std::vector<tet>& elems, size_t material)
+void mat::label_elems(std::vector<geo::tet>& elems, size_t material)
 {
 	for (int i = 0; i < elems.size(); i++)
 	{
@@ -47,7 +47,7 @@ void mat::label_elems(std::vector<tet>& elems, size_t material)
 	}
 }
 
-void mat::label_elems(std::vector<tri>& elems, size_t material)
+void mat::label_elems(std::vector<geo::tri>& elems, size_t material)
 {
 	for (int i = 0; i < elems.size(); i++)
 	{

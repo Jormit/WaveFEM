@@ -13,7 +13,7 @@
 
 struct sim
 {
-	sim(box bbox, double wavenumber, std::vector<material> materials, std::vector<node> nodes, std::vector<tet> volume_elems,
+	sim(geo::box bbox, double wavenumber, std::vector<material> materials, std::vector<geo::node> nodes, std::vector<geo::tet> volume_elems,
 		std::unordered_map<size_t, int> boundary_edge_map, std::unordered_map<size_t, int> boundary_face_map, ports ports);
 
 	static sim create(sim_config config, std::string data_path);
@@ -23,12 +23,12 @@ struct sim
 	void generate_outputs(std::string directory, sim_config config);
 
 	// Input
-	box bbox;
+	geo::box bbox;
 	double wavenumber;
 	std::vector<material> materials;
 	std::unordered_map<size_t, size_t> volume_material_map;
-	std::vector<node> nodes;
-	std::vector<tet> volume_elems;
+	std::vector<geo::node> nodes;
+	std::vector<geo::tet> volume_elems;
 	std::unordered_map<size_t, int> boundary_edge_map;
 	std::unordered_map<size_t, int> boundary_face_map;
 	ports sim_ports;

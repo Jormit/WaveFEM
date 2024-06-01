@@ -127,8 +127,8 @@ fem::_2d::mixed_order::A_B(const Eigen::Matrix<double, 3, 2>& coords, material m
 	return { A * area, B * area };
 }
 
-fem::dof_map fem::_2d::mixed_order::generate_dof_map(const std::vector<node>& nodes,
-	const std::vector<tri>& elems, std::unordered_map<size_t, int> boundary_edge_map)
+fem::dof_map fem::_2d::mixed_order::generate_dof_map(const std::vector<geo::node>& nodes,
+	const std::vector<geo::tri>& elems, std::unordered_map<size_t, int> boundary_edge_map)
 {
 	int i = 0;
 	fem::dof_map map;
@@ -139,7 +139,7 @@ fem::dof_map fem::_2d::mixed_order::generate_dof_map(const std::vector<node>& no
 			auto global_edge = e.edges[edge];
 			if (!map.contains({ global_edge, fem::dof_type::EDGE_1 }))
 			{
-				if (boundary_edge_map[global_edge] != PORT_OUTER_BOUNDARY)
+				if (boundary_edge_map[global_edge] != geo::PORT_OUTER_BOUNDARY)
 				{
 					map[{global_edge, fem::dof_type::EDGE_1}] = i++;
 					map[{global_edge, fem::dof_type::EDGE_2}] = i++;
@@ -170,7 +170,7 @@ fem::dof_map fem::_2d::mixed_order::generate_dof_map(const std::vector<node>& no
 	return map;
 }
 
-fem::dof_pair fem::_2d::mixed_order::global_dof_pair(const tri& elem, const size_t& dof_num)
+fem::dof_pair fem::_2d::mixed_order::global_dof_pair(const geo::tri& elem, const size_t& dof_num)
 {
 	switch (dof_num) {
 	case 0: return  { elem.edges[0], fem::dof_type::EDGE_1 };
@@ -192,7 +192,7 @@ fem::dof_pair fem::_2d::mixed_order::global_dof_pair(const tri& elem, const size
 }
 
 std::pair<Eigen::SparseMatrix<double>, Eigen::SparseMatrix<double>>
-fem::_2d::mixed_order::assemble_A_B(const std::vector<node>& nodes, const std::vector<tri>& elems,
+fem::_2d::mixed_order::assemble_A_B(const std::vector<geo::node>& nodes, const std::vector<geo::tri>& elems,
 	std::vector<material> materials, const fem::dof_map& dof_map, double k0)
 {
 	Eigen::SparseMatrix<double> A_global(dof_map.size(), dof_map.size());
@@ -235,8 +235,8 @@ fem::_2d::mixed_order::assemble_A_B(const std::vector<node>& nodes, const std::v
 	return { A_global, B_global };
 }
 
-Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes, const tri& e,
-	const point_2d& eval_point, const fem::dof_map& dof_map, const Eigen::VectorXcd& solution)
+Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(const std::vector<geo::node>& nodes, const geo::tri& e,
+	const geo::point_2d& eval_point, const fem::dof_map& dof_map, const Eigen::VectorXcd& solution)
 {
 	Eigen::Matrix<double, 3, 2> coords = e.coordinate_matrix(nodes);
 	Eigen::Vector2d modified_eval_point = eval_point.to_Eigen();
@@ -248,7 +248,7 @@ Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(const std::vector<node>& nodes
 	return eval_elem(e, lambda, nabla_lambda, dof_map, solution);
 }
 
-Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(const tri& e, const Eigen::Vector3d& lambda,
+Eigen::Vector2cd fem::_2d::mixed_order::eval_elem(const geo::tri& e, const Eigen::Vector3d& lambda,
 	const Eigen::Matrix<double, 3, 2>& nabla_lambda, const fem::dof_map& dof_map, const Eigen::VectorXcd& solution)
 {
 	auto func = vector_basis(lambda, nabla_lambda);

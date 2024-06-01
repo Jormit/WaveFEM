@@ -11,7 +11,7 @@
 #include "pml.h"
 #include "result_writer.h"
 
-sim::sim(box bbox, double wavenumber, std::vector<material> materials, std::vector<node> nodes, std::vector<tet> volume_elems,
+sim::sim(geo::box bbox, double wavenumber, std::vector<material> materials, std::vector<geo::node> nodes, std::vector<geo::tet> volume_elems,
 	std::unordered_map<size_t, int> boundary_edge_map, std::unordered_map<size_t, int> boundary_face_map, ports ports) :
 	bbox(bbox), wavenumber(wavenumber), materials(materials), nodes(nodes), volume_elems(volume_elems),
 	boundary_edge_map(boundary_edge_map), boundary_face_map(boundary_face_map), sim_ports(ports),
@@ -77,8 +77,8 @@ sim sim::create(sim_config config, std::string data_path)
 	std::unordered_set<size_t> boundary_faces;
 	std::tie(boundary_edges, boundary_faces) = mesher_interface::get_surface_edges_and_faces(boundaries);
 
-	auto boundary_edge_map = helpers::set_to_map<size_t, int>(boundary_edges, BOUNDARY);
-	auto boundary_face_map = helpers::set_to_map<size_t, int>(boundary_faces, BOUNDARY);
+	auto boundary_edge_map = helpers::set_to_map<size_t, int>(boundary_edges, geo::BOUNDARY);
+	auto boundary_face_map = helpers::set_to_map<size_t, int>(boundary_faces, geo::BOUNDARY);
 
 	// Get all elements and label material
 	auto elements = mesher_interface::get_all_volume_elems();

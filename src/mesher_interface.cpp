@@ -40,7 +40,7 @@ void mesher_interface::view_model()
 	gmsh::fltk::run();
 }
 
-box mesher_interface::get_bounding_box(int dim, int tag)
+geo::box mesher_interface::get_bounding_box(int dim, int tag)
 {
 	double xmin = 0, ymin = 0, zmin = 0, xmax = 0, ymax = 0, zmax = 0;
 	try
@@ -50,12 +50,12 @@ box mesher_interface::get_bounding_box(int dim, int tag)
 	catch (...)
 	{
 	}
-	return box(xmin, ymin, zmin, xmax, ymax, zmax);
+	return geo::box(xmin, ymin, zmin, xmax, ymax, zmax);
 }
 
-std::vector<box> mesher_interface::get_bounding_box(int dim, std::vector<int> tags)
+std::vector<geo::box> mesher_interface::get_bounding_box(int dim, std::vector<int> tags)
 {
-	std::vector<box> boxes;
+	std::vector<geo::box> boxes;
 	for (auto t : tags)
 	{
 		boxes.push_back(get_bounding_box(dim, t));
@@ -63,7 +63,7 @@ std::vector<box> mesher_interface::get_bounding_box(int dim, std::vector<int> ta
 	return boxes;
 }
 
-std::vector<int> mesher_interface::get_entities_in_bounding_box(int dim, box box)
+std::vector<int> mesher_interface::get_entities_in_bounding_box(int dim, geo::box box)
 {
 	gmsh::vectorpair obj_dim_tags;
 	gmsh::model::getEntitiesInBoundingBox(box.xmin, box.ymin, box.zmin, box.xmax, box.ymax, box.zmax, obj_dim_tags, dim);
@@ -72,7 +72,7 @@ std::vector<int> mesher_interface::get_entities_in_bounding_box(int dim, box box
 	return ids;
 }
 
-std::vector<std::vector<int>> mesher_interface::get_entities_in_bounding_box(int dim, std::vector<box> box)
+std::vector<std::vector<int>> mesher_interface::get_entities_in_bounding_box(int dim, std::vector<geo::box> box)
 {
 	std::vector<std::vector<int>> ids;
 	for (const auto& b : box)
@@ -100,12 +100,12 @@ std::vector<int> mesher_interface::get_surface_parent(std::vector<int> id)
 	return ids;
 }
 
-box mesher_interface::get_bounding_box()
+geo::box mesher_interface::get_bounding_box()
 {
 	return get_bounding_box(-1, -1);
 }
 
-int mesher_interface::add_box(box b)
+int mesher_interface::add_box(geo::box b)
 {
 	int id = gmsh::model::occ::addBox(b.xmin, b.ymin, b.zmin, b.xmax - b.xmin, b.ymax - b.ymin, b.zmax - b.zmin);
 	gmsh::model::occ::synchronize();
@@ -168,14 +168,14 @@ void mesher_interface::remove_duplicates()
 	gmsh::model::occ::synchronize();
 }
 
-point_3d mesher_interface::evaluate_surface_parameterization(int surface_id, point_2d point)
+geo::point_3d mesher_interface::evaluate_surface_parameterization(int surface_id, geo::point_2d point)
 {
 	std::vector<double> coord;
 	gmsh::model::getValue(2, surface_id, { point.u, point.v }, coord);
 	return { coord[0], coord[1], coord[2] };
 }
 
-Eigen::Matrix<double, 3, 2> mesher_interface::evaluate_surface_derivative(int surface_id, point_2d point)
+Eigen::Matrix<double, 3, 2> mesher_interface::evaluate_surface_derivative(int surface_id, geo::point_2d point)
 {
 	std::vector<double> result;
 	gmsh::model::getDerivative(2, surface_id, { point.u, point.v }, result);
@@ -189,18 +189,18 @@ Eigen::Matrix<double, 3, 2> mesher_interface::evaluate_surface_derivative(int su
 	return deriv_matrix;
 }
 
-std::vector<node> mesher_interface::get_all_nodes()
+std::vector<geo::node> mesher_interface::get_all_nodes()
 {
 	std::vector<size_t> nodeTags;
 	std::vector<double> coord;
 	std::vector<double> parametric_coord;
 	gmsh::model::mesh::getNodes(nodeTags, coord, parametric_coord, -1, -1, true, false);
 
-	std::vector<node> nodes_to_return(nodeTags.size());
+	std::vector<geo::node> nodes_to_return(nodeTags.size());
 
 	int i = 0;
 	for (auto n : nodeTags) {
-		node nn{ { coord[3 * i], coord[3 * i + 1], coord[3 * i + 2] }, {}, false };
+		geo::node nn{ { coord[3 * i], coord[3 * i + 1], coord[3 * i + 2] }, {}, false };
 		nodes_to_return[n - 1] = nn;
 		i++;
 	}
@@ -296,7 +296,7 @@ std::unordered_set<size_t> mesher_interface::get_edges_on_line(std::vector<int> 
 	return edges;
 }
 
-tet mesher_interface::assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4)
+geo::tet mesher_interface::assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4)
 {
 	std::array<size_t, 4> nodes{ n1, n2, n3, n4 };
 	std::sort(nodes.begin(), nodes.end());
@@ -331,7 +331,7 @@ tet mesher_interface::assemble_tet(size_t n1, size_t n2, size_t n3, size_t n4)
 			0 };
 }
 
-std::vector<tet> mesher_interface::get_all_volume_elems()
+std::vector<geo::tet> mesher_interface::get_all_volume_elems()
 {
 	std::vector<int> elementTypes;
 	std::vector<std::vector<size_t>> elementTags;
@@ -343,7 +343,7 @@ std::vector<tet> mesher_interface::get_all_volume_elems()
 	size_t num_elems = elementTags_flattened.size();
 	size_t offset = elementTags_flattened[0];
 
-	std::vector<tet> elems_to_return(num_elems);
+	std::vector<geo::tet> elems_to_return(num_elems);
 	size_t i = 0;
 	for (auto elem : elementTags_flattened)
 	{
@@ -384,7 +384,7 @@ std::vector<std::vector<size_t>> mesher_interface::get_volume_elem_ids(std::vect
 	return elems_to_return;
 }
 
-void mesher_interface::label_elems_in_volume(int id, size_t label, std::vector<tet>& elems)
+void mesher_interface::label_elems_in_volume(int id, size_t label, std::vector<geo::tet>& elems)
 {
 	auto ids = get_volume_elem_ids(id);
 	for (auto id : ids)
@@ -393,7 +393,7 @@ void mesher_interface::label_elems_in_volume(int id, size_t label, std::vector<t
 	}
 }
 
-void mesher_interface::label_elems_in_volume(std::vector<int> ids, size_t label, std::vector<tet>& elems)
+void mesher_interface::label_elems_in_volume(std::vector<int> ids, size_t label, std::vector<geo::tet>& elems)
 {
 	for (auto id : ids)
 	{
@@ -401,7 +401,7 @@ void mesher_interface::label_elems_in_volume(std::vector<int> ids, size_t label,
 	}
 }
 
-tri mesher_interface::assemble_tri(size_t n1, size_t n2, size_t n3)
+geo::tri mesher_interface::assemble_tri(size_t n1, size_t n2, size_t n3)
 {
 	std::array<size_t, 3> nodes{ n1, n2, n3 };
 	std::sort(nodes.begin(), nodes.end());
@@ -425,14 +425,14 @@ tri mesher_interface::assemble_tri(size_t n1, size_t n2, size_t n3)
 	return { nodes, {edge_tags[0], edge_tags[1], edge_tags[2]}, face_tags[0], 0 };
 }
 
-std::vector<tri> mesher_interface::get_surface_elems(int id)
+std::vector<geo::tri> mesher_interface::get_surface_elems(int id)
 {
 	std::vector<int> elementTypes;
 	std::vector<std::vector<size_t>> elementTags;
 	std::vector<std::vector<size_t>> nodeTags;
 	gmsh::model::mesh::getElements(elementTypes, elementTags, nodeTags, 2, id);
 
-	std::vector<tri> elems_to_return;
+	std::vector<geo::tri> elems_to_return;
 	elems_to_return.reserve(elementTags[0].size());
 
 	for (size_t i = 0; i < elementTags[0].size(); i++)
@@ -446,9 +446,9 @@ std::vector<tri> mesher_interface::get_surface_elems(int id)
 	return elems_to_return;
 }
 
-std::vector<std::vector<tri>> mesher_interface::get_surface_elems(std::vector<int> ids)
+std::vector<std::vector<geo::tri>> mesher_interface::get_surface_elems(std::vector<int> ids)
 {
-	std::vector<std::vector<tri>> elems_to_return;
+	std::vector<std::vector<geo::tri>> elems_to_return;
 	for (auto id : ids)
 	{
 		elems_to_return.push_back(get_surface_elems(id));
@@ -456,7 +456,7 @@ std::vector<std::vector<tri>> mesher_interface::get_surface_elems(std::vector<in
 	return elems_to_return;
 }
 
-tri mesher_interface::get_surface_element_by_coordinate(point_3d p)
+geo::tri mesher_interface::get_surface_element_by_coordinate(geo::point_3d p)
 {
 	double u, v, w;
 	size_t element_tag;
@@ -471,9 +471,9 @@ tri mesher_interface::get_surface_element_by_coordinate(point_3d p)
 	return assemble_tri(n1, n2, n3);
 }
 
-std::vector<tri> mesher_interface::get_surface_element_by_coordinate(std::vector<point_3d> points)
+std::vector<geo::tri> mesher_interface::get_surface_element_by_coordinate(std::vector<geo::point_3d> points)
 {
-	std::vector<tri> elements;
+	std::vector<geo::tri> elements;
 	elements.reserve(points.size());
 	for (const auto& p : points)
 	{
@@ -482,12 +482,12 @@ std::vector<tri> mesher_interface::get_surface_element_by_coordinate(std::vector
 	return elements;
 }
 
-tri mesher_interface::get_surface_element_by_parametric_coordinate(point_2d point, int id)
+geo::tri mesher_interface::get_surface_element_by_parametric_coordinate(geo::point_2d point, int id)
 {
 	return get_surface_element_by_coordinate(evaluate_surface_parameterization(id, point));
 }
 
-rectangle mesher_interface::get_surface_parametric_bounds(int id)
+geo::rectangle mesher_interface::get_surface_parametric_bounds(int id)
 {
 	std::vector<double> min;
 	std::vector<double> max;
@@ -495,9 +495,9 @@ rectangle mesher_interface::get_surface_parametric_bounds(int id)
 	return { min[0], min[1], max[0], max[1] };
 }
 
-std::vector<rectangle> mesher_interface::get_surface_parametric_bounds(std::vector<int> id)
+std::vector<geo::rectangle> mesher_interface::get_surface_parametric_bounds(std::vector<int> id)
 {
-	std::vector<rectangle> dim;
+	std::vector<geo::rectangle> dim;
 	for (auto i : id)
 	{
 		dim.push_back(get_surface_parametric_bounds(i));
@@ -505,16 +505,16 @@ std::vector<rectangle> mesher_interface::get_surface_parametric_bounds(std::vect
 	return dim;
 }
 
-point_2d mesher_interface::parameterize_on_surface(point_3d coord, int id)
+geo::point_2d mesher_interface::parameterize_on_surface(geo::point_3d coord, int id)
 {
 	std::vector<double> param_coords;
 	gmsh::model::getParametrization(2, id, { coord.x, coord.y, coord.z }, param_coords);
 	return { param_coords[0], param_coords[1] };
 }
 
-std::vector<point_2d> mesher_interface::parameterize_on_surface(std::vector <point_3d> coord, int id)
+std::vector<geo::point_2d> mesher_interface::parameterize_on_surface(std::vector <geo::point_3d> coord, int id)
 {
-	std::vector<point_2d> param_coords;
+	std::vector<geo::point_2d> param_coords;
 	for (const auto& p : coord)
 	{
 		param_coords.push_back(parameterize_on_surface(p, id));
@@ -522,7 +522,7 @@ std::vector<point_2d> mesher_interface::parameterize_on_surface(std::vector <poi
 	return param_coords;
 }
 
-void mesher_interface::parameterize_surface_nodes(std::vector<node>& nodes, int surface_id, const std::vector<tri> elements)
+void mesher_interface::parameterize_surface_nodes(std::vector<geo::node>& nodes, int surface_id, const std::vector<geo::tri> elements)
 {
 	for (const auto& e : elements)
 	{
@@ -537,7 +537,8 @@ void mesher_interface::parameterize_surface_nodes(std::vector<node>& nodes, int 
 	}
 }
 
-void mesher_interface::parameterize_surface_nodes(std::vector<node>& nodes, std::vector <int> surface_id, const std::vector<std::vector<tri>> elements)
+void mesher_interface::parameterize_surface_nodes(std::vector<geo::node>& nodes,
+	std::vector <int> surface_id, const std::vector<std::vector<geo::tri>> elements)
 {
 	for (int i = 0; i < surface_id.size(); i++)
 	{
@@ -545,7 +546,7 @@ void mesher_interface::parameterize_surface_nodes(std::vector<node>& nodes, std:
 	}
 }
 
-std::optional<size_t> mesher_interface::get_volume_element_by_coordinate(point_3d point)
+std::optional<size_t> mesher_interface::get_volume_element_by_coordinate(geo::point_3d point)
 {
 	double u, v, w;
 	size_t element_tag;
@@ -554,7 +555,8 @@ std::optional<size_t> mesher_interface::get_volume_element_by_coordinate(point_3
 
 	try
 	{
-		gmsh::model::mesh::getElementByCoordinates(point.x, point.y, point.z, element_tag, element_type, node_tags, u, v, w, 3, true);
+		gmsh::model::mesh::getElementByCoordinates(point.x, point.y, point.z, 
+			element_tag, element_type, node_tags, u, v, w, 3, true);
 	}
 	catch (...)
 	{
@@ -564,7 +566,7 @@ std::optional<size_t> mesher_interface::get_volume_element_by_coordinate(point_3
 	return element_tag - volume_elem_offset;
 }
 
-std::optional<size_t> mesher_interface::get_volume_entity_by_coordinate(point_3d point)
+std::optional<size_t> mesher_interface::get_volume_entity_by_coordinate(geo::point_3d point)
 {
 	gmsh::vectorpair dim_tags;
 	gmsh::model::getEntities(dim_tags, 3);
@@ -598,18 +600,18 @@ std::vector <int> mesher_interface::get_boundary_surfaces()
 	return shared_surfaces;
 }
 
-std::vector<int> mesher_interface::get_bounding_box_surfaces(box b)
+std::vector<int> mesher_interface::get_bounding_box_surfaces(geo::box b)
 {
 	double tol = 1e-4;
 
-	box xy_bottom (b.xmin - tol, b.ymin - tol, b.zmin - tol, b.xmax + tol, b.ymax + tol, b.zmin + tol);
-	box xy_top (b.xmin - tol, b.ymin - tol, b.zmax - tol, b.xmax + tol, b.ymax + tol, b.zmax + tol);
+	geo::box xy_bottom (b.xmin - tol, b.ymin - tol, b.zmin - tol, b.xmax + tol, b.ymax + tol, b.zmin + tol);
+	geo::box xy_top (b.xmin - tol, b.ymin - tol, b.zmax - tol, b.xmax + tol, b.ymax + tol, b.zmax + tol);
 
-	box xz_bottom(b.xmin - tol, b.ymin - tol, b.zmin - tol, b.xmax + tol, b.ymin + tol, b.zmax + tol);
-	box xz_top(b.xmin - tol, b.ymax - tol, b.zmin - tol, b.xmax + tol, b.ymax + tol, b.zmax + tol);
+	geo::box xz_bottom(b.xmin - tol, b.ymin - tol, b.zmin - tol, b.xmax + tol, b.ymin + tol, b.zmax + tol);
+	geo::box xz_top(b.xmin - tol, b.ymax - tol, b.zmin - tol, b.xmax + tol, b.ymax + tol, b.zmax + tol);
 
-	box yz_bottom(b.xmin - tol, b.ymin - tol, b.zmin - tol, b.xmin + tol, b.ymax + tol, b.zmax + tol);
-	box yz_top(b.xmax - tol, b.ymin - tol, b.zmin - tol, b.xmax + tol, b.ymax + tol, b.zmax + tol);
+	geo::box yz_bottom(b.xmin - tol, b.ymin - tol, b.zmin - tol, b.xmin + tol, b.ymax + tol, b.zmax + tol);
+	geo::box yz_top(b.xmax - tol, b.ymin - tol, b.zmin - tol, b.xmax + tol, b.ymax + tol, b.zmax + tol);
 
 	auto ids = get_entities_in_bounding_box(2, { xy_bottom, xy_top, xz_bottom, xz_top, yz_bottom, yz_top});
 

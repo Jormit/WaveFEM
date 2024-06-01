@@ -17,7 +17,7 @@ struct sim_config
 	sim_config(std::string filename);
 
 	std::string model_file;
-	std::vector<box> port_bounding_boxes;
+	std::vector<geo::box> port_bounding_boxes;
 	double bounding_box_padding;
 	bool pml_enable;
 	double pml_thickness;

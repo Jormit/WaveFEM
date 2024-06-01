@@ -8,63 +8,63 @@ pml_boundary pml::create(double pml_box_padding)
 	auto pml_bounds = free_space_bounds;
 	pml_bounds.add_padding(pml_box_padding);
 
-	box x_up(free_space_bounds.xmax, free_space_bounds.ymin, free_space_bounds.zmin,
+	geo::box x_up(free_space_bounds.xmax, free_space_bounds.ymin, free_space_bounds.zmin,
 		pml_bounds.xmax, free_space_bounds.ymax, free_space_bounds.zmax);
-	box x_down(pml_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmin,
+	geo::box x_down(pml_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmin,
 		free_space_bounds.xmin, free_space_bounds.ymax, free_space_bounds.zmax);
 
-	box y_up(free_space_bounds.xmin, free_space_bounds.ymax, free_space_bounds.zmin,
+	geo::box y_up(free_space_bounds.xmin, free_space_bounds.ymax, free_space_bounds.zmin,
 		free_space_bounds.xmax, pml_bounds.ymax, free_space_bounds.zmax);
-	box y_down(free_space_bounds.xmin, pml_bounds.ymin, free_space_bounds.zmin,
+	geo::box y_down(free_space_bounds.xmin, pml_bounds.ymin, free_space_bounds.zmin,
 		free_space_bounds.xmax, free_space_bounds.ymin, free_space_bounds.zmax);
 
-	box z_up(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmax,
+	geo::box z_up(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmax,
 		free_space_bounds.xmax, free_space_bounds.ymax, pml_bounds.zmax);
-	box z_down(free_space_bounds.xmin, free_space_bounds.ymin, pml_bounds.zmin,
+	geo::box z_down(free_space_bounds.xmin, free_space_bounds.ymin, pml_bounds.zmin,
 		free_space_bounds.xmax, free_space_bounds.ymax, free_space_bounds.zmin);
 
-	box xy_1(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmin,
+	geo::box xy_1(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmin,
 		pml_bounds.xmin, pml_bounds.ymin, free_space_bounds.zmax);
-	box xy_2(free_space_bounds.xmax, free_space_bounds.ymin, free_space_bounds.zmin,
+	geo::box xy_2(free_space_bounds.xmax, free_space_bounds.ymin, free_space_bounds.zmin,
 		pml_bounds.xmax, pml_bounds.ymin, free_space_bounds.zmax);
-	box xy_3(free_space_bounds.xmin, free_space_bounds.ymax, free_space_bounds.zmin,
+	geo::box xy_3(free_space_bounds.xmin, free_space_bounds.ymax, free_space_bounds.zmin,
 		pml_bounds.xmin, pml_bounds.ymax, free_space_bounds.zmax);
-	box xy_4(free_space_bounds.xmax, free_space_bounds.ymax, free_space_bounds.zmin,
+	geo::box xy_4(free_space_bounds.xmax, free_space_bounds.ymax, free_space_bounds.zmin,
 		pml_bounds.xmax, pml_bounds.ymax, free_space_bounds.zmax);
 
-	box xz_1(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmin,
+	geo::box xz_1(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmin,
 		pml_bounds.xmin, free_space_bounds.ymax, pml_bounds.zmin);
-	box xz_2(free_space_bounds.xmax, free_space_bounds.ymin, free_space_bounds.zmin,
+	geo::box xz_2(free_space_bounds.xmax, free_space_bounds.ymin, free_space_bounds.zmin,
 		pml_bounds.xmax, free_space_bounds.ymax, pml_bounds.zmin);
-	box xz_3(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmax,
+	geo::box xz_3(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmax,
 		pml_bounds.xmin, free_space_bounds.ymax, pml_bounds.zmax);
-	box xz_4(free_space_bounds.xmax, free_space_bounds.ymin, free_space_bounds.zmax,
+	geo::box xz_4(free_space_bounds.xmax, free_space_bounds.ymin, free_space_bounds.zmax,
 		pml_bounds.xmax, free_space_bounds.ymax, pml_bounds.zmax);
 
-	box yz_1(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmin,
+	geo::box yz_1(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmin,
 		free_space_bounds.xmax, pml_bounds.ymin, pml_bounds.zmin);
-	box yz_2(free_space_bounds.xmin, free_space_bounds.ymax, free_space_bounds.zmin,
+	geo::box yz_2(free_space_bounds.xmin, free_space_bounds.ymax, free_space_bounds.zmin,
 		free_space_bounds.xmax, pml_bounds.ymax, pml_bounds.zmin);
-	box yz_3(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmax,
+	geo::box yz_3(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmax,
 		free_space_bounds.xmax, pml_bounds.ymin, pml_bounds.zmax);
-	box yz_4(free_space_bounds.xmin, free_space_bounds.ymax, free_space_bounds.zmax,
+	geo::box yz_4(free_space_bounds.xmin, free_space_bounds.ymax, free_space_bounds.zmax,
 		free_space_bounds.xmax, pml_bounds.ymax, pml_bounds.zmax);
 
-	box xyz_1(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmin,
+	geo::box xyz_1(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmin,
 		pml_bounds.xmin, pml_bounds.ymin, pml_bounds.zmin);
-	box xyz_2(free_space_bounds.xmax, free_space_bounds.ymin, free_space_bounds.zmin,
+	geo::box xyz_2(free_space_bounds.xmax, free_space_bounds.ymin, free_space_bounds.zmin,
 		pml_bounds.xmax, pml_bounds.ymin, pml_bounds.zmin);
-	box xyz_3(free_space_bounds.xmin, free_space_bounds.ymax, free_space_bounds.zmin,
+	geo::box xyz_3(free_space_bounds.xmin, free_space_bounds.ymax, free_space_bounds.zmin,
 		pml_bounds.xmin, pml_bounds.ymax, pml_bounds.zmin);
-	box xyz_4(free_space_bounds.xmax, free_space_bounds.ymax, free_space_bounds.zmin,
+	geo::box xyz_4(free_space_bounds.xmax, free_space_bounds.ymax, free_space_bounds.zmin,
 		pml_bounds.xmax, pml_bounds.ymax, pml_bounds.zmin);
-	box xyz_5(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmax,
+	geo::box xyz_5(free_space_bounds.xmin, free_space_bounds.ymin, free_space_bounds.zmax,
 		pml_bounds.xmin, pml_bounds.ymin, pml_bounds.zmax);
-	box xyz_6(free_space_bounds.xmax, free_space_bounds.ymin, free_space_bounds.zmax,
+	geo::box xyz_6(free_space_bounds.xmax, free_space_bounds.ymin, free_space_bounds.zmax,
 		pml_bounds.xmax, pml_bounds.ymin, pml_bounds.zmax);
-	box xyz_7(free_space_bounds.xmin, free_space_bounds.ymax, free_space_bounds.zmax,
+	geo::box xyz_7(free_space_bounds.xmin, free_space_bounds.ymax, free_space_bounds.zmax,
 		pml_bounds.xmin, pml_bounds.ymax, pml_bounds.zmax);
-	box xyz_8(free_space_bounds.xmax, free_space_bounds.ymax, free_space_bounds.zmax,
+	geo::box xyz_8(free_space_bounds.xmax, free_space_bounds.ymax, free_space_bounds.zmax,
 		pml_bounds.xmax, pml_bounds.ymax, pml_bounds.zmax);
 
 	std::array<int, 2> x_ids;
@@ -112,7 +112,7 @@ pml_boundary pml::create(double pml_box_padding)
 	return { x_ids, y_ids, z_ids, xy_ids, xz_ids, yz_ids, xyz_ids };
 }
 
-void pml::label_elements(pml_boundary pml_volumes, std::vector<tet>& elems)
+void pml::label_elements(pml_boundary pml_volumes, std::vector<geo::tet>& elems)
 {
 	mesher_interface::label_elems_in_volume(
 		{ 
