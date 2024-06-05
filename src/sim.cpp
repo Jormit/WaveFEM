@@ -109,8 +109,6 @@ sim sim::create(sim_config config, std::string data_path)
 
 	auto bounding_box_surfaces = mesher_interface::get_bounding_box_surfaces(boundary);
 
-	// auto test = geo::generate_face_to_element_map(elements);
-
 	return {
 		std::move(boundary),
 		config.simulation_wavenumber,
@@ -200,6 +198,9 @@ void sim::solve_full()
 
 void sim::generate_outputs(std::string directory, sim_config config)
 {
+	// Print far_field
+	post::eval_far_field_slice(*this, 0, 360);
+
 	for (int p = 0; p < sim_ports.elements.size(); p++)
 	{
 		// Save port fields

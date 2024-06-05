@@ -31,3 +31,27 @@ double fem::_3d::volume(const Eigen::Matrix<double, 4, 3>& coords)
 
 	return std::abs(coord_matrix.determinant()) / 6;
 }
+
+Eigen::Vector4d fem::_3d::project_2d_to_3d_lambda(Eigen::Vector3d lambda, geo::tri e_2d, geo::tet e_3d)
+{
+	size_t n = 0;
+	while (n < 3)
+	{
+		if (e_2d.nodes[n] != e_3d.nodes[n])
+		{
+			break;
+		}
+		n++;
+	}
+
+	Eigen::Vector4d out;
+
+	switch (n)
+	{
+	case 0: out << 0, lambda(0), lambda(1), lambda(2); break;
+	case 1: out << lambda(0), 0, lambda(1), lambda(2); break;
+	case 2: out << lambda(0), lambda(1), 0, lambda(2); break;
+	case 3: out << lambda(0), lambda(1), lambda(2), 0; break;
+	}
+	return out;
+}

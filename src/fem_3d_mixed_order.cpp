@@ -329,6 +329,12 @@ Eigen::Vector3cd fem::_3d::mixed_order::eval_elem(const std::vector<geo::node>& 
 	auto nabla_lambda = fem::_3d::nabla_lambda(simplex_coeff);
 	auto lambda = fem::_3d::lambda(modified_eval_point, simplex_coeff);
 
+	return eval_elem(e, lambda, nabla_lambda, dof_map, solution);
+}
+
+Eigen::Vector3cd fem::_3d::mixed_order::eval_elem(const geo::tet& e, const Eigen::Vector4d& lambda,
+	const Eigen::Matrix<double, 4, 3>& nabla_lambda, const fem::dof_map& dof_map, const Eigen::VectorXcd& solution)
+{
 	auto func = basis(lambda, nabla_lambda);
 
 	Eigen::Vector3cd value = Eigen::Vector3cd::Zero();
@@ -340,7 +346,6 @@ Eigen::Vector3cd fem::_3d::mixed_order::eval_elem(const std::vector<geo::node>& 
 			value += func.row(i) * solution(dof_map.at(dof_pair));
 		}
 	}
-
 	return value;
 }
 
@@ -354,6 +359,12 @@ Eigen::Vector3cd fem::_3d::mixed_order::eval_elem_curl(const std::vector<geo::no
 	auto nabla_lambda = fem::_3d::nabla_lambda(simplex_coeff);
 	auto lambda = fem::_3d::lambda(modified_eval_point, simplex_coeff);
 
+	return eval_elem_curl(e, lambda, nabla_lambda, dof_map, solution);
+}
+
+Eigen::Vector3cd fem::_3d::mixed_order::eval_elem_curl(const geo::tet& e, const Eigen::Vector4d& lambda,
+	const Eigen::Matrix<double, 4, 3>& nabla_lambda, const fem::dof_map& dof_map, const Eigen::VectorXcd& solution)
+{
 	auto func = basis_curl(lambda, nabla_lambda);
 
 	Eigen::Vector3cd value = Eigen::Vector3cd::Zero();

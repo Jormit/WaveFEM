@@ -64,6 +64,7 @@ namespace fem
 		Eigen::Vector4d lambda(const Eigen::Vector3d& coords, const Eigen::Matrix<double, 4, 4>& simplex_coeff);
 		Eigen::Matrix<double, 4, 3> nabla_lambda(const Eigen::Matrix<double, 4, 4>& simplex_coeff);
 		double volume(const Eigen::Matrix<double, 4, 3>& coords);
+		Eigen::Vector4d project_2d_to_3d_lambda(Eigen::Vector3d lambda, geo::tri e_2d, geo::tet e_3d);
 
 		namespace mixed_order
 		{
@@ -93,8 +94,14 @@ namespace fem
 			Eigen::Vector3cd eval_elem(const std::vector<geo::node>& nodes, const geo::tet& e, const geo::point_3d& eval_point,
 				const dof_map& dof_map, const Eigen::VectorXcd& solution);
 
+			Eigen::Vector3cd eval_elem(const geo::tet& e, const Eigen::Vector4d& lambda,
+				const Eigen::Matrix<double, 4, 3>& nabla_lambda, const fem::dof_map& dof_map, const Eigen::VectorXcd& solution);
+
 			Eigen::Vector3cd eval_elem_curl(const std::vector<geo::node>& nodes, const geo::tet& e, const geo::point_3d& eval_point,
 				const dof_map& dof_map, const Eigen::VectorXcd& solution);
+
+			Eigen::Vector3cd eval_elem_curl(const geo::tet& e, const Eigen::Vector4d& lambda,
+				const Eigen::Matrix<double, 4, 3>& nabla_lambda, const fem::dof_map& dof_map, const Eigen::VectorXcd& solution);
 
 		}
 	}

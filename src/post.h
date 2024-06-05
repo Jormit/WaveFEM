@@ -23,4 +23,6 @@ namespace post
 	Eigen::MatrixXcd eval_s_parameters(const sim& sim_instance, size_t num_x, size_t num_y);
 
 	geo::unstructured_3d_field_data project_2d_structured_surface_field_into_3d(geo::structured_2d_field_data data, int surface_id);
+
+	geo::polar_2d_field_data eval_far_field_slice(sim& sim_instance, size_t port_num, size_t num);
 };
