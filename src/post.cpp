@@ -273,8 +273,8 @@ geo::polar_2d_field_data post::eval_far_field_slice(sim& sim_instance, size_t po
 			field(2) * std::sin(theta);
 
 		std::complex<double> out_phi =
-			field(0) * std::sin(phi) +
-			field(1) * std::cos(phi);
+			- field(0) * std::sin(phi) +
+			  field(1) * std::cos(phi);
 
 		far_field.row(n) << out_r, out_theta, out_phi;
 		
