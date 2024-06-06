@@ -175,7 +175,7 @@ geo::unstructured_3d_field_data post::project_2d_structured_surface_field_into_3
 geo::polar_2d_field_data post::eval_far_field_slice(sim& sim_instance, size_t port_num, size_t num)
 {
 	geo::structured_polar_2d sweep = { 0, 2.0 * constants::pi / (num - 1), num };
-	Eigen::MatrixX3cd far_field(sweep.num_steps, 3);
+	Eigen::MatrixX3cd far_field = Eigen::MatrixX3cd::Zero(sweep.num_steps, 3);
 
 	auto bounding_box_surface_ids = mesher_interface::get_bounding_box_surfaces(sim_instance.bbox);
 	auto surface_elems = mesher_interface::get_surface_elems(bounding_box_surface_ids);
@@ -260,6 +260,8 @@ geo::polar_2d_field_data post::eval_far_field_slice(sim& sim_instance, size_t po
 					field += w * elem_area * (normal.cross(e_field) * g);
 				}
 			}
+			ofs.close();
+			exit(1);
 		}
 
 		std::complex<double> out_r = 
