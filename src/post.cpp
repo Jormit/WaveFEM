@@ -259,7 +259,6 @@ geo::polar_2d_field_data post::eval_far_field_slice(sim& sim_instance, size_t po
 					//field += w * elem_area * (normal.cross(-e_field_curl) * g + normal.cross(e_field).cross(g_grad) + normal.dot(e_field) * g_grad);
 					field += w * elem_area * (normal.cross(e_field) * g);
 				}
-				exit(1);
 			}
 		}
 
