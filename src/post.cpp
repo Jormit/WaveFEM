@@ -261,7 +261,6 @@ geo::polar_2d_field_data post::eval_far_field_slice(sim& sim_instance, size_t po
 				}
 			}
 			ofs.close();
-			exit(1);
 		}
 
 		std::complex<double> out_r = 
