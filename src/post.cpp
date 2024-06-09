@@ -197,9 +197,7 @@ geo::polar_2d_field_data post::eval_far_field_slice(sim& sim_instance, size_t po
 	double r = 10000;
 
 	Eigen::Vector3d offset;
-	offset << 0, 0, 128;
-
-	std::ofstream ofs("ff.out");
+	offset << 0, 0, 100;
 
 	for (size_t n = 0; n < num; n++)
 	{
@@ -211,7 +209,7 @@ geo::polar_2d_field_data post::eval_far_field_slice(sim& sim_instance, size_t po
 		Eigen::Vector3cd field = Eigen::Vector3d::Zero();
 
 		// Surface loop
-		for (size_t face = 1; face < 2; face++)
+		for (size_t face = 0; face < 6; face++)
 		{
 			auto normal = geo::box_face_normal(face);
 
@@ -253,14 +251,9 @@ geo::polar_2d_field_data post::eval_far_field_slice(sim& sim_instance, size_t po
 					auto g = func::free_space_greens_function(eval_point, coord_3d, sim_instance.wavenumber);
 					auto g_grad = func::free_space_greens_function_grad(eval_point, coord_3d, sim_instance.wavenumber);
 
-					ofs << coord_3d(0) << "," << coord_3d(1) << "," << coord_3d(2) << ",";
-					ofs << e_field(0).real() << "," << e_field(1).real() << "," << e_field(2).real() << "," << std::endl;
-
-					//field += w * elem_area * (normal.cross(-e_field_curl) * g + normal.cross(e_field).cross(g_grad) + normal.dot(e_field) * g_grad);
-					field += w * elem_area * (normal.cross(e_field) * g);
+					field += w * elem_area * (normal.cross(-e_field_curl) * g + normal.cross(e_field).cross(g_grad) + normal.dot(e_field) * g_grad);
 				}
 			}
-			ofs.close();
 		}
 
 		std::complex<double> out_r = 
@@ -282,8 +275,6 @@ geo::polar_2d_field_data post::eval_far_field_slice(sim& sim_instance, size_t po
 	}
 
 	std::cout << far_field;
-
-	ofs.close();
 
 	return geo::polar_2d_field_data();
 }
