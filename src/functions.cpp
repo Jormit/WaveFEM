@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "functions.h"
 #include "constants.h"
 
@@ -7,31 +9,15 @@ std::complex<double> func::free_space_greens_function(Eigen::Vector3d r, Eigen::
 {
     auto norm = (r - r_).norm();
     auto j = std::complex<double>{ 0, 1 };
-    return std::exp(-j * wavenumber * norm) / (4 * constants::pi * norm);
+    return std::exp(j * wavenumber * norm) / norm;
 }
 
 Eigen::Vector3cd func::free_space_greens_function_grad(Eigen::Vector3d r, Eigen::Vector3d r_, double wavenumber)
 {
     Eigen::Vector3cd grad_g;
-
-    Eigen::Vector3d dr_plus_x;
-    Eigen::Vector3d dr_minus_x;
-    dr_plus_x << r_(0) + grad_h, r_(1), r_(2);
-    dr_minus_x << r_(0) - grad_h, r_(1), r_(2);
-    grad_g(0) = (free_space_greens_function(r, dr_plus_x, wavenumber) - free_space_greens_function(r, dr_minus_x, wavenumber)) / (2 * grad_h);
-
-    Eigen::Vector3d dr_plus_y;
-    Eigen::Vector3d dr_minus_y;
-    dr_plus_y << r_(0), r_(1) + grad_h, r_(2);
-    dr_minus_y << r_(0), r_(1) - grad_h, r_(2);
-    grad_g(1) = (free_space_greens_function(r, dr_plus_y, wavenumber) - free_space_greens_function(r, dr_minus_y, wavenumber)) / (2 * grad_h);
-
-    Eigen::Vector3d dr_plus_z;
-    Eigen::Vector3d dr_minus_z;
-    dr_plus_z << r_(0), r_(1), r_(2) + grad_h;
-    dr_minus_z << r_(0), r_(1), r_(2) - grad_h;
-    grad_g(2) = (free_space_greens_function(r, dr_plus_z, wavenumber) - free_space_greens_function(r, dr_minus_z, wavenumber)) / (2 * grad_h);
-
+    auto norm = (r - r_).norm();
+    auto j = std::complex<double>{ 0, 1 };
+    grad_g = (1.0 / norm - j * wavenumber) * std::exp(j * wavenumber * norm) / norm * (r_ - r) / norm;
     return grad_g;
 }
 
@@ -60,6 +46,8 @@ Eigen::Vector3cd func::free_space_greens_function_grad(Eigen::Vector3d r, Eigen:
 
     return grad_g;
 }
-
 */
+
+
+
 
