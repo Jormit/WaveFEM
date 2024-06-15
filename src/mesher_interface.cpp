@@ -604,6 +604,7 @@ std::vector<int> mesher_interface::get_bounding_box_surfaces(geo::box b)
 {
 	double tol = 1e-4;
 
+	// Ordered per enum box_face
 	geo::box xy_bottom (b.xmin - tol, b.ymin - tol, b.zmin - tol, b.xmax + tol, b.ymax + tol, b.zmin + tol);
 	geo::box xy_top (b.xmin - tol, b.ymin - tol, b.zmax - tol, b.xmax + tol, b.ymax + tol, b.zmax + tol);
 

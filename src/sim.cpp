@@ -198,9 +198,6 @@ void sim::solve_full()
 
 void sim::generate_outputs(std::string directory, sim_config config)
 {
-	// Print far_field
-	post::eval_far_field_slice(*this, 0, 360);
-
 	for (int p = 0; p < sim_ports.elements.size(); p++)
 	{
 		// Save port fields
@@ -225,8 +222,11 @@ void sim::generate_outputs(std::string directory, sim_config config)
 			static_cast<int> (bbox.y_dim() / config.target_mesh_size * 3),
 			static_cast<int> (bbox.z_dim() / config.target_mesh_size * 3), field_type::H_FIELD);
 
+		auto e_field_far = post::eval_far_field_slice(*this, p, 360, geo::THETA, 90, 1000);
+
 		result_writer::write_structured_3d_field(directory + E_filename, e_field);
 		result_writer::write_structured_3d_field(directory + B_filename, h_field);
+		result_writer::write_polar_2d_field_data(directory + E_filename, e_field_far);
 	}
 
 	// Print s-params

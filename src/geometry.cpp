@@ -251,16 +251,16 @@ std::map<size_t, std::pair<size_t, size_t>> geo::generate_face_to_element_map(co
 	return map;
 }
 
-Eigen::Vector3d geo::box_face_normal(size_t id)
+Eigen::Vector3d geo::box_face_normal(box_face id)
 {
 	Eigen::Vector3d normal;
 	switch (id) {
-	case 0: normal <<  0,  0, -1; break;
-	case 1: normal <<  0,  0,  1; break;
-	case 2: normal <<  0, -1,  0; break;
-	case 3: normal <<  0,  1,  0; break;
-	case 4: normal << -1,  0,  0; break;
-	case 5: normal <<  1,  0,  0; break;
+	case box_face::XY_BOTTOM : normal <<  0,  0, -1; break;
+	case box_face::XY_TOP    : normal <<  0,  0,  1; break;
+	case box_face::XZ_BOTTOM : normal <<  0, -1,  0; break;
+	case box_face::XZ_TOP    : normal <<  0,  1,  0; break;
+	case box_face::YZ_BOTTOM : normal << -1,  0,  0; break;
+	case box_face::YZ_TOP    : normal <<  1,  0,  0; break;
 	}
 	return normal;
 }

@@ -172,47 +172,41 @@ geo::unstructured_3d_field_data post::project_2d_structured_surface_field_into_3
 	return { out_points, out_field };
 }
 
-geo::polar_2d_field_data post::eval_far_field_slice(sim& sim_instance, size_t port_num, size_t num)
+geo::polar_2d_field_data post::eval_far_field_slice(sim& sim_instance, size_t port_num, size_t num, geo::far_field_slice type, double fixed_angle, double r)
 {
-	geo::structured_polar_2d sweep = { 0, 2.0 * constants::pi / (num - 1), num };
+	geo::structured_polar_2d sweep = { 0, 2.0 * constants::pi / (num - 1), num, type, fixed_angle};
 	Eigen::MatrixX3cd far_field = Eigen::MatrixX3cd::Zero(sweep.num_steps, 3);
 
 	auto bounding_box_surface_ids = mesher_interface::get_bounding_box_surfaces(sim_instance.bbox);
 	auto surface_elems = mesher_interface::get_surface_elems(bounding_box_surface_ids);
-
 	auto face_2_elem = geo::generate_face_to_element_map(sim_instance.volume_elems);
-
 	mesher_interface::parameterize_surface_nodes(sim_instance.nodes, bounding_box_surface_ids, surface_elems);
-
-	/*	Bbox plane ordering set by mesh_interface::get_bounding_box_surfaces()
-		xy_bottom
-		xy_top
-		xz_bottom
-		xz_top
-		yz_bottom
-		yz_top
-	*/
-
-	double phi = constants::pi / 2;
-	double r = 1000;
-
-	Eigen::Vector3d offset;
-	offset << 0, 0, 0;
 
 	for (size_t n = 0; n < num; n++)
 	{
 		Eigen::Vector3d eval_point;
-		double theta = sweep.start_angle + sweep.angle_step * n;
-		eval_point << r * std::sin(theta) * std::cos(phi), r * std::sin(theta) * std::sin(phi), r * std::cos(theta);
-		eval_point += offset;
+		double theta;
+		double phi;
 
+		if (type == geo::far_field_slice::THETA)
+		{
+			theta = sweep.start_angle + sweep.angle_step * n;
+			phi = fixed_angle;
+			eval_point << r * std::sin(theta) * std::cos(phi), r* std::sin(theta)* std::sin(phi), r* std::cos(theta);
+		}
+		else
+		{
+			theta = fixed_angle;
+			phi = sweep.start_angle + sweep.angle_step * n;
+			eval_point << r * std::sin(theta) * std::cos(phi), r* std::sin(theta)* std::sin(phi), r* std::cos(theta);
+		}
 
 		Eigen::Vector3cd field = Eigen::Vector3d::Zero();
 
 		// Surface loop
 		for (size_t face = 0; face < 6; face++)
 		{
-			auto normal = geo::box_face_normal(face);
+			auto normal = geo::box_face_normal(static_cast<geo::box_face>(face));
 
 			// Elem loop
 			for (const auto& e_2d : surface_elems[face])
@@ -273,8 +267,5 @@ geo::polar_2d_field_data post::eval_far_field_slice(sim& sim_instance, size_t po
 
 		far_field.row(n) << out_r, out_theta, out_phi;		
 	}
-
-	std::cout << far_field;
-
-	return geo::polar_2d_field_data();
+	return { sweep , far_field };
 }
