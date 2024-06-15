@@ -22,7 +22,7 @@ Eigen::Vector3cd func::free_space_greens_function_grad(Eigen::Vector3d r, Eigen:
 }
 
 /*
-Eigen::Vector3cd func::free_space_greens_function_grad(Eigen::Vector3d r, Eigen::Vector3d r_, double wavenumber)
+Eigen::Vector3cd func::free_space_greens_function_grad_2(Eigen::Vector3d r, Eigen::Vector3d r_, double wavenumber)
 {
     Eigen::Vector3cd grad_g;
 
@@ -47,7 +47,3 @@ Eigen::Vector3cd func::free_space_greens_function_grad(Eigen::Vector3d r, Eigen:
     return grad_g;
 }
 */
-
-
-
-

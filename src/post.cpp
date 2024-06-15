@@ -206,6 +206,7 @@ geo::polar_2d_field_data post::eval_far_field_slice(sim& sim_instance, size_t po
 		eval_point << r * std::sin(theta) * std::cos(phi), r * std::sin(theta) * std::sin(phi), r * std::cos(theta);
 		eval_point += offset;
 
+
 		Eigen::Vector3cd field = Eigen::Vector3d::Zero();
 
 		// Surface loop
@@ -251,7 +252,7 @@ geo::polar_2d_field_data post::eval_far_field_slice(sim& sim_instance, size_t po
 					auto g = func::free_space_greens_function(eval_point, coord_3d, sim_instance.wavenumber);
 					auto g_grad = func::free_space_greens_function_grad(eval_point, coord_3d, sim_instance.wavenumber);
 
-					field += w * elem_area * (normal.cross(-e_field_curl) * g + (normal.cross(e_field)).cross(g_grad) + e_field.dot(normal) * g_grad);
+					field += w * elem_area * (normal.cross(e_field_curl).conjugate() * g + (normal.cross(e_field)).conjugate().cross(g_grad).conjugate() + normal.dot(e_field.conjugate()) * g_grad);
 				}
 			}
 		}
