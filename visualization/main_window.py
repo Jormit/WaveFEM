@@ -37,12 +37,13 @@ class main_window(MainWindow):
         self.horizontal_splitter = QtWidgets.QSplitter()
         self.setCentralWidget(self.horizontal_splitter)
 
+        self.viewplane_stack = QtWidgets.QStackedWidget()
+
         # Initialize object view
         self.plotter = QtInteractor(self.right_vertical_splitter)
         self.plotter.set_background("white")
         self.plotter.enable_surface_point_picking(callback=self.surface_selection_callback, show_point=False, show_message=False, tolerance=0.001)
         self.plotter.track_click_position(callback=self.plotter_click_callback)
-
         self.signal_close.connect(self.plotter.close)
 
         # Create menu bar
@@ -66,7 +67,8 @@ class main_window(MainWindow):
         sys.stdout.write = self.console.print_text
 
         # Form layout
-        self.right_vertical_splitter.addWidget(self.plotter)
+        self.viewplane_stack.addWidget(self.plotter)
+        self.right_vertical_splitter.addWidget(self.viewplane_stack)
         self.right_vertical_splitter.addWidget(self.console.widget_handle())
         self.left_vertical_splitter.addWidget(self.tree.widget_handle())
 
