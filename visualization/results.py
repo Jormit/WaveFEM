@@ -106,6 +106,14 @@ class dataset_3d_unstructured (dataset_base):
 
         return plotter.add_mesh(grid.glyph(orient='vectors', scale=True, factor=1/max_mag * 2), reset_camera=False, cmap='jet')
     
+
+class dataset_2d_polar(dataset_base):
+    def __init__(self, filename):
+        self.angles, self.r, self.theta, self.phi = data_loader.import_2d_polar_field(filename)
+
+    def plot(self, plotter):
+        return None
+    
 class results:
     def __init__(self, directory):
         self.directory = directory
@@ -126,6 +134,9 @@ class results:
 
             if filename.endswith(".3du"):
                 self.datasets[filename] = dataset_3d_unstructured(self.directory + filename)
+
+            if filename.endswith(".ff"):
+                self.datasets[filename] = dataset_2d_polar(self.directory + filename)
 
     def results_list(self):
         list = []
