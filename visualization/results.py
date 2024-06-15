@@ -16,6 +16,9 @@ class dataset_base:
     
     def set_parameters(self, params):
         return
+    
+    def is_plot_2d(self):
+        return False
 
 class dataset_vtk (dataset_base):
     def __init__(self, filename):
@@ -111,7 +114,17 @@ class dataset_2d_polar(dataset_base):
     def __init__(self, filename):
         self.angles, self.r, self.theta, self.phi = data_loader.import_2d_polar_field(filename)
 
+    def is_plot_2d(self):        
+        return True
+
     def plot(self, plotter):
+        plotter.plot(self.angles, np.abs(self.theta), label="Theta")
+        plotter.plot(self.angles, np.abs(self.phi), label="Phi")
+        plotter.plot(self.angles, np.abs(self.r), label="r")
+        plotter.legend(loc="upper right")
+        plotter.set_xlabel("Swept Angle")
+        plotter.set_ylabel("E Field Magnitude")
+
         return None
     
 class results:
@@ -147,6 +160,9 @@ class results:
     def activate_dataset(self, name, plotter):
         self.active_dataset_actor = self.datasets[name].plot(plotter)
         self.active_dataset_name = name
+
+    def is_plot_2d(self, name):
+        return self.datasets[name].is_plot_2d()
 
     def deactivate_dataset(self, plotter):
         if (self.active_dataset_actor is not None):            

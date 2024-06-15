@@ -88,8 +88,8 @@ def import_2d_polar_field(filename):
         line=line.split()
         if line: 
             r.append(complex(line[0]))
-            theta.append(complex(line[0]))
-            phi.append(complex(line[0]))
+            theta.append(complex(line[1]))
+            phi.append(complex(line[2]))
 
     angles = np.mgrid[start:start + step*(steps-1):steps*1j]
 
