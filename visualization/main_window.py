@@ -7,7 +7,7 @@ import subprocess
 
 from model import model
 from setup import setup
-from results import results
+from results import *
 import defaults
 from ui_components import *
 
@@ -46,8 +46,9 @@ class main_window(MainWindow):
         self.plotter.track_click_position(callback=self.plotter_click_callback)
         self.signal_close.connect(self.plotter.close)
 
-        # Initalize 2d plotter view
-        self.plotter_2d = MplCanvas(self, width=5, height=4, dpi=100)
+        # Initalize 2d plotters
+        self.plotter_2d = MplCanvas(self)
+        self.plotter_polar = MplCanvasPolar(self)
 
         # Create menu bar
         self.menubar = menu(self,
@@ -70,8 +71,9 @@ class main_window(MainWindow):
         sys.stdout.write = self.console.print_text
 
         # Form layout
-        self.viewplane_stack.addWidget(self.plotter)        
+        self.viewplane_stack.addWidget(self.plotter)       
         self.viewplane_stack.addWidget(self.plotter_2d)
+        self.viewplane_stack.addWidget(self.plotter_polar)
 
         self.right_vertical_splitter.addWidget(self.viewplane_stack)
         self.right_vertical_splitter.addWidget(self.console.widget_handle())
@@ -165,10 +167,14 @@ class main_window(MainWindow):
 
         elif (result_index > -1):
             self.model.reset_shading(0.1)
-            if self.results.is_plot_2d(it.text(0)):
+            if self.results.plot_type(it.text(0)) == PLOT_2D:
                 self.viewplane_stack.setCurrentIndex(1)
                 self.plotter_2d.axes.clear()
                 self.results.activate_dataset(it.text(0), self.plotter_2d.axes)
+
+            elif self.results.plot_type(it.text(0)) == PLOT_POLAR:
+                self.viewplane_stack.setCurrentIndex(2)
+                self.results.activate_dataset(it.text(0), self.plotter_polar.axes)
 
             else:
                 self.results.activate_dataset(it.text(0), self.plotter)
@@ -181,7 +187,7 @@ class main_window(MainWindow):
         if (self.model is not None):
             self.model.remove_highlights()
         if (self.results is not None):
-            self.results.deactivate_dataset(self.plotter)
+            self.results.deactivate_dataset()
         self.menubar.disable_assignment()
         self.viewplane_stack.setCurrentIndex(0)
 
@@ -288,7 +294,7 @@ class main_window(MainWindow):
             self.remove_splitter_focus()
             table = value_table_with_edit_and_delete_button(self.results.dataset_parameters(), self.edit_results, None)
             self.left_vertical_splitter.addWidget(table.widget_handle())
-            self.results.refresh_dataset(self.plotter)
+            self.results.refresh_dataset()
 
     def validate_simulation(self):
         print("\nValidation Result:")

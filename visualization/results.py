@@ -4,6 +4,10 @@ import pyvista as pv
 
 import data_loader
 
+PLOT_3D = 0
+PLOT_2D = 1
+PLOT_POLAR = 2
+
 class dataset_base:
     def __init__(self, filename):
         return
@@ -17,8 +21,8 @@ class dataset_base:
     def set_parameters(self, params):
         return
     
-    def is_plot_2d(self):
-        return False
+    def plot_type(self):
+        return PLOT_3D
 
 class dataset_vtk (dataset_base):
     def __init__(self, filename):
@@ -43,7 +47,7 @@ class dataset_3d (dataset_base):
             return self.vector_plot(plotter)
         else:
             return self.clip_plane(plotter)
-
+    
     def parameters(self):
         return {
             "Plot Style" : {
@@ -113,19 +117,47 @@ class dataset_3d_unstructured (dataset_base):
 class dataset_2d_polar(dataset_base):
     def __init__(self, filename):
         self.angles, self.r, self.theta, self.phi = data_loader.import_2d_polar_field(filename)
+        self.variable = "Total"
+        self.quantity = "Directivity (dB)"
 
-    def is_plot_2d(self):        
-        return True
+    def plot_type(self):
+        return PLOT_POLAR
 
     def plot(self, plotter):
-        plotter.plot(self.angles, np.abs(self.theta), label="Theta")
-        plotter.plot(self.angles, np.abs(self.phi), label="Phi")
-        plotter.plot(self.angles, np.abs(self.r), label="r")
-        plotter.legend(loc="upper right")
-        plotter.set_xlabel("Swept Angle")
-        plotter.set_ylabel("E Field Magnitude")
+        if (self.variable == "Phi"):
+            variable = np.abs(self.phi)
+        elif (self.variable == "Theta"):
+            variable = np.abs(self.theta)
+        else:
+            variable = (np.abs(self.theta) + np.abs(self.phi))
 
-        return None
+        if (self.quantity == "Directivity (dB)"):
+            variable = 20 * np.log10(variable/np.mean(variable))
+        else:
+            variable = variable / np.max(variable)
+            
+        plotter.plot(self.angles, variable)
+        plotter.set_xlabel("Swept Angle")
+        plotter.set_ylabel(self.quantity)
+        plotter.set_theta_zero_location("N")
+
+        return plotter
+    
+    def parameters(self):
+        return {
+            "Variable" : {
+                "options" : ["Phi", "Theta", "Total"],
+                "selected" : self.variable
+            },
+            "Quantity" : {
+                "options" : ["Directivity (dB)", "Normalized Magnitude"],
+                "selected" : self.quantity
+            }
+        }
+    
+    def set_parameters(self, params):
+        self.variable = params["Variable"]["selected"]
+        self.quantity = params["Quantity"]["selected"]
     
 class results:
     def __init__(self, directory):
@@ -133,6 +165,7 @@ class results:
         self.datasets = {}
         self.active_dataset_actor = None
         self.active_dataset_name = None
+        self.current_plotter = None
 
         if not os.path.exists(self.directory):
             return
@@ -160,20 +193,24 @@ class results:
     def activate_dataset(self, name, plotter):
         self.active_dataset_actor = self.datasets[name].plot(plotter)
         self.active_dataset_name = name
+        self.current_plotter = plotter
 
-    def is_plot_2d(self, name):
-        return self.datasets[name].is_plot_2d()
+    def plot_type(self, name):
+        return self.datasets[name].plot_type()
 
-    def deactivate_dataset(self, plotter):
-        if (self.active_dataset_actor is not None):            
-            plotter.clear_plane_widgets()
-            plotter.remove_actor(self.active_dataset_actor)
-            self.active_dataset_actor = None
+    def deactivate_dataset(self):
+        if (self.active_dataset_actor is not None):
+            if (self.datasets[self.active_dataset_name].plot_type() == PLOT_3D):
+                self.current_plotter.clear_plane_widgets()
+                self.current_plotter.remove_actor(self.active_dataset_actor)
+                self.active_dataset_actor = None
+            else:
+                self.current_plotter.cla()
 
-    def refresh_dataset(self, plotter):
-        if (self.active_dataset_actor is not None):  
-            self.deactivate_dataset(plotter)
-            self.active_dataset_actor = self.datasets[self.active_dataset_name].plot(plotter)
+    def refresh_dataset(self):
+        if (self.active_dataset_actor is not None):
+            self.deactivate_dataset()
+            self.active_dataset_actor = self.datasets[self.active_dataset_name].plot(self.current_plotter)
 
     def dataset_parameters(self):
         if (self.active_dataset_name is not None):

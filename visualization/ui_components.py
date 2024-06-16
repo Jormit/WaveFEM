@@ -2,6 +2,7 @@ from qtpy import QtWidgets, QtGui, QtCore
 
 import matplotlib
 matplotlib.use('Qt5Agg')
+import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
@@ -429,7 +430,11 @@ class console_box():
         return self.box
     
 class MplCanvas(FigureCanvasQTAgg):
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
+    def __init__(self, parent=None):
+        fig, self.axes = plt.subplots()
         super(MplCanvas, self).__init__(fig)
+
+class MplCanvasPolar(FigureCanvasQTAgg):
+    def __init__(self, parent=None):
+        fig, self.axes = plt.subplots(subplot_kw={'projection': 'polar'})
+        super(MplCanvasPolar, self).__init__(fig)
