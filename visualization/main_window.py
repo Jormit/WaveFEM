@@ -318,6 +318,6 @@ class main_window(MainWindow):
 if __name__ == '__main__':
 
     app = QtWidgets.QApplication(sys.argv)
-    app.setStyleSheet(qdarkstyle.load_stylesheet(qdarkstyle.DarkPalette))
+    app.setStyleSheet(qdarkstyle.load_stylesheet(qdarkstyle.LightPalette))
     window = main_window()
     sys.exit(app.exec_())
