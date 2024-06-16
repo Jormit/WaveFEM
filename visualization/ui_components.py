@@ -431,10 +431,10 @@ class console_box():
     
 class MplCanvas(FigureCanvasQTAgg):
     def __init__(self, parent=None):
-        fig, self.axes = plt.subplots()
-        super(MplCanvas, self).__init__(fig)
+        self.fig, self.axes = plt.subplots()
+        super(MplCanvas, self).__init__(self.fig)
 
 class MplCanvasPolar(FigureCanvasQTAgg):
     def __init__(self, parent=None):
-        fig, self.axes = plt.subplots(subplot_kw={'projection': 'polar'})
-        super(MplCanvasPolar, self).__init__(fig)
+        self.fig, self.axes = plt.subplots(subplot_kw={'projection': 'polar'})
+        super(MplCanvasPolar, self).__init__(self.fig)

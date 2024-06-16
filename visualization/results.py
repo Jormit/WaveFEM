@@ -205,7 +205,8 @@ class results:
                 self.current_plotter.remove_actor(self.active_dataset_actor)
                 self.active_dataset_actor = None
             else:
-                self.current_plotter.cla()
+                self.current_plotter.clear()
+                self.active_dataset_actor = None
 
     def refresh_dataset(self):
         if (self.active_dataset_actor is not None):
