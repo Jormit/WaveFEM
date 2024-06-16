@@ -117,7 +117,7 @@ class dataset_3d_unstructured (dataset_base):
 class dataset_2d_polar(dataset_base):
     def __init__(self, filename):
         self.angles, self.r, self.theta, self.phi = data_loader.import_2d_polar_field(filename)
-        self.variable = "Total"
+        self.variable = "Theta"
         self.quantity = "Directivity (dB)"
 
     def plot_type(self):
