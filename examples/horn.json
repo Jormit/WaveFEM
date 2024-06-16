@@ -14,7 +14,7 @@
     "pml_enable": true,
     "pml_thickness": 20.0,
     "frequency": 4000000000.0,
-    "target_elements_per_wavelength": 3,
+    "target_elements_per_wavelength": 5,
     "material_assignments": [
         "Conductor"
     ],
