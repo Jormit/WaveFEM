@@ -201,7 +201,7 @@ class main_window(MainWindow):
             self.model.remove_highlights()
             self.menubar.disable_assignment()
         if (self.results is not None):
-            self.results.deactivate_dataset(self.plotter)
+            self.results.deactivate_dataset()
         self.surface_clicked = False        
 
     def surface_selection_callback(self, point):
@@ -318,6 +318,6 @@ class main_window(MainWindow):
 if __name__ == '__main__':
 
     app = QtWidgets.QApplication(sys.argv)
-    app.setStyleSheet(qdarkstyle.load_stylesheet(qdarkstyle.LightPalette))
+    app.setStyleSheet(qdarkstyle.load_stylesheet(qdarkstyle.DarkPalette))
     window = main_window()
     sys.exit(app.exec_())
