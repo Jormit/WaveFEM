@@ -108,7 +108,10 @@ geo::structured_2d_field_data post::eval_port_from_3d(const sim& sim_instance, s
 geo::structured_3d_field_data post::eval_full(const sim& sim_instance, size_t port_num,
 	size_t num_x, size_t num_y, size_t num_z, field_type type)
 {
-	auto points = geo::generate_grid_points(sim_instance.bbox, num_x, num_y, num_z);
+	auto sample_box = sim_instance.bbox;
+	sample_box.add_padding(-1);
+
+	auto points = geo::generate_grid_points(sample_box, num_x, num_y, num_z);
 
 	geo::structured_grid_3d grid(sim_instance.bbox, num_x, num_y, num_z);
 	Eigen::MatrixX3cd field(points.size(), 3);
