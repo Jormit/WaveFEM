@@ -1,11 +1,14 @@
 #include <iostream>
 #include <cmath>
+#include <fstream>
 
 #include "post.h"
 #include "mesher_interface.h"
 #include "fem.h"
 #include "helpers.h"
 #include "constants.h"
+#include "quad.h"
+#include "functions.h"
 
 Eigen::Vector3cd post::eval_field_at_point(const sim& sim_instance, geo::point_3d point, size_t port_num, field_type type)
 {
@@ -167,4 +170,102 @@ geo::unstructured_3d_field_data post::project_2d_structured_surface_field_into_3
 		out_field.row(i) = deriv * field_vec;
 	}
 	return { out_points, out_field };
+}
+
+geo::polar_2d_field_data post::eval_far_field_slice(sim& sim_instance, size_t port_num, size_t num, geo::far_field_slice type, double fixed_angle, double r)
+{
+	geo::structured_polar_2d sweep = { 0, 2.0 * constants::pi / (num - 1), num, type, fixed_angle};
+	Eigen::MatrixX3cd far_field = Eigen::MatrixX3cd::Zero(sweep.num_steps, 3);
+
+	auto bounding_box_surface_ids = mesher_interface::get_bounding_box_surfaces(sim_instance.bbox);
+	auto surface_elems = mesher_interface::get_surface_elems(bounding_box_surface_ids);
+	auto face_2_elem = geo::generate_face_to_element_map(sim_instance.volume_elems);
+	mesher_interface::parameterize_surface_nodes(sim_instance.nodes, bounding_box_surface_ids, surface_elems);
+
+	for (size_t n = 0; n < num; n++)
+	{
+		Eigen::Vector3d eval_point;
+		double theta;
+		double phi;
+
+		if (type == geo::far_field_slice::THETA)
+		{
+			theta = sweep.start_angle + sweep.angle_step * n;
+			phi = fixed_angle;
+			eval_point << r * std::sin(theta) * std::cos(phi), r* std::sin(theta)* std::sin(phi), r* std::cos(theta);
+		}
+		else
+		{
+			theta = fixed_angle;
+			phi = sweep.start_angle + sweep.angle_step * n;
+			eval_point << r * std::sin(theta) * std::cos(phi), r* std::sin(theta)* std::sin(phi), r* std::cos(theta);
+		}
+
+		Eigen::Vector3cd field = Eigen::Vector3d::Zero();
+
+		// Surface loop
+		for (size_t face = 0; face < 6; face++)
+		{
+			auto normal = geo::box_face_normal(static_cast<geo::box_face>(face));
+
+			// Elem loop
+			for (const auto& e_2d : surface_elems[face])
+			{
+				// Decide on which element connected to surface face is the inner one.
+				auto& e_3d_options = face_2_elem[e_2d.face];
+				auto e_3d = sim_instance.volume_elems[e_3d_options.first];
+				if (e_3d.material_id != mat::FREE_SPACE)
+				{
+					e_3d = sim_instance.volume_elems[e_3d_options.second];
+				}
+
+				Eigen::Matrix<double, 4, 3> coords = e_3d.coordinate_matrix(sim_instance.nodes);
+				auto simplex_coeff = fem::_3d::simplex_coefficients(coords);
+				auto nabla_lambda = fem::_3d::nabla_lambda(simplex_coeff);
+				auto elem_area = fem::_2d::area(e_2d.coordinate_matrix(sim_instance.nodes));
+
+				// Integration loop
+				for (size_t p = 0; p < 6; p++)
+				{
+					// Get lambda for face element.
+					Eigen::Vector3d lambda_2d;
+					lambda_2d <<
+						quad::surface::gauss_6_point[p][1],
+						quad::surface::gauss_6_point[p][2],
+						quad::surface::gauss_6_point[p][3];
+					auto w = quad::surface::gauss_6_point[p][0];
+					auto lambda_3d = fem::_3d::project_2d_to_3d_lambda(lambda_2d, e_2d, e_3d);
+					auto coord_3d = e_2d.lambda_to_coord(sim_instance.nodes, lambda_2d);
+
+					auto e_field = fem::_3d::mixed_order::eval_elem(e_3d, lambda_3d, nabla_lambda,
+						sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
+
+					auto e_field_curl = fem::_3d::mixed_order::eval_elem_curl(e_3d, lambda_3d, nabla_lambda,
+						sim_instance.full_dof_map, sim_instance.full_solutions[port_num]);
+
+					auto g = func::free_space_greens_function(eval_point, coord_3d, sim_instance.wavenumber);
+					auto g_grad = func::free_space_greens_function_grad(eval_point, coord_3d, sim_instance.wavenumber);
+
+					field += w * elem_area * (normal.cross(e_field_curl).conjugate() * g + (normal.cross(e_field)).conjugate().cross(g_grad).conjugate() + normal.dot(e_field.conjugate()) * g_grad);
+				}
+			}
+		}
+
+		std::complex<double> out_r = 
+			field(0) * std::sin(theta) * std::cos(phi) + 
+			field(1) * std::sin(theta) * std::sin(phi) + 
+			field(2) * std::cos(theta);
+
+		std::complex<double> out_theta =
+			field(0) * std::cos(theta) * std::cos(phi) +
+			field(1) * std::cos(theta) * std::sin(phi) -
+			field(2) * std::sin(theta);
+
+		std::complex<double> out_phi =
+			- field(0) * std::sin(phi) +
+			  field(1) * std::cos(phi);
+
+		far_field.row(n) << out_r, out_theta, out_phi;		
+	}
+	return { sweep , far_field };
 }

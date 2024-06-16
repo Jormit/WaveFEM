@@ -80,6 +80,17 @@ Eigen::Matrix<double, 3, 2> geo::tri::coordinate_matrix(const std::vector<node>&
 	return coords;
 }
 
+Eigen::Vector3d geo::tri::lambda_to_coord(const std::vector<node>& nodes, Eigen::Vector3d lambda) const
+{
+	Eigen::Matrix<double, 3, 3> coords;
+
+	coords <<
+		nodes[this->nodes[0] - 1].coords.x, nodes[this->nodes[1] - 1].coords.x, nodes[this->nodes[2] - 1].coords.x,
+		nodes[this->nodes[0] - 1].coords.y, nodes[this->nodes[1] - 1].coords.y, nodes[this->nodes[2] - 1].coords.y,
+		nodes[this->nodes[0] - 1].coords.z, nodes[this->nodes[1] - 1].coords.z, nodes[this->nodes[2] - 1].coords.z;
+	return coords * lambda;
+}
+
 std::array<size_t, 2> geo::tet::get_edge_nodes(size_t edge) const
 {
 	switch (edge)
@@ -238,4 +249,18 @@ std::map<size_t, std::pair<size_t, size_t>> geo::generate_face_to_element_map(co
 	}
 
 	return map;
+}
+
+Eigen::Vector3d geo::box_face_normal(box_face id)
+{
+	Eigen::Vector3d normal;
+	switch (id) {
+	case box_face::XY_BOTTOM : normal <<  0,  0, -1; break;
+	case box_face::XY_TOP    : normal <<  0,  0,  1; break;
+	case box_face::XZ_BOTTOM : normal <<  0, -1,  0; break;
+	case box_face::XZ_TOP    : normal <<  0,  1,  0; break;
+	case box_face::YZ_BOTTOM : normal << -1,  0,  0; break;
+	case box_face::YZ_TOP    : normal <<  1,  0,  0; break;
+	}
+	return normal;
 }

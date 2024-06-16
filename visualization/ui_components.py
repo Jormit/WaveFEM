@@ -1,5 +1,10 @@
 from qtpy import QtWidgets, QtGui, QtCore
 
+import matplotlib
+matplotlib.use('Qt5Agg')
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
+
 app_icon = "./visualization/assets/icons/application-wave.png"
 save_icon = "./visualization/assets/icons/disk.png"
 open_icon = "./visualization/assets/icons/folder.png"
@@ -423,3 +428,8 @@ class console_box():
     def widget_handle(self):
         return self.box
     
+class MplCanvas(FigureCanvasQTAgg):
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        super(MplCanvas, self).__init__(fig)

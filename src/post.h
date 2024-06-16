@@ -7,7 +7,6 @@
 #include "sim.h"
 #include "geometry.h"
 
-enum slice_plane {XY, XZ, YZ};
 enum field_type {E_FIELD, H_FIELD, POYNTING};
 
 namespace post
@@ -23,4 +22,6 @@ namespace post
 	Eigen::MatrixXcd eval_s_parameters(const sim& sim_instance, size_t num_x, size_t num_y);
 
 	geo::unstructured_3d_field_data project_2d_structured_surface_field_into_3d(geo::structured_2d_field_data data, int surface_id);
+
+	geo::polar_2d_field_data eval_far_field_slice(sim& sim_instance, size_t port_num, size_t num, geo::far_field_slice type, double fixed_angle, double r);
 };

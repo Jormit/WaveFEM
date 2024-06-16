@@ -68,3 +68,31 @@ def import_unstructured_3d_field(filename):
     z = np.array(z)
 
     return x, y, z, vec
+
+def import_2d_polar_field(filename):
+    f=open(filename,"r+")
+    lines = f.readlines()
+
+    r = []
+    theta = []
+    phi = []
+
+    line0=lines[0].split()
+    line1=lines[1].split()
+
+    start = float(line0[0])
+    step = float(line0[1])
+    steps = int(line0[2])
+
+    for line in lines[2:]:
+        line=line.split()
+        if line: 
+            r.append(complex(line[0]))
+            theta.append(complex(line[1]))
+            phi.append(complex(line[2]))
+
+    angles = np.mgrid[start:start + step*(steps-1):steps*1j]
+
+    return angles, r, theta, phi
+
+    

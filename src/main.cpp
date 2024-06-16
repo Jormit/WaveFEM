@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 
 	auto current_sim = sim::create (config, args.data_path);
 
-	// mesher_interface::view_model();
+	mesher_interface::view_model();
 
 	current_sim.solve_ports();
 	current_sim.solve_full();
