@@ -136,10 +136,12 @@ class dataset_2d_polar(dataset_base):
         else:
             variable = variable / np.max(variable)
             
-        plotter.plot(self.angles, variable)
-        plotter.set_xlabel("Swept Angle")
-        plotter.set_ylabel(self.quantity)
-        plotter.set_theta_zero_location("N")
+        plotter.axes.plot(self.angles, variable)
+        plotter.axes.set_xlabel("Swept Angle")
+        plotter.axes.set_ylabel(self.quantity)
+        plotter.axes.set_theta_zero_location("N")
+
+        plotter.draw()
 
         return plotter
     
@@ -205,7 +207,7 @@ class results:
                 self.current_plotter.remove_actor(self.active_dataset_actor)
                 self.active_dataset_actor = None
             else:
-                self.current_plotter.clear()
+                self.current_plotter.axes.clear()
                 self.active_dataset_actor = None
 
     def refresh_dataset(self):

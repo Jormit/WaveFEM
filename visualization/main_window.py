@@ -170,11 +170,11 @@ class main_window(MainWindow):
             if self.results.plot_type(it.text(0)) == PLOT_2D:
                 self.viewplane_stack.setCurrentIndex(1)
                 self.plotter_2d.axes.clear()
-                self.results.activate_dataset(it.text(0), self.plotter_2d.axes)
+                self.results.activate_dataset(it.text(0), self.plotter_2d)
 
             elif self.results.plot_type(it.text(0)) == PLOT_POLAR:
                 self.viewplane_stack.setCurrentIndex(2)
-                self.results.activate_dataset(it.text(0), self.plotter_polar.axes)
+                self.results.activate_dataset(it.text(0), self.plotter_polar)
 
             else:
                 self.results.activate_dataset(it.text(0), self.plotter)
@@ -304,8 +304,7 @@ class main_window(MainWindow):
         else:
             print("Setup is Invalid!")
         
-    def run_simulation(self):
-        
+    def run_simulation(self):        
         if (self.setup.validate()):
             print("Running!")
             self.save_file()
