@@ -10,6 +10,7 @@
 #include "helpers.h"
 #include "pml.h"
 #include "result_writer.h"
+#include "constants.h"
 
 sim::sim(geo::box bbox, double wavenumber, std::vector<material> materials, std::vector<geo::node> nodes, std::vector<geo::tet> volume_elems,
 	std::unordered_map<size_t, int> boundary_edge_map, std::unordered_map<size_t, int> boundary_face_map, ports ports) :
@@ -222,7 +223,7 @@ void sim::generate_outputs(std::string directory, sim_config config)
 			static_cast<int> (bbox.y_dim() / config.target_mesh_size * 3),
 			static_cast<int> (bbox.z_dim() / config.target_mesh_size * 3), field_type::H_FIELD);
 
-		auto e_field_far = post::eval_far_field_slice(*this, p, 360, geo::THETA, 90, 1000);
+		auto e_field_far = post::eval_far_field_slice(*this, p, 360, geo::THETA, constants::pi/2, 1000);
 
 		result_writer::write_structured_3d_field(directory + E_filename, e_field);
 		result_writer::write_structured_3d_field(directory + B_filename, h_field);
